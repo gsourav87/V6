@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sothikbanglacalendar.vercel.app/sitemap.xml
