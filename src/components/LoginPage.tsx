@@ -56,6 +56,7 @@ export function LoginPage({ onSuccess }: LoginPageProps) {
       } else {
         await signIn(email, password);
       }
+      localStorage.setItem("auth:hasSignedIn", "1");
       onSuccess?.();
     } catch (err: any) {
       setError(err.message || "Authentication failed");
@@ -70,6 +71,7 @@ export function LoginPage({ onSuccess }: LoginPageProps) {
     setLoading(true);
     try {
       await signInWithGoogle();
+      localStorage.setItem("auth:hasSignedIn", "1");
       onSuccess?.();
     } catch (err: any) {
       setError(err.message || "Google sign-in failed");
@@ -112,6 +114,7 @@ export function LoginPage({ onSuccess }: LoginPageProps) {
     setLoading(true);
     try {
       await verifyPhoneCode(verificationCode);
+      localStorage.setItem("auth:hasSignedIn", "1");
       onSuccess?.();
     } catch (err: any) {
       setError(err.message || "Verification failed");

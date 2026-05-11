@@ -1,28 +1,19 @@
-import { useState, useEffect, useContext, createContext } from "react";
-import { User } from "firebase/auth";
-import { onAuthChanged } from "@/lib/firebase-auth";
+import { useContext, createContext } from "react";
+
+// Minimal user shape — no Firebase SDK import needed here.
+export type AuthUser = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+};
 
 type AuthContextType = {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
 };
 
-export const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
-
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthChanged((authUser) => {
-      setUser(authUser);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-
-  return { user, loading };
-}
+export const AuthContext = createContext<AuthContextType>({ user: null, loading: false });
 
 export function useAuthContext() {
   return useContext(AuthContext);

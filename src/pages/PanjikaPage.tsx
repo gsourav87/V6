@@ -96,7 +96,7 @@ export default function PanjikaPage() {
     <div className="min-h-screen bg-background pb-20">
       <NavBar />
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 md:px-8">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 md:px-8">
 
         {/* Date navigation */}
         <div className={cn(
@@ -290,7 +290,7 @@ export default function PanjikaPage() {
         <p className="text-center text-xs text-muted-foreground mt-6 font-bengali">
           সমস্ত সময় কলকাতা (IST, UTC+5:30) অনুযায়ী · বিশুদ্ধ সিদ্ধান্ত পদ্ধতি
         </p>
-      </div>
+      </main>
     </div>
   );
 }

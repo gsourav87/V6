@@ -105,14 +105,14 @@ export default function FestivalPage() {
     return (
       <div className="min-h-screen bg-background">
         <NavBar />
-        <div className="max-w-2xl mx-auto px-4 py-20 text-center font-bengali">
+        <main className="max-w-2xl mx-auto px-4 py-20 text-center font-bengali">
           <div className="text-5xl mb-4">🔍</div>
           <h1 className="text-2xl font-bold mb-2">উৎসব পাওয়া যায়নি</h1>
           <p className="text-muted-foreground mb-6">এই উৎসবের তথ্য এখনও যোগ করা হয়নি।</p>
           <Link href="/" className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold">
             ক্যালেন্ডারে ফিরুন
           </Link>
-        </div>
+        </main>
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default function FestivalPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-8 space-y-8">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 mt-8 space-y-8">
 
         {/* Description */}
         <section>
@@ -218,7 +218,7 @@ export default function FestivalPage() {
           </div>
         </section>
 
-      </div>
+      </main>
     </div>
   );
 }

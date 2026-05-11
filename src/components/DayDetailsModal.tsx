@@ -43,7 +43,7 @@ function SectionHead({ children, className }: { children: React.ReactNode; class
 
 export function DayDetailsModal({ date, onClose }: Props) {
   const utcDate = useMemo(
-    () => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())),
+    () => new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())),
     [date]
   );
 

@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 const NAV_LINKS = [
   { href: "/",                  label: "ক্যালেন্ডার", icon: "📅" },
@@ -8,6 +9,7 @@ const NAV_LINKS = [
   { href: "/news",              label: "সংবাদ",       icon: "📰" },
   { href: "/weather",           label: "আবহাওয়া",    icon: "🌤️" },
   { href: "/today-bengali-date",label: "আজকের তারিখ", icon: "🗓" },
+  { href: "/finance",           label: "বাজার",       icon: "💰" },
 ];
 
 export function NavBar() {
@@ -15,8 +17,8 @@ export function NavBar() {
 
   return (
     <nav className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border mb-6">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none flex-1 min-w-0">
           {NAV_LINKS.map(({ href, label, icon }) => {
             const isActive = href === "/" ? location === "/" : location.startsWith(href);
             return (
@@ -35,6 +37,9 @@ export function NavBar() {
               </Link>
             );
           })}
+        </div>
+        <div className="shrink-0 pl-1 border-l border-border ml-1">
+          <ThemeSelector />
         </div>
       </div>
     </nav>

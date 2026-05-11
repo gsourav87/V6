@@ -2,7 +2,7 @@ import { Link } from "wouter";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <main className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
 
         {/* Large 404 */}
@@ -33,6 +33,6 @@ export default function NotFound() {
         </div>
 
       </div>
-    </div>
+    </main>
   );
 }

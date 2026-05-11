@@ -88,7 +88,7 @@ export default function DatePage() {
   }, [title, description, year, month, day, bnDate, tithi, nakshatra]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center px-4 py-10">
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center px-4 py-10">
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="w-full max-w-2xl mb-6 text-xs text-slate-400 font-bengali">
@@ -151,6 +151,6 @@ export default function DatePage() {
       <Link href="/" className="mt-8 text-sm text-slate-400 hover:text-white transition-colors font-bengali">
         ← মূল ক্যালেন্ডারে ফিরে যান
       </Link>
-    </div>
+    </main>
   );
 }

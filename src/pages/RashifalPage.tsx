@@ -109,7 +109,7 @@ export default function RashifalPage() {
     <div className="min-h-screen bg-background pb-20">
       <NavBar />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Page header */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🔮</div>
@@ -176,7 +176,7 @@ export default function RashifalPage() {
         <p className="text-center text-xs text-muted-foreground mt-8 font-bengali">
           রাশিফল বিনোদনের উদ্দেশ্যে প্রদান করা হয়। ব্যক্তিগত সিদ্ধান্তের জন্য বিশেষজ্ঞের পরামর্শ নিন।
         </p>
-      </div>
+      </main>
     </div>
   );
 }

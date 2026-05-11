@@ -2,7 +2,24 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -s http://localhost:5173/weather -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s http://localhost:5173/news -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s http://localhost:5173/ -o /dev/null -w \"%{http_code}\")",
+      "Bash(npx vite *)",
+      "Bash(curl -s http://localhost:5173/ -o /dev/null -w \"/ → %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:5173/weather -o /dev/null -w \"/weather → %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:5173/news -o /dev/null -w \"/news → %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:5173/panjika -o /dev/null -w \"/panjika → %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:5173/api/news -o /dev/null -w \"/api/news → %{http_code}\\\\n\")",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(curl -s --max-time 8 -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/124.0 Safari/537.36\" -H \"Accept: application/json\" -H \"Referer: https://finance.yahoo.com/\" \"https://query2.finance.yahoo.com/v8/finance/chart/%5EBSESN?interval=1d&range=1d\")",
+      "Bash(curl -s --max-time 8 -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://query1.finance.yahoo.com/v7/finance/quote?symbols=%5EBSESN,%5ENSEI,HDFCBANK.NS,TCS.NS,RELIANCE.NS,INFY.NS\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(q['symbol'], q.get\\('regularMarketPrice'\\), q.get\\('regularMarketChangePercent','?'\\)\\) for q in d['quoteResponse']['result']]\")",
+      "Bash(curl -s --max-time 8 -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/124.0 Safari/537.36\" -H \"Accept: application/json\" -H \"Referer: https://finance.yahoo.com/\" \"https://query2.finance.yahoo.com/v8/finance/chart/%5ENSEI?interval=1d&range=1d\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); m=d['chart']['result'][0]['meta']; print\\('Nifty:', m['regularMarketPrice'], '| prev:', m['chartPreviousClose']\\)\")"
     ]
   }
 }

@@ -85,7 +85,7 @@ export default function TodayBengaliDate() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="max-w-2xl mx-auto px-4 py-10">
+      <main className="max-w-2xl mx-auto px-4 py-10">
 
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted-foreground font-bengali">
@@ -187,7 +187,7 @@ export default function TodayBengaliDate() {
           </div>
         </div>
 
-      </div>
+      </main>
     </div>
   );
 }

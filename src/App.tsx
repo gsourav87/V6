@@ -8,6 +8,7 @@ const NewsPage         = lazy(() => import("./pages/NewsPage"));
 const PanjikaPage      = lazy(() => import("./pages/PanjikaPage"));
 const WeatherPage      = lazy(() => import("./pages/WeatherPage"));
 const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
+const FinancePage      = lazy(() => import("./pages/FinancePage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import SeoContent from "./components/SeoContent";
@@ -23,6 +24,7 @@ import { useCalendar } from "@/hooks/useCalendar";
 import { useTodayInfo } from "@/hooks/useTodayInfo";
 
 import { Header } from "@/components/Header";
+import { NavBar } from "@/components/NavBar";
 import { LiveClock } from "@/components/LiveClock";
 import { MonthNavigator } from "@/components/MonthNavigator";
 import { CalendarGrid } from "@/components/CalendarGrid";
@@ -60,7 +62,9 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
+      <NavBar />
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4 mt-2">
@@ -70,39 +74,58 @@ function Home() {
 
         <LiveClock />
 
-        {/* SEO navigation links */}
-        <nav aria-label="Quick links" className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 text-sm font-bengali font-semibold text-primary">
-          <Link href={`/date/${todayY}/${todayM}/${todayD}`}>
-            আজকের বাংলা তারিখ ও পঞ্জিকা দেখুন
-          </Link>
-          <Link href="/today-bengali-date">
-            আজকের বাংলা তারিখ
-          </Link>
-          <Link href="/month/jaistha/2026">
-            জ্যৈষ্ঠ ২০২৬
-          </Link>
-          <Link href="/month/boishakh/2026">
-            বৈশাখ ২০২৬
-          </Link>
-        </nav>
-
-        {/* Page links */}
-        <div className="flex flex-wrap justify-center gap-2 mt-3">
-          {[
-            { href: "/panjika",  label: "📖 পঞ্জিকা" },
-            { href: "/rashifal", label: "🔮 রাশিফল" },
-            { href: "/news",     label: "📰 সংবাদ" },
-            { href: "/weather",  label: "🌤️ আবহাওয়া" },
-          ].map(({ href, label }) => (
+        {/* Page navigation cards */}
+        <div className="grid grid-cols-5 gap-2 mt-4">
+          {([
+            { href: "/panjika",  icon: "📅", label: "পঞ্জিকা",  desc: "তিথি · নক্ষত্র · রাহু কাল" },
+            { href: "/rashifal", icon: "⭐", label: "রাশিফল",  desc: "আজকের রাশিফল" },
+            { href: "/news",     icon: "📰", label: "সংবাদ",   desc: "বাংলা খবর" },
+            { href: "/weather",  icon: "🌤️", label: "আবহাওয়া", desc: "৭ দিনের পূর্বাভাস" },
+            { href: "/finance",  icon: "💰", label: "বাজার",   desc: "মুদ্রা · জ্বালানি · শেয়ার" },
+          ] as const).map(({ href, icon, label, desc }) => (
             <Link
               key={href}
               href={href}
-              className="text-xs bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground px-4 py-1.5 rounded-full transition-colors font-bengali font-semibold"
+              className="flex flex-col items-center gap-1.5 bg-card border border-border rounded-xl p-3 hover:border-primary/50 hover:shadow-sm transition-all text-center"
             >
-              {label}
+              <span className="text-2xl">{icon}</span>
+              <span className="text-xs font-bengali font-bold text-foreground leading-tight">{label}</span>
+              <span className="text-[10px] font-bengali text-muted-foreground leading-tight hidden sm:block">{desc}</span>
             </Link>
           ))}
         </div>
+
+        {/* SEO navigation links */}
+        <nav aria-label="Quick links" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-4 text-sm font-bengali font-semibold text-primary">
+          <Link href={`/date/${todayY}/${todayM}/${todayD}`}>আজকের বাংলা তারিখ ও পঞ্জিকা</Link>
+          <Link href="/today-bengali-date">আজকের বাংলা তারিখ</Link>
+        </nav>
+
+        {/* All 12 Bengali months */}
+        <nav aria-label="Bengali months 2026" className="flex flex-wrap justify-center gap-2 mt-3">
+          {([
+            { slug: "boishakh",  nameBn: "বৈশাখ" },
+            { slug: "jaistha",   nameBn: "জ্যৈষ্ঠ" },
+            { slug: "ashar",     nameBn: "আষাঢ়" },
+            { slug: "shraban",   nameBn: "শ্রাবণ" },
+            { slug: "bhadra",    nameBn: "ভাদ্র" },
+            { slug: "ashwin",    nameBn: "আশ্বিন" },
+            { slug: "kartik",    nameBn: "কার্তিক" },
+            { slug: "agrohayon", nameBn: "অগ্রহায়ণ" },
+            { slug: "poush",     nameBn: "পৌষ" },
+            { slug: "magh",      nameBn: "মাঘ" },
+            { slug: "falgun",    nameBn: "ফাল্গুন" },
+            { slug: "chaitra",   nameBn: "চৈত্র" },
+          ] as const).map(({ slug, nameBn }) => (
+            <Link
+              key={slug}
+              href={`/month/${slug}/2026`}
+              className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full text-xs font-bengali font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              {nameBn} ২০২৬
+            </Link>
+          ))}
+        </nav>
 
         {/* Festival spotlight */}
         <div className="mt-5">
@@ -153,7 +176,7 @@ function Home() {
             <SeoContent />
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Day details modal */}
       {selectedDate && (
@@ -242,6 +265,10 @@ function App() {
 
                 <Route path="/festival/:slug">
                   <FestivalPage />
+                </Route>
+
+                <Route path="/finance">
+                  <FinancePage />
                 </Route>
 
                 <Route>

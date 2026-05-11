@@ -54,10 +54,32 @@ function deduplicate(items: NewsItem[]): NewsItem[] {
 }
 
 async function fetchBengaliNews(): Promise<NewsItem[]> {
-  const res = await fetch("/api/news");
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const xml = await res.text();
-  const items = parseRSSXml(xml);
+  // Try server-side proxy first
+  try {
+    const res = await fetch("/api/news", { signal: AbortSignal.timeout(4000) });
+    if (res.ok) {
+      const xml = await res.text();
+      const items = parseRSSXml(xml);
+      if (items.length > 0) return deduplicate(items);
+    }
+  } catch { /* fall through to browser fallback */ }
+
+  // Browser fallback: rss2json.com is CORS-enabled and free (10k req/month)
+  const BBC_RSS = "https://feeds.bbci.co.uk/bengali/rss.xml";
+  const r = await fetch(
+    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(BBC_RSS)}`,
+    { signal: AbortSignal.timeout(10000) }
+  );
+  if (!r.ok) throw new Error(`rss2json HTTP ${r.status}`);
+  const data = await r.json() as any;
+  if (data.status !== "ok") throw new Error("rss2json error");
+  const items: NewsItem[] = (data.items ?? []).map((item: any) => ({
+    title:       item.title ?? "",
+    link:        item.link ?? "",
+    description: (item.description ?? "").replace(/<[^>]*>/g, "").trim(),
+    pubDate:     item.pubDate ?? "",
+    thumbnail:   item.thumbnail ?? "",
+  })).filter((i: NewsItem) => i.title);
   return deduplicate(items);
 }
 
@@ -91,7 +113,7 @@ function NewsCard({ item }: { item: NewsItem }) {
           </p>
         )}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="font-semibold text-red-600 dark:text-red-400">BBC বাংলা</span>
+          <span className="font-semibold text-red-600 dark:text-red-400">সংবাদ</span>
           {validDate && (
             <>
               <span>·</span>
@@ -150,7 +172,7 @@ export default function NewsPage() {
     <div className="min-h-screen bg-background pb-20">
       <NavBar />
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -159,15 +181,13 @@ export default function NewsPage() {
               <span>📰</span> বাংলা সংবাদ
             </h1>
             <div className="flex items-center gap-2 mt-1">
-              <span className="inline-flex items-center bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded tracking-wide">
-                BBC বাংলা
-              </span>
-              <span className="text-muted-foreground text-sm font-bengali">— সর্বশেষ খবর</span>
+              <span className="text-muted-foreground text-sm font-bengali">BBC বাংলা · ABP · আনন্দবাজার সহ বিভিন্ন সূত্র থেকে</span>
             </div>
           </div>
           <button
             onClick={() => refetch()}
             disabled={isFetching}
+            aria-label="সংবাদ রিফ্রেশ করুন"
             className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground px-3 py-1.5 rounded-full font-bengali hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
@@ -210,9 +230,9 @@ export default function NewsPage() {
         )}
 
         <p className="text-center text-xs text-muted-foreground mt-8 font-bengali">
-          সংবাদ সূত্র: BBC বাংলা। সর্বস্বত্ব সংরক্ষিত।
+          সংবাদ সূত্র: BBC বাংলা · ABP লাইভ · আনন্দবাজার। সর্বস্বত্ব সংরক্ষিত।
         </p>
-      </div>
+      </main>
     </div>
   );
 }

@@ -150,7 +150,7 @@ export default function WeatherPage() {
     <div className="min-h-screen bg-background pb-20">
       <NavBar />
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -231,7 +231,7 @@ export default function WeatherPage() {
         <p className="text-center text-xs text-muted-foreground mt-8 font-bengali">
           তথ্যসূত্র: Open-Meteo (open-meteo.com) · স্বয়ংক্রিয়ভাবে আপডেট হয়
         </p>
-      </div>
+      </main>
     </div>
   );
 }

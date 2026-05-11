@@ -1,164 +1,124 @@
-import {
-  initializeApp,
-  getApps,
-} from "firebase/app";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  User,
-  signInWithPopup,
-  GoogleAuthProvider,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  ConfirmationResult,
-} from "firebase/auth";
+// No top-level Firebase SDK imports — everything is loaded lazily via dynamic import.
+// This keeps Firebase out of the main JS bundle entirely.
 
-// Check if Firebase config is available
 export const firebaseReady = !!(
   import.meta.env.VITE_FIREBASE_API_KEY &&
   import.meta.env.VITE_FIREBASE_PROJECT_ID
 );
 
-let auth: ReturnType<typeof getAuth> | null = null;
-let recaptchaVerifier: RecaptchaVerifier | null = null;
-let confirmationResult: ConfirmationResult | null = null;
+const firebaseConfig = firebaseReady
+  ? {
+      apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
+      authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+      projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId:             import.meta.env.VITE_FIREBASE_APP_ID,
+    }
+  : null;
 
-if (firebaseReady) {
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  };
+// Single shared promise so Firebase is initialized at most once.
+let _authPromise: Promise<import("firebase/auth").Auth> | null = null;
 
-  if (!getApps().length) {
-    initializeApp(firebaseConfig);
-  }
+async function getAuth(): Promise<import("firebase/auth").Auth> {
+  if (!firebaseReady || !firebaseConfig) throw new Error("Firebase not configured");
+  if (_authPromise) return _authPromise;
 
-  auth = getAuth();
+  _authPromise = (async () => {
+    const [{ initializeApp, getApps }, { getAuth: _getAuth }] = await Promise.all([
+      import("firebase/app"),
+      import("firebase/auth"),
+    ]);
+    if (!getApps().length) initializeApp(firebaseConfig!);
+    return _getAuth();
+  })();
+
+  return _authPromise;
 }
 
 // ===== EMAIL & PASSWORD =====
-export async function signUp(email: string, password: string): Promise<User> {
-  if (!auth) throw new Error("Firebase not configured");
-  if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters");
-  }
-  
+export async function signUp(email: string, password: string) {
+  const auth = await getAuth();
+  const { createUserWithEmailAndPassword } = await import("firebase/auth");
+  if (password.length < 6) throw new Error("Password must be at least 6 characters");
   const result = await createUserWithEmailAndPassword(auth, email, password);
   return result.user;
 }
 
-export async function signIn(email: string, password: string): Promise<User> {
-  if (!auth) throw new Error("Firebase not configured");
-  
+export async function signIn(email: string, password: string) {
+  const auth = await getAuth();
+  const { signInWithEmailAndPassword } = await import("firebase/auth");
   const result = await signInWithEmailAndPassword(auth, email, password);
   return result.user;
 }
 
 // ===== GOOGLE SIGN-IN =====
-export async function signInWithGoogle(): Promise<User> {
-  if (!auth) throw new Error("Firebase not configured");
-  
+export async function signInWithGoogle() {
+  const auth = await getAuth();
+  const { signInWithPopup, GoogleAuthProvider } = await import("firebase/auth");
   const provider = new GoogleAuthProvider();
   const result = await signInWithPopup(auth, provider);
   return result.user;
 }
 
 // ===== PHONE NUMBER AUTHENTICATION =====
-export async function setupRecaptcha(
-  containerId: string = "recaptcha-container"
-): Promise<void> {
-  if (!auth) throw new Error("Firebase not configured");
-  
-  recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-    size: "invisible",
-    callback: () => {
-      console.log("Recaptcha verified");
-    },
-  });
+let _recaptchaVerifier: import("firebase/auth").RecaptchaVerifier | null = null;
+let _confirmationResult: import("firebase/auth").ConfirmationResult | null = null;
+
+export async function setupRecaptcha(containerId = "recaptcha-container"): Promise<void> {
+  const auth = await getAuth();
+  const { RecaptchaVerifier } = await import("firebase/auth");
+  _recaptchaVerifier = new RecaptchaVerifier(auth, containerId, { size: "invisible" });
 }
 
-export async function sendPhoneVerificationCode(
-  phoneNumber: string
-): Promise<ConfirmationResult> {
-  if (!auth) throw new Error("Firebase not configured");
-  if (!recaptchaVerifier) {
-    await setupRecaptcha();
-  }
-
-  if (!recaptchaVerifier) {
-    throw new Error("Failed to initialize reCAPTCHA");
-  }
-
-  confirmationResult = await signInWithPhoneNumber(
-    auth,
-    phoneNumber,
-    recaptchaVerifier
-  );
-  
-  return confirmationResult;
+export async function sendPhoneVerificationCode(phoneNumber: string) {
+  const auth = await getAuth();
+  if (!_recaptchaVerifier) await setupRecaptcha();
+  if (!_recaptchaVerifier) throw new Error("Failed to initialize reCAPTCHA");
+  const { signInWithPhoneNumber } = await import("firebase/auth");
+  _confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, _recaptchaVerifier);
+  return _confirmationResult;
 }
 
-export async function verifyPhoneCode(code: string): Promise<User> {
-  if (!confirmationResult) {
-    throw new Error("No verification code sent. Please send code first.");
-  }
-
-  const result = await confirmationResult.confirm(code);
+export async function verifyPhoneCode(code: string) {
+  if (!_confirmationResult) throw new Error("No verification code sent. Please send code first.");
+  const result = await _confirmationResult.confirm(code);
   return result.user;
 }
 
 // ===== SIGN OUT =====
 export async function signOut(): Promise<void> {
-  if (!auth) throw new Error("Firebase not configured");
-  await firebaseSignOut(auth);
+  const auth = await getAuth();
+  const { signOut: _signOut } = await import("firebase/auth");
+  await _signOut(auth);
 }
 
 // ===== AUTH STATE LISTENER =====
-export function onAuthChanged(
-  callback: (user: User | null) => void
-): () => void {
-  if (!auth) {
+// Returns a Promise<unsubscribe> because Firebase is loaded asynchronously.
+export async function onAuthChanged(
+  callback: (user: import("firebase/auth").User | null) => void
+): Promise<() => void> {
+  if (!firebaseReady) {
     callback(null);
     return () => {};
   }
-
+  const auth = await getAuth();
+  const { onAuthStateChanged } = await import("firebase/auth");
   return onAuthStateChanged(auth, callback);
 }
 
-// ===== HELPER FUNCTIONS =====
+// ===== HELPERS (sync — no Firebase import needed) =====
 export function formatPhoneNumber(phone: string): string {
-  // Remove all non-digits
   const cleaned = phone.replace(/\D/g, "");
-  
-  // If starts with country code, keep it
-  if (cleaned.startsWith("91")) {
-    return "+" + cleaned;
-  }
-  
-  // Otherwise assume India (+91)
+  if (cleaned.startsWith("91")) return "+" + cleaned;
   return "+91" + cleaned;
 }
 
 export function validatePhoneNumber(phone: string): boolean {
   const cleaned = phone.replace(/\D/g, "");
-  
-  // India: 10 digits (or 12 with +91)
-  if (cleaned.length === 10 || cleaned.length === 12) return true;
-  
-  // US: 10 digits (or 11 with +1)
-  if (cleaned.length === 10 || cleaned.length === 11) return true;
-  
-  return false;
+  return cleaned.length === 10 || cleaned.length === 12 || cleaned.length === 11;
 }
 
 export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }

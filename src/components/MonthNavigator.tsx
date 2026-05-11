@@ -1,9 +1,9 @@
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Moon, Sun } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BANGLA_MONTHS, toBengaliNumerals } from "@/lib/bengali-calendar";
-import { useTheme } from "@/components/ThemeProvider";
 import { PushNotifications } from "@/components/PushNotifications";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 interface MonthNavigatorProps {
   selectedYear: number;
@@ -24,18 +24,16 @@ export function MonthNavigator({
   goToNextMonth,
   goToToday
 }: MonthNavigatorProps) {
-  const { theme, setTheme } = useTheme();
-  
   // Year range 1430-1436
   const years = Array.from({ length: 7 }, (_, i) => 1430 + i);
 
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card p-4 rounded-2xl shadow-sm border border-card-border mb-6">
       <div className="flex items-center gap-2 w-full sm:w-auto">
-        <Button variant="outline" size="icon" onClick={goToPrevMonth} data-testid="button-prev-month">
+        <Button variant="outline" size="icon" onClick={goToPrevMonth} data-testid="button-prev-month" aria-label="আগের মাস">
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="icon" onClick={goToNextMonth} data-testid="button-next-month">
+        <Button variant="outline" size="icon" onClick={goToNextMonth} data-testid="button-next-month" aria-label="পরের মাস">
           <ChevronRight className="h-4 w-4" />
         </Button>
         <Button variant="secondary" onClick={goToToday} className="ml-2 font-bengali font-medium" data-testid="button-today">
@@ -73,16 +71,7 @@ export function MonthNavigator({
         
         <PushNotifications />
 
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="ml-1 rounded-full"
-          data-testid="button-theme-toggle"
-          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        >
-          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
+        <ThemeSelector />
       </div>
     </div>
   );

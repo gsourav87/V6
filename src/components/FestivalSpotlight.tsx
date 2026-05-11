@@ -90,7 +90,7 @@ export function FestivalSpotlight() {
     <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
       <div className="text-3xl shrink-0">{nextFestival.icon}</div>
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] font-semibold text-muted-foreground font-bengali uppercase tracking-wider mb-0.5">
+        <div className="text-xs font-semibold text-muted-foreground font-bengali uppercase tracking-wider mb-0.5">
           পরবর্তী উৎসব
         </div>
         <div className="font-bold font-bengali text-foreground leading-tight">{nextFestival.nameBn}</div>
@@ -102,11 +102,11 @@ export function FestivalSpotlight() {
         <div className="text-2xl font-bold text-primary font-bengali leading-none">
           {toBengaliNumerals(daysUntil)}
         </div>
-        <div className="text-[10px] text-muted-foreground font-bengali">দিন বাকি</div>
+        <div className="text-xs text-muted-foreground font-bengali">দিন বাকি</div>
         {nextFestival.slug && (
           <Link
             href={`/festival/${nextFestival.slug}`}
-            className="mt-1.5 inline-flex items-center gap-0.5 text-[10px] text-primary hover:underline font-bengali font-semibold"
+            className="mt-1.5 inline-flex items-center gap-0.5 text-xs text-primary hover:underline font-bengali font-semibold"
           >
             বিস্তারিত <ChevronRight className="w-3 h-3" />
           </Link>
