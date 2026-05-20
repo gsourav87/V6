@@ -19,7 +19,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthContext";
-import { GoogleAnalytics } from '@next/third-parties/google'
 
 import { useCalendar } from "@/hooks/useCalendar";
 import { useTodayInfo } from "@/hooks/useTodayInfo";
