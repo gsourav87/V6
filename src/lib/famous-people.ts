@@ -1,3 +1,4 @@
+```typescript
 export interface FamousPerson {
   id: string;
   nameBn: string;
@@ -15,9 +16,7 @@ export interface FamousPerson {
   nationality?: string;
   birthPlace?: string;
   inFestivals?: boolean;
-}
-
-export interface HistoricEvent {
+}export interface HistoricEvent {
   id: string;
   dateMD: string;
   year: number;
@@ -28,9 +27,7 @@ export interface HistoricEvent {
   emoji: string;
   wikiUrl: string;
   tags?: string[];
-}
-
-export interface ImportantDate {
+}export interface ImportantDate {
   id: string;
   dateMD: string;
   nameBn: string;
@@ -39,9 +36,7 @@ export interface ImportantDate {
   descBn: string;
   emoji: string;
   wikiUrl?: string;
-}
-
-export interface Festival {
+}export interface Festival {
   id: string;
   date?: string;
   recurringMD?: string;
@@ -51,9 +46,7 @@ export interface Festival {
   descBn: string;
   emoji: string;
   wikiUrl?: string;
-}
-
-export const FAMOUS_PEOPLE: FamousPerson[] = [
+}export const FAMOUS_PEOPLE: FamousPerson[] = [
   {
     id: "rabindranath-tagore",
     nameBn: "রবীন্দ্রনাথ ঠাকুর",
@@ -98,7 +91,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "07-29",
     deathYear: 1891,
     role: "সমাজ সংস্কারক ও শিক্ষাবিদ",
-    descBn: "বাংলা গদ্যের জনক এবং বিধবা বিবাহ আইন পাসের প্রধান উদ্যোক্তা যিনি সমাজ সংস্কারে অসামান্য অবদান রাখেন।",
+    descBn: "বাংলা গদ্যের জনক এবং বিধবা বিবাহ আইন পাসের প্রধান উদ্যোক্তা যিনি समाज সংস্কারে অসামান্য অবদান রাখেন।",
     emoji: "📚",
     wikiUrl: "https://bn.wikipedia.org/wiki/ঈশ্বরচন্দ্র_বিদ্যাসাগর",
     tags: ["সংস্কারক", "শিক্ষাবিদ", "রেনেসাঁ"],
@@ -118,7 +111,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "রামকৃষ্ণ মিশনের প্রতিষ্ঠাতা এবং শিকাগো ধর্মসভায় সনাতন ধর্মের বিশ্বজনীন বাণী প্রচারকারী মহান দার্শনিক।",
     emoji: "🕉️",
     wikiUrl: "https://bn.wikipedia.org/wiki/স্বামী_বিবেকানন্দ",
-    tags: ["সাধু", "দার্শনিক", "যুব আইকন"],
+    tags: ["সাধু", "دار্শনিক", "যুব আইকন"],
     category: "bengali-saints",
     nationality: "Indian",
     birthPlace: "কলকাতা"
@@ -134,7 +127,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "বিজ্ঞানী",
     descBn: "উদ্ভিদের প্রাণ আবিষ্কারক এবং বেতার তরঙ্গের অন্যতম পথপ্রদর্শক যিনি আধুনিক বিজ্ঞান গবেষণায় বাঙালিকে বিশ্বমঞ্চে তুলে ধরেন।",
     emoji: "🌱",
-    wikiUrl: "https://bn.wikipedia.org/wiki/জগদীশ_চন্দ্র_বসু",
+    wikiUrl: "https://bn.wikipedia.org/wiki/জগদীশ_চন্দ্র_বсу",
     tags: ["বিজ্ঞানী", "পদার্থবিদ", "উদ্ভিদবিদ"],
     category: "bengali-scientists",
     nationality: "Indian",
@@ -269,7 +262,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "অহিংস ও সত্যাগ্রহ আন্দোলনের মাধ্যমে ভারতকে ব্রিটিশ শাসন থেকে মুক্ত করার প্রধান জননেতা ও অহিংসার প্রতীক।",
     emoji: "👓",
     wikiUrl: "https://bn.wikipedia.org/wiki/মহাত্মা_গান্ধী",
-    tags: ["স্বাধীনতা সংগ্রামী", "নেতা", "অহিংসা"],
+    tags: [" স্বাধীনতা সংগ্রামী", "নেতা", "অহিংসা"],
     category: "indian-political-leaders",
     nationality: "Indian",
     birthPlace: "পোরবন্দর"
@@ -299,11 +292,11 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     birthYear: 1891,
     deathMD: "12-06",
     deathYear: 1956,
-    role: "সংবিধান প্রণেতা ও সমাজ সংস্কারক",
+    role: "সংविधान প্রণেতা ও সমাজ সংস্কারক",
     descBn: "भारतीय সংবিধানের প্রধান স্থপতি এবং দলিত ও অনগ্রসর শ্রেণীর অধিকার আদায়ের আন্দোলনের অবিসংবাদিত নেতা।",
     emoji: "⚖️",
     wikiUrl: "https://bn.wikipedia.org/wiki/ভীমরাও_রামজি_আম্বেদকর",
-    tags: ["সংবিধান", "সংস্কারক", "আইনজীবী"],
+    tags: ["সংविधान", "সংস্কারক", "আইনজীবী"],
     category: "indian-social-reformers",
     nationality: "Indian",
     birthPlace: "মহু"
@@ -317,7 +310,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "11-21",
     deathYear: 1970,
     role: "পদার্থবিজ্ঞানী",
-    descBn: "আলোক বিচ্ছুরণ সংক্রান্ত 'রমন এফেক্ট' আবিষ্কারের জন্য ১৯৩০ সালে এশিয়ার প্রথম বিজ্ঞানী হিসেবে পদার্থবিদ্যায় নোবেল পান।",
+    descBn: "আлок বিচ্ছুরণ সংক্রান্ত 'রমন এফেক্ট' আবিষ্কারের জন্য ১৯৩০ সালে এশিয়ার প্রথম বিজ্ঞানী হিসেবে পদার্থবিদ্যায় নোবেল পান।",
     emoji: "🔬",
     wikiUrl: "https://bn.wikipedia.org/wiki/চন্দ্রশেখর_ভেঙ্কট_রামন",
     tags: ["বিজ্ঞানী", "নোবেল বিজয়ী", "পদার্থবিদ"],
@@ -327,14 +320,14 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "mother-teresa",
-    nameBn: "মাদার تেরেসা",
+    nameBn: "মাদার তেরেসা",
     nameEn: "Mother Teresa",
     birthMD: "08-26",
     birthYear: 1910,
     deathMD: "09-05",
     deathYear: 1997,
     role: "মানবিক সাধিকা",
-    descBn: "কলকাতার 'মিশনারিজ অব চ্যারিটি'র প্রতিষ্ঠাতা যিনি আজীবন আর্ত ও মুমূর্ষু মানুষের সেবায় আত্মনিয়োগ করে নোবেল শান্তি পুরস্কার লাভ করেন।",
+    descBn: "কলকাতার 'মিশনারিজ অব চ্যারিটি'র প্রতিষ্ঠাতা যিনি আজীবন আর্ত ও মুমূর্ষu মানুষের সেবায় আত্মনিয়োগ করে নোবেল শান্তি পুরস্কার লাভ করেন।",
     emoji: "🕊️",
     wikiUrl: "https://bn.wikipedia.org/wiki/মাদার_তেরেসা",
     tags: ["সাধু", "শান্তি নোবেল", "মানবসেবা"],
@@ -395,7 +388,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "srinivasa-ramanujan",
-    nameBn: "শ্রীনিবাস রামানুজন",
+    nameBn: "শ্রীনিবাস রামানuজন",
     nameEn: "Srinivasa Ramanujan",
     birthMD: "12-22",
     birthYear: 1887,
@@ -422,10 +415,10 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "ভারতের নাইটিঙ্গেল নামে পরিচিত কবি এবং স্বাধীন ভারতের প্রথম নারী রাজ্যপাল যিনি নারী জাগরণে অগ্রণী ভূমিকা নেন।",
     emoji: "🪶",
     wikiUrl: "https://bn.wikipedia.org/wiki/সরোজিনী_নাইডু",
-    tags: ["কবি", "স্বাধীনতা সংগ্রামী", "নারী নেত্রী"],
+    tags: ["কবি", " স্বাধীনতা সংগ্রামী", "নারী নেত্রী"],
     category: "indian-poets",
     nationality: "Indian",
-    birthPlace: "হায়দরাবাদ"
+    birthPlace: "হায়دراবাদ"
   },
   {
     id: "begum-rokeya",
@@ -523,7 +516,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "কনিষ্ঠ বিপ্লবী শহীদ",
     descBn: "মাত্র ১৮ বছর বয়সে দেশের স্বাধীনতার জন্য হাসিমুখে ফাঁসির দড়ি গলায় পরা বাংলার অন্যতম জনপ্রিয় নির্ভীক বিপ্লবী।",
     emoji: "⚖️",
-    wikiUrl: "https://bn.wikipedia.org/wiki/ক্ষuদিরাম_বсу",
+    wikiUrl: "https://bn.wikipedia.org/wiki/ক্ষuদিরাম_বসু",
     tags: ["বিপ্লবী", "শহীদ", "ফাঁসি"],
     category: "bengali-revolutionaries",
     nationality: "Indian",
@@ -557,7 +550,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "প্রাণরসায়নবিদ",
     descBn: "জেনেটিক কোড ব্যাখ্যা এবং প্রোটিন সংশ্লেষণে এর ভূমিকা আবিষ্কারের জন্য ১৯৬৮ সালে চিকিৎসাবিজ্ঞানে নোবেল লাভ করেন।",
     emoji: "🧬",
-    wikiUrl: "https://bn.wikipedia.org/wiki/হর_গোবিন্দ_খোরানা",
+    wikiUrl: "https://bn.wikipedia.org/wiki/হর_গোবিন্দ_خোরানা",
     tags: ["বিজ্ঞানী", "নোবেল বিজয়ী", "ডিএনএ"],
     category: "indian-nobel-winners",
     nationality: "American",
@@ -606,7 +599,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     tags: ["অর্থনীতিবিদ", "নোবেল বিজয়ী", "দারিদ্র্য"],
     category: "indian-nobel-winners",
     nationality: "American",
-    birthPlace: "মুম্বাই"
+    birthPlace: "مুম্বাই"
   },
   {
     id: "michael-madhusudan-dutt",
@@ -619,7 +612,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "মহাকবি ও নাট্যকার",
     descBn: "বাংলা সাহিত্যে অমিত্রাক্ষর ছন্দের প্রবর্তক এবং কালজয়ী 'মেঘনাদবধ কাব্য' এর রচয়িতা মহাকবি।",
     emoji: "✒️",
-    wikiUrl: "https://bn.wikipedia.org/wiki/মাইকেল_مधুসূদন_দত্ত",
+    wikiUrl: "https://bn.wikipedia.org/wiki/মাইকেল_মধুসূদন_দত্ত",
     tags: ["কবি", "নাট্যকার", "অমিত্রাক্ষর"],
     category: "bengali-poets",
     nationality: "Indian",
@@ -790,7 +783,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "মাইহার ঘরানার বিখ্যাত সরোদ বাদক যিনি আন্তর্জাতিক মঞ্চে শাস্ত্রীয় বাদ্যযন্ত্রের মূর্ছনা ছড়িয়ে দিয়েছিলেন।",
     emoji: "🪕",
     wikiUrl: "https://bn.wikipedia.org/wiki/আলী_আকবর_খাঁ",
-    tags: ["সরোদ", "शास्त्रীয় সংগীত"],
+    tags: ["সরোদ", "শাস্ত্রীয় সংগীত"],
     category: "bengali-musicians",
     nationality: "Indian",
     birthPlace: "ব্রাহ্মণবাড়িয়া"
@@ -821,7 +814,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "10-24",
     deathYear: 2013,
     role: "নেপথ্য গায়ক",
-    descBn: "शास्त्रীয় ও আধুনিক গানের কিংবদন্তি প্লেব্যাক গায়ক যিনি হিন্দি ও বাংলা চলচ্চিত্রে হাজার হাজার কালজয়ী গান গেয়েছেন।",
+    descBn: "শাস্ত্রীয় ও আধুনিক গানের কিংবদন্তি প্লেব্যাক গায়ক যিনি হিন্দি ও বাংলা চলচ্চিত্রে হাজার হাজার কালজয়ী গান গেয়েছেন।",
     emoji: "🎵",
     wikiUrl: "https://bn.wikipedia.org/wiki/মান্না_দে",
     tags: ["গায়ক", "দাদাসাহেব ফালকে"],
@@ -861,7 +854,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     tags: ["পক্ষীবিদ", "প্রকৃতি"],
     category: "indian-scientists",
     nationality: "Indian",
-    birthPlace: "মুম্বাই"
+    birthPlace: "مুম্বাই"
   },
   {
     id: "homi-bhabha",
@@ -875,10 +868,10 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "ভারতের পরমাণু শক্তি কর্মসূচির জনক এবং টাটা ইনস্টিটিউট অব ফান্ডামেন্টাল রিসার্চের প্রতিষ্ঠাতা অধিকর্তা।",
     emoji: "⚛️",
     wikiUrl: "https://bn.wikipedia.org/wiki/হোমি_জাহাঙ্গীর_ভাবা",
-    tags: ["পরমাণু", "বিজ্ঞানী"],
+    tags: ["পরমাণu", "বিজ্ঞানী"],
     category: "indian-scientists",
     nationality: "Indian",
-    birthPlace: "মুম্বাই"
+    birthPlace: "مুম্বাই"
   },
   {
     id: "vikram-sarabhai",
@@ -956,7 +949,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     birthYear: 1564,
     deathMD: "01-08",
     deathYear: 1642,
-    role: "জ্যোতির্বিজ্ঞানী ও পদার্থবিদ",
+    role: "জ্যোতির্বিজ্ঞানী ও পদার্থবিদ",
     descBn: "দূরবীক্ষণ যন্ত্রের উন্নতিসাধন এবং সৌরজগতের সূর্যকেন্দ্রিক তত্ত্বের পরীক্ষামূলক প্রমাণ দানকারী আধুনিক বিজ্ঞানের জনক।",
     emoji: "🔭",
     wikiUrl: "https://bn.wikipedia.org/wiki/গ্যালিলিও_গ্যালিলি",
@@ -974,7 +967,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "09-28",
     deathYear: 1895,
     role: "অণুজীববিজ্ঞানী",
-    descBn: "জлаতঙ্ক রোগের প্রতিষেধক এবং তরল জীবাণুমুক্তকরণের 'পাস্তুরায়ন' পদ্ধতির আবিষ্কারক বিশ্বখ্যাত ফরাসি বিজ্ঞানী।",
+    descBn: "জলাতঙ্ক রোগের প্রতিষেধক এবং তরল জীবাণুমুক্তকরণের 'পাস্তুরায়ন' পদ্ধতির আবিষ্কারক বিশ্বখ্যাত ফরাসি বিজ্ঞানী।",
     emoji: "🧪",
     wikiUrl: "https://bn.wikipedia.org/wiki/লুই_পাস্তুর",
     tags: ["বিজ্ঞানী", "চিকিৎসা"],
@@ -984,7 +977,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "thomas-edison",
-    nameBn: "টმას আলভা এডিসন",
+    nameBn: "টমাস আলভা এডিসন",
     nameEn: "Thomas Edison",
     birthMD: "02-11",
     birthYear: 1847,
@@ -993,11 +986,11 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "উদ্ভাবক ও ব্যবসায়ী",
     descBn: "বৈদ্যুতিক বাল্ব, ফোনোগ্রাফ ও মোশন পিকচার ক্যামেরাসহ হাজারেরও বেশি পেটেন্টের অধিকারী ইতিহাসের শ্রেষ্ঠতম উদ্ভাবক।",
     emoji: "💡",
-    wikiUrl: "https://bn.wikipedia.org/wiki/টმას_এডিসন",
+    wikiUrl: "https://bn.wikipedia.org/wiki/টমাস_এডিসন",
     tags: ["উদ্ভাবক", "বিদ্যুৎ"],
     category: "historic-inventors",
     nationality: "American",
-    birthPlace: "মিলান"
+    birthPlace: "میلان"
   },
   {
     id: "nikola-tesla",
@@ -1007,7 +1000,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     birthYear: 1856,
     deathMD: "01-07",
     deathYear: 1943,
-    role: "তড়িৎ প্রকৌশলী ও দূরदर्शी উদ্ভাবক",
+    role: "তড়িৎ প্রকৌশলী ও দূরদর্শী উদ্ভাবক",
     descBn: "পর্যায়বৃত্ত বিদ্যুৎ প্রবাহ (AC) ব্যবস্থার রূপকার এবং বেতার প্রযুক্তির অন্যতম দূরদর্শী স্বপ্নদ্রষ্টা ও বিজ্ঞানী।",
     emoji: "⚡",
     wikiUrl: "https://bn.wikipedia.org/wiki/নিকোলা_টেসলা",
@@ -1052,14 +1045,14 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "soumitra-chatterjee",
-    nameBn: "সৌমিত্র চট্টোপাধ্যায়",
+    nameBn: "সอมিত্র চট্টোপাধ্যায়",
     nameEn: "Soumitra Chatterjee",
     birthMD: "01-19",
     birthYear: 1935,
     deathMD: "11-15",
     deathYear: 2020,
     role: "অভিনেতা ও বাচিক শিল্পী",
-    descBn: "সত্যজিৎ রায়ের 'অপু' ও 'ফেলুদা' চরিত্রের অমর রূপদানকারী দাদাসাহেব ফালকে ও ফরাসি লিজিয়ন অব অনার বিজয়ী অভিনেতা।",
+    descBn: "সত্যজিৎ রায়ের 'অপু' ও 'ফেলuদা' চরিত্রের অমর রূপদানকারী দাদাসাহেব ফালকে ও ফরাসি লিজিয়ন অব অনার বিজয়ী অভিনেতা।",
     emoji: "🕵️‍♂️",
     wikiUrl: "https://bn.wikipedia.org/wiki/সৌমিত্র_চট্টোপাধ্যায়",
     tags: ["চলচ্চিত্র", "ফেলুদা", "দাদাসাহেব ফালকে"],
@@ -1086,7 +1079,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "mrinal-sen",
-    nameBn: "মৃণাল সেন",
+    nameBn: "مৃণাল সেন",
     nameEn: "Mrinal Sen",
     birthMD: "05-14",
     birthYear: 1923,
@@ -1095,7 +1088,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "চলচ্চিত্র পরিচালক",
     descBn: "ভারতীয় সমান্তরাল সিনেমার অন্যতম পথিকৃৎ যিনি রাজনৈতিক ও সামাজিক বাস্তবতাকে সেলুলয়েডে সাহসের সঙ্গে তুলে ধরেন।",
     emoji: "🎬",
-    wikiUrl: "https://bn.wikipedia.org/wiki/مৃণাল_সেন",
+    wikiUrl: "https://bn.wikipedia.org/wiki/मृণাল_সেন",
     tags: ["চলচ্চিত্র", "পরিচালক", "প্যারালাল সিনেমা"],
     category: "bengali-film-legends",
     nationality: "Indian",
@@ -1131,7 +1124,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     tags: ["ক্রিকেট", "ভারতরত্ন", "রেকর্ড"],
     category: "indian-sports-personalities",
     nationality: "Indian",
-    birthPlace: "মুম্বাই"
+    birthPlace: "مুম্বাই"
   },
   {
     id: "dhyan-chand",
@@ -1180,7 +1173,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     tags: ["বক্সিং", "অলিম্পিক", "নারী নেত্রী"],
     category: "indian-sports-personalities",
     nationality: "Indian",
-    birthPlace: "মণিপুর"
+    birthPlace: "مণিপুর"
   },
   {
     id: "matangini-hazra",
@@ -1211,7 +1204,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "যতীন্দ্রনাথ মুখোপাধ্যায়, যিনি খালি হাতে বাঘ মেরে বাঘা যতীন খ্যাতি পান এবং বুড়িবালামের তীরে ব্রিটিশের বিরুদ্ধে সম্মুখযুদ্ধে লড়েন।",
     emoji: "🐯",
     wikiUrl: "https://bn.wikipedia.org/wiki/যতীন্দ্রনাথ_মুখোপাধ্যায়",
-    tags: ["বিপ্লবী", "সম্মুখযুদ্ধ", "যুগান্তর"],
+    tags: ["বিপ্লবী", "সম্মুখযুদ্ধ", "যugান্তর"],
     category: "bengali-revolutionaries",
     nationality: "Indian",
     birthPlace: "কয়া"
@@ -1242,10 +1235,10 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "03-23",
     deathYear: 1931,
     role: "সমাজতান্ত্রিক বিপ্লবী",
-    descBn: "'ইনکیলাব জিন্দাবাদ' স্লোগানের জনপ্রিয়তা দেওয়া এবং মাত্র ২৩ বছর বয়সে ফাঁসির মঞ্চে জীবন দেওয়া ভারতের আইকনিক বিপ্লবী।",
+    descBn: "'ইনকিলাব জিন্দাবাদ' স্লোগানের জনপ্রিয়তা দেওয়া এবং মাত্র ২৩ বছর বয়সে ফাঁসির মঞ্চে জীবন দেওয়া ভারতের আইকনিক বিপ্লবী।",
     emoji: "🚩",
     wikiUrl: "https://bn.wikipedia.org/wiki/ভগত_সিং",
-    tags: ["বিপ্লবী", "শহীদ", "ইনکیলাব"],
+    tags: ["বিপ্লবী", "শহীদ", "ইনকিলাব"],
     category: "indian-freedom-fighters",
     nationality: "Indian",
     birthPlace: "লয়ালপুর"
@@ -1259,7 +1252,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "02-27",
     deathYear: 1931,
     role: "সশস্ত্র বিপ্লবী সংগঠক",
-    descBn: "हिंदुस्तान सोशलिस्ट रिपब्लिकन एसोसिएशन के प्रमुख जिन्होंने प्रतिज्ञा की थी कि वे कभी ब्रिटिश शासन के हाथ नहीं आएंगे।",
+    descBn: "হিন্দুস্তান সোশ্যালিস্ট রিপাবলিকান অ্যাসোসিয়েশনের প্রধান যিনি প্রতিজ্ঞা করেছিলেন কখনো ব্রিটিশের হাতে ধরা দেবেন না।",
     emoji: "🔫",
     wikiUrl: "https://bn.wikipedia.org/wiki/চন্দ্র_শেখর_আজাদ",
     tags: ["বিপ্লবী", "আজাদ", "শহীদ"],
@@ -1286,7 +1279,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "nelson-mandela",
-    nameBn: "নেলসন ম্যান্ডেলা",
+    nameBn: "ネルソン・マンデラ",
     nameEn: "Nelson Mandela",
     birthMD: "07-18",
     birthYear: 1918,
@@ -1295,7 +1288,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "বর্ণবাদ বিরোধী নেতা ও রাষ্ট্রপতি",
     descBn: "দক্ষিণ আফ্রিকার বর্ণবাদ বিরোধী আন্দোলনের মহানায়ক ও প্রথম কৃষ্ণাঙ্গ রাষ্ট্রপতি যিনি নোবেল শান্তি পুরস্কার লাভ করেন।",
     emoji: "🌍",
-    wikiUrl: "https://bn.wikipedia.org/wiki/নেলসন_ম্যান্ডেলা",
+    wikiUrl: "https://bn.wikipedia.org/wiki/ネルソン・マンデラ",
     tags: ["নেতা", "শান্তি নোবেল", "বর্ণবাদ বিরোধী"],
     category: "world-leaders",
     nationality: "South African",
@@ -1318,9 +1311,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     nationality: "American",
     birthPlace: "আটলান্টা"
   }
-];
-
-export const HISTORIC_EVENTS: HistoricEvent[] = [
+];export const HISTORIC_EVENTS: HistoricEvent[] = [
   {
     id: "indian-independence",
     dateMD: "08-15",
@@ -1465,16 +1456,14 @@ export const HISTORIC_EVENTS: HistoricEvent[] = [
     wikiUrl: "https://bn.wikipedia.org/wiki/চট্টগ্রাম_অস্ত্রাগার_লুণ্ঠন",
     tags: ["সূর্য সেন", "বিপ্লবী", "চট্টগ্রাম"]
   }
-];
-
-export const IMPORTANT_DATES: ImportantDate[] = [
+];export const IMPORTANT_DATES: ImportantDate[] = [
   {
     id: "international-mother-language-day",
     dateMD: "02-21",
     nameBn: "আন্তর্জাতিক মাতৃভাষা দিবস",
     nameEn: "International Mother Language Day",
     category: "un-international-observance-days",
-    descBn: "ইউনেস্কো কর্তৃক স্বীকৃতিপ্রাপ্ত বৈশ্বিক দিবস, যা ১৯৫২ সালের বাঙালি ভাষা শহীদদের স্মরণে বিশ্বজুড়ে পালিত হয়।",
+    descBn: "ইউনেস্কো কর্তৃক স্বীকৃতিপ্রাপ্ত বৈশ্বিক দিবস, যা ১৯৫২ সালের বাঙালি ভাষা শহীদদের স্মরণে বিশ্বজুড়ে পালিত হয়।",
     emoji: "🗣️",
     wikiUrl: "https://bn.wikipedia.org/wiki/আন্তর্জাতিক_মাতৃভাষা_দিবস"
   },
@@ -1484,7 +1473,7 @@ export const IMPORTANT_DATES: ImportantDate[] = [
     nameBn: "বিশ্ব পরিবেশ দিবস",
     nameEn: "World Environment Day",
     category: "un-international-observance-days",
-    descBn: "পরিবেশ সুরক্ষায় বিশ্বব্যাপী সচেতনতা বৃদ্ধির লক্ষ্যে জাতিসংঘের উদ্যোগে উদযাপিত একটি প্রধান আন্তর্জাতিক দিবস।",
+    descBn: "পরিবেশ সুরক্ষায় বিশ্বব্যাপী সচেতনতা বৃদ্ধির লক্ষ্যে জাতিসংঘের উদ্যোগে উদযাপিত একটি প্রধান আন্তর্জাতিক দিবস।",
     emoji: "🌱",
     wikiUrl: "https://bn.wikipedia.org/wiki/বিশ্ব_পরিবেশ_দিবস"
   },
@@ -1504,7 +1493,7 @@ export const IMPORTANT_DATES: ImportantDate[] = [
     nameBn: "শিক্ষক দিবস (ভারত)",
     nameEn: "National Teachers' Day",
     category: "important-international-dates",
-    descBn: "মহান শিক্ষাবিদ ও ভারতের প্রাক্তন রাষ্ট্রপতি ড. সর্বপল্লী রাধাকৃষ্ণনের জন্মদিনে শিক্ষকদের প্রতি সম্মান জানানোর জাতীয় দিবস।",
+    descBn: "মহীয়সী শিক্ষাবিদ ও ভারতের প্রাক্তন রাষ্ট্রপতি ড. সর্বপল্লী রাধাকৃষ্ণনের জন্মদিনে শিক্ষকদের প্রতি সম্মান জানানোর জাতীয় দিবস।",
     emoji: "👨‍🏫",
     wikiUrl: "https://bn.wikipedia.org/wiki/শিক্ষক_দিবস"
   },
@@ -1514,7 +1503,7 @@ export const IMPORTANT_DATES: ImportantDate[] = [
     nameBn: "জাতীয় শিশু দিবস (ভারত)",
     nameEn: "Children's Day",
     category: "important-international-dates",
-    descBn: "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী জওহরলাল নেহেরুর জন্মদিবস, যিনি শিশুদের অত্যন্ত ভালোবাসতেন।",
+    descBn: "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী জওহরলাল নেহেরুর জন্মতিথি উপলক্ষে শিশুদের আনন্দ ও কল্যাণের উদ্দেশ্যে উদযাপিত দিন।",
     emoji: "🧸",
     wikiUrl: "https://bn.wikipedia.org/wiki/শিশু_দিবস"
   },
@@ -1538,9 +1527,7 @@ export const IMPORTANT_DATES: ImportantDate[] = [
     emoji: "🎪",
     wikiUrl: "https://bn.wikipedia.org/wiki/প্রজাতন্ত্র_দিবস_(ভারত)"
   }
-];
-
-export const FESTIVALS: Festival[] = [
+];export const FESTIVALS: Festival[] = [
   {
     id: "durga-puja",
     recurringMD: "আশ্বিন-কার্তিক",
@@ -1578,14 +1565,14 @@ export const FESTIVALS: Festival[] = [
     nameEn: "Eid-ul-Fitr",
     descBn: "দীর্ঘ এক মাস পবিত্র রমজান মাসের সিয়াম সাধনার পর মুসলিম উম্মাহর সর্ববৃহৎ আনন্দ ও সৌহার্দ্যের ধর্মীয় উৎসব।",
     emoji: "🌙",
-    wikiUrl: "https://bn.wikipedia.org/wiki/ঈদুল_ফিওর"
+    wikiUrl: "https://bn.wikipedia.org/wiki/ঈদুল_ফিতর"
   },
   {
     id: "eid-ul-adha",
     category: "islamic-observances",
     nameBn: "ঈদুল আজহা",
     nameEn: "Eid-ul-Adha",
-    descBn: "হযরত ইব্রাহিমের মহান ত্যাগের স্মৃতিবিজড়িত কোরবানি ঈদ, যা আল্লাহর প্রতি পরম আনুগত্য ও আত্মত্যাগের প্রতীক।",
+    descBn: "হযরত ইব্রাহিমের মহান ت্যাগের স্মৃতিবিজড়িত কোরবানি ঈদ, যা আল্লাহর প্রতি পরম আনুগত্য ও আত্মত্যাগের প্রতীক।",
     emoji: "🐐",
     wikiUrl: "https://bn.wikipedia.org/wiki/ঈদুল_আজহা"
   },
@@ -1599,25 +1586,14 @@ export const FESTIVALS: Festival[] = [
     emoji: "🎄",
     wikiUrl: "https://bn.wikipedia.org/wiki/বড়দিন"
   }
-];
-
-const generatedPeople: FamousPerson[] = [...FAMOUS_PEOPLE];
-const generatedEvents: HistoricEvent[] = [...HISTORIC_EVENTS];
-const generatedDates: ImportantDate[] = [...IMPORTANT_DATES];
-const generatedFestivals: Festival[] = [...FESTIVALS];
-
-const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-const personCategories = [
+];const generatedPeople: FamousPerson[] = [...FAMOUS_PEOPLE];const generatedEvents: HistoricEvent[] = [...HISTORIC_EVENTS];const generatedDates: ImportantDate[] = [...IMPORTANT_DATES];const generatedFestivals: Festival[] = [...FESTIVALS];const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];const personCategories = [
   "bengali-legends", "bengali-poets", "bengali-writers", "bengali-musicians", "bengali-saints",
   "bengali-revolutionaries", "bengali-scientists", "bengali-film-legends", "bengali-freedom-fighters", "bengali-philosophers",
   "indian-freedom-fighters", "indian-saints", "indian-scientists", "indian-nobel-winners", "indian-poets",
   "indian-musicians", "indian-sports-personalities", "indian-political-leaders", "indian-social-reformers", "indian-educators",
   "international-nobel-winners", "international-scientists", "world-leaders", "historic-inventors", "global-philosophers",
   "international-sports-legends", "international-film-legends"
-];
-
-let personCounter = 1;
-for (let i = 0; i < 240; i++) {
+];let personCounter = 1;for (let i = 0; i < 240; i++) {
   const currentCat = personCategories[i % personCategories.length];
   const day = ((i % 28) + 1).toString().padStart(2, "0");
   const month = months[i % 12];
@@ -1635,11 +1611,7 @@ for (let i = 0; i < 240; i++) {
     nationality: i % 2 === 0 ? "Indian" : "Bangladeshi"
   });
   personCounter++;
-}
-
-let eventCounter = 1;
-const eventCategories = ["historic-world-events", "indian-historic-events", "bengali-cultural-events"];
-for (let i = 0; i < 150; i++) {
+}let eventCounter = 1;const eventCategories = ["historic-world-events", "indian-historic-events", "bengali-cultural-events"];for (let i = 0; i < 150; i++) {
   const currentCat = eventCategories[i % eventCategories.length];
   const day = ((i % 28) + 1).toString().padStart(2, "0");
   const month = months[i % 12];
@@ -1655,11 +1627,7 @@ for (let i = 0; i < 150; i++) {
     wikiUrl: "https://bn.wikipedia.org/wiki/বিশেষ:র্যান্ডম"
   });
   eventCounter++;
-}
-
-let dateCounter = 1;
-const dateCategories = ["un-international-observance-days", "important-international-dates"];
-for (let i = 0; i < 100; i++) {
+}let dateCounter = 1;const dateCategories = ["un-international-observance-days", "important-international-dates"];for (let i = 0; i < 100; i++) {
   const currentCat = dateCategories[i % dateCategories.length];
   const day = ((i % 28) + 1).toString().padStart(2, "0");
   const month = months[i % 12];
@@ -1674,11 +1642,7 @@ for (let i = 0; i < 100; i++) {
     wikiUrl: "https://bn.wikipedia.org/wiki/বিশেষ:র্যান্ডম"
   });
   dateCounter++;
-}
-
-let festivalCounter = 1;
-const festivalCategories = ["religious-festivals", "bengali-festivals", "hindu-festivals", "islamic-observances", "buddhist-festivals", "sikh-festivals", "christian-observances"];
-for (let i = 0; i < 60; i++) {
+}let festivalCounter = 1;const festivalCategories = ["religious-festivals", "bengali-festivals", "hindu-festivals", "islamic-observances", "buddhist-festivals", "sikh-festivals", "christian-observances"];for (let i = 0; i < 60; i++) {
   const currentCat = festivalCategories[i % festivalCategories.length];
   const day = ((i % 28) + 1).toString().padStart(2, "0");
   const month = months[i % 12];
@@ -1693,9 +1657,6 @@ for (let i = 0; i < 60; i++) {
     wikiUrl: "https://bn.wikipedia.org/wiki/বিশেষ:র্যান্ডম"
   });
   festivalCounter++;
-}
+}export const FAMOUS_PEOPLE_DATA = generatedPeople;export const HISTORIC_EVENTS_DATA = generatedEvents;export const IMPORTANT_DATES_DATA = generatedDates;export const FESTIVALS_DATA = generatedFestivals;
 
-export const FAMOUS_PEOPLE_DATA = generatedPeople;
-export const HISTORIC_EVENTS_DATA = generatedEvents;
-export const IMPORTANT_DATES_DATA = generatedDates;
-export const FESTIVALS_DATA = generatedFestivals;
+```
