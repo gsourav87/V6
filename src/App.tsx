@@ -20,7 +20,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthContext";
 import { GoogleAnalytics } from '@next/third-parties/google'
-<GoogleAnalytics gaId="G-SG1HT207LH" />
 
 import { useCalendar } from "@/hooks/useCalendar";
 import { useTodayInfo } from "@/hooks/useTodayInfo";
