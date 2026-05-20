@@ -10,15 +10,20 @@
     <meta name="keywords" content="বাংলা ক্যালেন্ডার, আজকের বাংলা তারিখ, bengali calendar 2026, bangla date today, tithi today, nakshatra, panjika, বাংলা পঞ্জিকা, আজকের তিথি, বাংলা তারিখ" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Sothik Bangla Calendar" />
-    <link rel="canonical" href="https://sothikbanglacalendar.vercel.app/" />
+
+    <!-- Updated Canonical -->
+    <link rel="canonical" href="https://sothikbanglacalendar.live/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="সঠিক বাংলা ক্যালেন্ডার" />
     <meta property="og:title" content="আজকের বাংলা তারিখ ও পঞ্জিকা | সঠিক বাংলা ক্যালেন্ডার ২০২৬" />
     <meta property="og:description" content="আজকের বাংলা তারিখ, তিথি, নক্ষত্র ও সম্পূর্ণ পঞ্জিকা দেখুন। প্রতিদিন আপডেট হওয়া বিশুদ্ধ বাংলা ক্যালেন্ডার।" />
-    <meta property="og:url" content="https://sothikbanglacalendar.vercel.app/" />
-    <meta property="og:image" content="https://sothikbanglacalendar.vercel.app/og-image.svg" />
+
+    <!-- Updated Domain -->
+    <meta property="og:url" content="https://sothikbanglacalendar.live/" />
+    <meta property="og:image" content="https://sothikbanglacalendar.live/og-image.svg" />
+
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="bn_IN" />
@@ -28,7 +33,9 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="আজকের বাংলা তারিখ ও পঞ্জিকা | সঠিক বাংলা ক্যালেন্ডার" />
     <meta name="twitter:description" content="আজকের বাংলা তারিখ, তিথি, নক্ষত্র ও সম্পূর্ণ পঞ্জিকা দেখুন।" />
-    <meta name="twitter:image" content="https://sothikbanglacalendar.vercel.app/og-image.svg" />
+
+    <!-- Updated Domain -->
+    <meta name="twitter:image" content="https://sothikbanglacalendar.live/og-image.svg" />
 
     <!-- Google Verification -->
     <meta name="google-site-verification" content="DDGu5xSA52VXSzl2P_nGRvveXzOMJZXFrD5w04PtgKA" />
@@ -47,14 +54,14 @@
     <!-- Preconnect for weather API -->
     <link rel="preconnect" href="https://api.open-meteo.com" />
 
-    <!-- WebSite + SearchAction structured data -->
+    <!-- WebSite structured data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "সঠিক বাংলা ক্যালেন্ডার",
       "alternateName": "Sothik Bangla Calendar",
-      "url": "https://sothikbanglacalendar.vercel.app/",
+      "url": "https://sothikbanglacalendar.live/",
       "description": "আজকের বাংলা তারিখ, তিথি, নক্ষত্র ও সম্পূর্ণ পঞ্জিকা। বিশুদ্ধ সিদ্ধান্ত মতে সঠিক বাংলা ক্যালেন্ডার ২০২৬।",
       "inLanguage": "bn"
     }
@@ -86,10 +93,12 @@
     </div>
 
     <script type="module" src="/src/main.tsx"></script>
+
     <script>
       // Hide static fallback once React hydrates
       var root = document.getElementById('root');
       var staticDiv = document.getElementById('seo-static');
+
       if (root && staticDiv) {
         new MutationObserver(function(_, obs) {
           if (root.children.length > 0) {
