@@ -1,536 +1,330 @@
+import type { Festival } from "./festivals";
+
 export interface FamousPerson {
   id: string;
   nameBn: string;
   nameEn: string;
-  birthMD: string;
+  birthMD: string;    // "MM-DD" — for recurring annual check
   birthYear: number;
-  deathMD?: string;
+  deathMD?: string;   // "MM-DD" — only for key commemorated dates
   deathYear?: number;
   role: string;
   descBn: string;
   emoji: string;
   wikiUrl: string;
-  tags?: string[];
-  category?: string;
-  nationality?: string;
-  birthPlace?: string;
+  /** true = birth anniversary already listed in festivals.ts — skip in calendar cell */
   inFestivals?: boolean;
-}
-
-export interface HistoricEvent {
-  id: string;
-  dateMD: string;
-  year: number;
-  titleBn: string;
-  titleEn: string;
-  descBn: string;
-  category: string;
-  emoji: string;
-  wikiUrl: string;
-  tags?: string[];
-}
-
-export interface ImportantDate {
-  id: string;
-  dateMD: string;
-  nameBn: string;
-  nameEn: string;
-  category: string;
-  descBn: string;
-  emoji: string;
-  wikiUrl?: string;
-}
-
-export interface Festival {
-  id: string;
-  date?: string;
-  recurringMD?: string;
-  nameBn: string;
-  nameEn: string;
-  category: string;
-  descBn: string;
-  emoji: string;
-  wikiUrl?: string;
 }
 
 export const FAMOUS_PEOPLE: FamousPerson[] = [
   {
-    id: "rabindranath-tagore",
-    nameBn: "রবীন্দ্রনাথ ঠাকুর",
-    nameEn: "Rabindranath Tagore",
-    birthMD: "05-07",
-    birthYear: 1861,
-    deathMD: "08-07",
-    deathYear: 1941,
-    role: "কবি, সাহিত্যিক ও দার্শনিক",
-    descBn: "এশিয়ার প্রথম নোবেল বিজয়ী সাহিত্যিক যিনি গীতাঞ্জলি কাব্যের জন্য বিশ্বজোড়া খ্যাতি লাভ করেন এবং দুই দেশের জাতীয় সংগীত রচনা করেন।",
-    emoji: "✍️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/রব](https://bn.wikipedia.org/wiki/রব)ীন্দ্রনাথ_ঠাকুর",
-    tags: ["কবি", "নোবেল বিজয়ী", "রেনেসাঁ"],
-    category: "bengali-poets",
-    nationality: "Indian",
-    birthPlace: "কলকাতা",
-    inFestivals: true
-  },
-  {
-    id: "kazi-nazrul-islam",
-    nameBn: "কাজী নজরুল ইসলাম",
-    nameEn: "Kazi Nazrul Islam",
-    birthMD: "05-24",
-    birthYear: 1899,
-    deathMD: "08-29",
-    deathYear: 1976,
-    role: "বিদ্রোহী কবি",
-    descBn: "বাংলাদেশের জাতীয় কবি যার অগ্নিময় কবিতা ও গান পরাধীনতার বিরুদ্ধে এবং শোষণের বিরুদ্ধে আপসহীন সংগ্রামের প্রেরণা জোগায়।",
-    emoji: "🎸",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/ক](https://bn.wikipedia.org/wiki/ক)াজী_নজরুল_ইসলাম",
-    tags: ["কবি", "বিদ্রোহী", "সংগীতজ্ঞ"],
-    category: "bengali-poets",
-    nationality: "Bangladeshi",
-    birthPlace: "চুরুলিয়া"
-  },
-  {
-    id: "ishwar-chandra-vidyasagar",
-    nameBn: "ঈশ্বরচন্দ্র বিদ্যাসাগর",
-    nameEn: "Ishwar Chandra Vidyasagar",
-    birthMD: "09-26",
-    birthYear: 1820,
-    deathMD: "07-29",
-    deathYear: 1891,
-    role: "সমাজ সংস্কারক ও শিক্ষাবিদ",
-    descBn: "বাংলা গদ্যের জনক এবং বিধবা বিবাহ আইন পাসের প্রধান উদ্যোক্তা যিনি সমাজ সংস্কারে অসামান্য অবদান রাখেন।",
-    emoji: "📚",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/ঈশ](https://bn.wikipedia.org/wiki/ঈশ)্বরচন্দ্র_বিদ্যাসাগর",
-    tags: ["সংস্কারক", "শিক্ষাবিদ", "রেনেসাঁ"],
-    category: "bengali-philosophers",
-    nationality: "Indian",
-    birthPlace: "वीरसिंह"
-  },
-  {
-    id: "swami-vivekananda",
-    nameBn: "স্বামী বিবেকানন্দ",
-    nameEn: "Swami Vivekananda",
-    birthMD: "01-12",
-    birthYear: 1863,
-    deathMD: "07-04",
-    deathYear: 1902,
-    role: "আধ্যাত্মিক গুরু ও সমাজ সংস্কারক",
-    descBn: "রামকৃষ্ণ মিশনের প্রতিষ্ঠাতা এবং শিকাগো ধর্মসভায় সনাতন ধর্মের বিশ্বজনীন বাণী প্রচারকারী মহান দার্শনিক।",
-    emoji: "🕉️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/স](https://bn.wikipedia.org/wiki/স)্বামী_বিবেকানন্দ",
-    tags: ["সাধু", "দার্শনিক", "যুব আইকন"],
-    category: "bengali-saints",
-    nationality: "Indian",
-    birthPlace: "কলকাতা"
-  },
-  {
-    id: "jagadish-chandra-bose",
-    nameBn: "জগদীশ চন্দ্র বসু",
-    nameEn: "Jagadish Chandra Bose",
-    birthMD: "11-30",
-    birthYear: 1858,
-    deathMD: "11-23",
-    deathYear: 1937,
-    role: "বিজ্ঞানী",
-    descBn: "উদ্ভিদের প্রাণ আবিষ্কারক এবং বেতার তরঙ্গের অন্যতম পথপ্রদর্শক যিনি আধুনিক বিজ্ঞান গবেষণায় বাঙালিকে বিশ্বমঞ্চে তুলে ধরেন।",
-    emoji: "🌱",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/জগদ](https://bn.wikipedia.org/wiki/জগদ)ীশ_চন্দ্র_বসু",
-    tags: ["বিজ্ঞানী", "পদার্থবিদ", "উদ্ভিদবিদ"],
-    category: "bengali-scientists",
-    nationality: "Indian",
-    birthPlace: "ময়মনসিংহ"
-  },
-  {
-    id: "satyajit-ray",
-    nameBn: "সত্যজিৎ রায়",
-    nameEn: "Satyajit Ray",
-    birthMD: "05-02",
-    birthYear: 1921,
-    deathMD: "04-23",
-    deathYear: 1992,
-    role: "চলচ্চিত্র পরিচালক ও সাহিত্যিক",
-    descBn: "অস্কার বিজয়ী চলচ্চিত্র নির্মাতা যিনি পথের পাঁচালী ছবির মাধ্যমে বাংলা সিনেমাকে আন্তর্জাতিক স্তরে সুপ্রতিষ্ঠিত করেন।",
-    emoji: "🎬",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/সত](https://bn.wikipedia.org/wiki/সত)্যজিৎ_রায়",
-    tags: ["চলচ্চিত্র", "অস্কার", "লেখক"],
-    category: "bengali-film-legends",
-    nationality: "Indian",
-    birthPlace: "কলকাতা"
-  },
-  {
-    id: "subhas-chandra-bose",
-    nameBn: "নেতাজি সুভাষচন্দ্র বসু",
-    nameEn: "Subhas Chandra Bose",
-    birthMD: "01-23",
-    birthYear: 1897,
-    deathMD: "08-18",
-    deathYear: 1945,
-    role: "স্বাধীনতা সংগ্রামী",
-    descBn: "আজাদ হিন্দ ফৌজের অধিনায়ক যিনি 'তোমরা আমাকে রক্ত দাও, আমি তোমাদের স্বাধীনতা দেব' স্লোগানে কাঁপিয়েছিলেন ব্রিটিশ রাজ।",
-    emoji: "🎖️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/স](https://bn.wikipedia.org/wiki/স)ুভাষচন্দ্র_বসু",
-    tags: ["বিপ্লবী", "স্বাধীনতা সংগ্রামী", "নেতাজি"],
-    category: "bengali-revolutionaries",
-    nationality: "Indian",
-    birthPlace: "কটক"
-  },
-  {
-    id: "satyendra-nath-bose",
-    nameBn: "সত্যেন্দ্রনাথ বসু",
-    nameEn: "Satyendra Nath Bose",
-    birthMD: "01-01",
-    birthYear: 1894,
-    deathMD: "02-04",
-    deathYear: 1974,
-    role: "তাত্ত্বিক পদার্থবিজ্ঞানী",
-    descBn: "বোস-আইনস্টাইন পরিসংখ্যানের জন্য বিখ্যাত পদার্থবিদ, যাঁর নামানুসারে পরমাণুর মৌলিক কণা 'বোসন' এর নামকরণ করা হয়েছে।",
-    emoji: "⚛️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/সত](https://bn.wikipedia.org/wiki/সত)্যেন্দ্রনাথ_বসু",
-    tags: ["বিজ্ঞানী", "পদার্থবিদ", "বোসন"],
-    category: "bengali-scientists",
-    nationality: "Indian",
-    birthPlace: "কলকাতা"
-  },
-  {
-    id: "amartya-sen",
-    nameBn: "অমর্ত্য সেন",
-    nameEn: "Amartya Sen",
-    birthMD: "11-03",
-    birthYear: 1933,
-    role: "অর্থনীতিবিদ",
-    descBn: "কল্যাণমুখী অর্থনীতি এবং দুর্ভিক্ষ নিয়ে গবেষণার জন্য ১৯৯৮ সালে অর্থনীতিতে নোবেল স্মারক পুরস্কার লাভ করেন।",
-    emoji: "📊",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/অমর](https://bn.wikipedia.org/wiki/অমর)্ত্য_সেন",
-    tags: ["অর্থনীতিবিদ", "নোবেল বিজয়ী"],
-    category: "indian-nobel-winners",
-    nationality: "Indian",
-    birthPlace: "শান্তিনিকেতন"
-  },
-  {
-    id: "lalon-shah",
-    nameBn: "লালন শাহ",
-    nameEn: "Lalon Shah",
-    birthMD: "10-14",
-    birthYear: 1774,
-    deathMD: "10-17",
-    deathYear: 1890,
-    role: "বাউল সাধক ও সমাজ সংস্কারক",
-    descBn: "অসাম্প্রদায়িক মানবতাবাদী বাউল গানের প্রধান পুরুষ যিনি জাতপ্রথার ঊর্ধ্বে উঠে মানুষের জয়গান গেয়েছেন।",
-    emoji: "🪕",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/ল](https://bn.wikipedia.org/wiki/ল)ালন",
-    tags: ["সাধু", "সংগীতজ্ঞ", "বাউল"],
-    category: "bengali-saints",
-    nationality: "Bangladeshi",
-    birthPlace: "ঝিনাইদহ"
-  },
-  {
-    id: "sri-aurobindo",
-    nameBn: "শ্রী অরবিন্দ",
-    nameEn: "Sri Aurobindo",
-    birthMD: "08-15",
-    birthYear: 1872,
-    deathMD: "12-05",
-    deathYear: 1950,
-    role: "যোগী, দার্শনিক ও বিপ্লবী",
-    descBn: "জাতীয়তাবাদী আন্দোলনের প্রারম্ভিক নেতা যিনি পরবর্তীকালে আধ্যাত্মিক সাধনায় নিমগ্ন হয়ে পণ্ডিচেরিতে আশ্রম গড়ে তোলেন।",
-    emoji: "🧘",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/শ](https://bn.wikipedia.org/wiki/শ)্রী_অরবিন্দ",
-    tags: ["দার্শনিক", "বিপ্লবী", "সাধু"],
-    category: "bengali-philosophers",
-    nationality: "Indian",
-    birthPlace: "কলকাতা"
-  },
-  {
-    id: "ram-mohan-roy",
-    nameBn: "রাজা রামমোহন রায়",
-    nameEn: "Raja Ram Mohan Roy",
-    birthMD: "05-22",
-    birthYear: 1772,
-    deathMD: "09-27",
-    deathYear: 1833,
-    role: "সমাজ সংস্কারক",
-    descBn: "ব্রাহ্মসমাজের প্রতিষ্ঠাতা এবং সতীদাহ প্রথা উচ্ছেদের প্রধান কারিগর, যাঁকে আধুনিক ভারতের জনক বলা হয়।",
-    emoji: "🔥",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/র](https://bn.wikipedia.org/wiki/র)ামমোহন_রায়",
-    tags: ["সংস্কারক", "রেনেসাঁ"],
-    category: "bengali-philosophers",
-    nationality: "Indian",
-    birthPlace: "রাধানগর"
-  },
-  {
-    id: "mahatma-gandhi",
+    id: "gandhi",
     nameBn: "মহাত্মা গান্ধী",
     nameEn: "Mahatma Gandhi",
-    birthMD: "10-02",
-    birthYear: 1869,
-    deathMD: "01-30",
-    deathYear: 1948,
-    role: "জাতির জনক (ভারত)",
-    descBn: "অহিংস ও সত্যাগ্রহ আন্দোলনের মাধ্যমে ভারতকে ব্রিটিশ শাসন থেকে মুক্ত করার প্রধান জননেতা ও অহিংসার প্রতীক।",
-    emoji: "👓",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/মহ](https://bn.wikipedia.org/wiki/মহ)াত্মা_গান্ধী",
-    tags: ["কোণ স্বাধীনতা সংগ্রামী", "নেতা", "অহিংসা"],
-    category: "indian-political-leaders",
-    nationality: "Indian",
-    birthPlace: "পোরবন্দর"
-  },
-  {
-    id: "jawaharlal-nehru",
-    nameBn: "জওহরলাল নেহেরু",
-    nameEn: "Jawaharlal Nehru",
-    birthMD: "11-14",
-    birthYear: 1889,
-    deathMD: "05-27",
-    deathYear: 1964,
-    role: "প্রথম প্রধানমন্ত্রী (ভারত)",
-    descBn: "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী ও আধুনিক ভারতের রূপকার যিনি শিশুদের কাছে চাচা নেহেরু নামে পরিচিত ছিলেন।",
-    emoji: "🌹",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/জওহরল](https://bn.wikipedia.org/wiki/জওহরল)াল_নেহেরু",
-    tags: ["প্রধানমন্ত্রী", "নেতা", "স্বাধীন ভারত"],
-    category: "indian-political-leaders",
-    nationality: "Indian",
-    birthPlace: "এলাহাবাদ"
-  },
-  {
-    id: "b-r-ambedkar",
-    nameBn: "বি আর আম্বেদকর",
-    nameEn: "B. R. Ambedkar",
-    birthMD: "04-14",
-    birthYear: 1891,
-    deathMD: "12-06",
-    deathYear: 1956,
-    role: "সংবিধান প্রণেতা ও সমাজ সংস্কারক",
-    descBn: "ভারতীয় সংবিধানের প্রধান স্থপতি এবং দলিত ও অনগ্রসর শ্রেণীর অধিকার আদায়ের আন্দোলনের অবিসংবাদিত নেতা।",
-    emoji: "⚖️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/ভ](https://bn.wikipedia.org/wiki/ভ)ীমরাও_রামজি_আম্বেদকর",
-    tags: ["সংবিধান", "সংস্কারক", "আইনজীবী"],
-    category: "indian-social-reformers",
-    nationality: "Indian",
-    birthPlace: "মহু"
-  },
-  {
-    id: "c-v-raman",
-    nameBn: "সি ভি রমন",
-    nameEn: "C. V. Raman",
-    birthMD: "11-07",
-    birthYear: 1888,
-    deathMD: "11-21",
-    deathYear: 1970,
-    role: "পদার্থবিজ্ঞানী",
-    descBn: "আলোক বিচ্ছুরণ সংক্রান্ত 'রমন এফেক্ট' আবিষ্কারের জন্য ১৯৩০ সালে এশিয়ার প্রথম বিজ্ঞানী হিসেবে পদার্থবিদ্যায় নোবেল পান।",
-    emoji: "🔬",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/চন](https://bn.wikipedia.org/wiki/চন)্দ্রশেখর_ভেঙ্কট_রামন",
-    tags: ["বিজ্ঞানী", "নোবেল বিজয়ী", "পদার্থবিদ"],
-    category: "indian-nobel-winners",
-    nationality: "Indian",
-    birthPlace: "তিরুচিরাপল্লী"
-  },
-  {
-    id: "mother-teresa",
-    nameBn: "মাদার তেরেসা",
-    nameEn: "Mother Teresa",
-    birthMD: "08-26",
-    birthYear: 1910,
-    deathMD: "09-05",
-    deathYear: 1997,
-    role: "মানবিক সাধিকা",
-    descBn: "কলকাতার 'মিশনারিজ অব চ্যারিটি'র প্রতিষ্ঠাতা যিনি আজীবন আর্ত ও মুমূর্ষু মানুষের সেবায় আত্মনিয়োগ করে নোবেল শান্তি পুরস্কার লাভ করেন।",
+    birthMD: "10-02", birthYear: 1869,
+    deathMD: "01-30", deathYear: 1948,
+    role: "জাতির পিতা",
+    descBn: "সত্যাগ্রহ ও অহিংসার পথে ভারতের স্বাধীনতা আন্দোলনের নেতৃত্ব দিয়েছিলেন।",
     emoji: "🕊️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/ম](https://bn.wikipedia.org/wiki/ম)াদার_তেরেসা",
-    tags: ["সাধু", "শান্তি নোবেল", "মানবসেবা"],
-    category: "indian-nobel-winners",
-    nationality: "Indian",
-    birthPlace: "স্কোপিয়ে"
+    wikiUrl: "https://en.wikipedia.org/wiki/Mahatma_Gandhi",
+    inFestivals: true,
   },
   {
-    id: "apj-abdul-kalam",
-    nameBn: "এ পি জে আব্দুল কালাম",
-    nameEn: "A. P. J. Abdul Kalam",
-    birthMD: "10-15",
-    birthYear: 1931,
-    deathMD: "07-27",
-    deathYear: 2015,
-    role: "বিজ্ঞানী ও রাষ্ট্রপতি",
-    descBn: "ভারতের 'মিসাইল ম্যান' খ্যাত মহাকাশ বিজ্ঞানী এবং ভারতের একাদশ জনপ্রিয় দূরদর্শী রাষ্ট্রপতি যিনি তরুণদের অন্যতম প্রেরণা।",
-    emoji: "🚀",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/এ_প](https://bn.wikipedia.org/wiki/এ_প)ি_জে_আব্দুল_কালাম",
-    tags: ["বিজ্ঞানী", "রাষ্ট্রপতি", "মিসাইল ম্যান"],
-    category: "indian-scientists",
-    nationality: "Indian",
-    birthPlace: "রামেশ্বরম"
+    id: "bose",
+    nameBn: "নেতাজি সুভাষচন্দ্র বসু",
+    nameEn: "Subhas Chandra Bose",
+    birthMD: "01-23", birthYear: 1897,
+    role: "নেতাজি, আজাদ হিন্দ ফৌজের সর্বাধিনায়ক",
+    descBn: "\"তোমরা আমাকে রক্ত দাও, আমি তোমাদের স্বাধীনতা দেব\" — এই অমর বাণীর জনক।",
+    emoji: "⚔️",
+    wikiUrl: "https://en.wikipedia.org/wiki/Subhas_Chandra_Bose",
+    inFestivals: true,
   },
   {
-    id: "albert-einstein",
-    nameBn: "আলবার্ট আইনস্টাইন",
-    nameEn: "Albert Einstein",
-    birthMD: "03-14",
-    birthYear: 1879,
-    deathMD: "04-18",
-    deathYear: 1955,
-    role: "তাত্ত্বিক পদার্থবিজ্ঞানী",
-    descBn: "আপেক্ষিকতার তত্ত্বের প্রবক্তা এবং आधुनिक পদার্থবিজ্ঞানের জনক যিনি ভর-শক্তি সমীকরণ ই-ইকুয়াল-টু-এমসি-স্কয়ার আবিষ্কার করেন।",
-    emoji: "🧠",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/আলব](https://bn.wikipedia.org/wiki/আলব)ার্ট_আইনস্টাইন",
-    tags: ["বিজ্ঞানী", "পদার্থবিদ", "নোবেল বিজয়ী"],
-    category: "international-scientists",
-    nationality: "German",
-    birthPlace: "উলম"
+    id: "tagore",
+    nameBn: "রবীন্দ্রনাথ ঠাকুর",
+    nameEn: "Rabindranath Tagore",
+    birthMD: "05-07", birthYear: 1861,
+    deathYear: 1941,
+    role: "বিশ্বকবি",
+    descBn: "১৯১৩ সালে সাহিত্যে নোবেল পুরস্কার বিজয়ী। বাংলা সাহিত্যের সর্বশ্রেষ্ঠ কবি।",
+    emoji: "✍️",
+    wikiUrl: "https://en.wikipedia.org/wiki/Rabindranath_Tagore",
+    inFestivals: true,
   },
   {
-    id: "isaac-newton",
-    nameBn: "আইজ্যাক নিউটন",
-    nameEn: "Isaac Newton",
-    birthMD: "01-04",
-    birthYear: 1643,
-    deathMD: "03-31",
-    deathYear: 1727,
-    role: "গণিতবিদ ও পদার্থবিদ",
-    descBn: "মহাকর্ষ সূত্র এবং গতির তিনটি বিখ্যাত সূত্রের আবিষ্কারক যা ধ্রুপদী বলবিদ্যার ভিত্তি স্থাপন করেছিল।",
-    emoji: "🍎",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/আইজ](https://bn.wikipedia.org/wiki/আইজ)্যাক_নিউটন",
-    tags: ["বিজ্ঞানী", "গণিতবিদ", "মহাকর্ষ"],
-    category: "historic-inventors",
-    nationality: "British",
-    birthPlace: "উলসথর্প"
+    id: "vivekananda",
+    nameBn: "স্বামী বিবেকানন্দ",
+    nameEn: "Swami Vivekananda",
+    birthMD: "01-12", birthYear: 1863,
+    role: "ধর্মগুরু, যুব আদর্শ",
+    descBn: "১৮৯৩ সালে শিকাগো বিশ্বধর্ম সম্মেলনে \"ভ্রাতা ও ভগিনীগণ\" সম্বোধনে বিশ্বকে নাড়া দেন।",
+    emoji: "🪷",
+    wikiUrl: "https://en.wikipedia.org/wiki/Swami_Vivekananda",
   },
   {
-    id: "srinivasa-ramanujan",
-    nameBn: "শ্রীনিবাস রামানুজন",
-    nameEn: "Srinivasa Ramanujan",
-    birthMD: "12-22",
-    birthYear: 1887,
-    deathMD: "04-26",
-    deathYear: 1920,
-    role: "গণিতবিদ",
-    descBn: "কোনো প্রথাগত শিক্ষা ছাড়াই গাণিতিক বিশ্লেষণ, সংখ্যাতত্ত্ব এবং অসীম ধারায় অবিশ্বাস্য অবদান রাখা ভারতের প্রবাদপ্রতিম গণিত প্রতিভা।",
-    emoji: "🔢",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/শ](https://bn.wikipedia.org/wiki/শ)্রীনিবাস_রামানুজন",
-    tags: ["গণিতবিদ", "প্রতিভা"],
-    category: "indian-scientists",
-    nationality: "Indian",
-    birthPlace: "ইরোড"
+    id: "savitribai",
+    nameBn: "সাবিত্রীবাই ফুলে",
+    nameEn: "Savitribai Phule",
+    birthMD: "01-03", birthYear: 1831,
+    role: "ভারতের প্রথম মহিলা শিক্ষিকা",
+    descBn: "জ্যোতিরাও ফুলের সঙ্গে মিলে মেয়েদের জন্য ভারতের প্রথম স্কুল প্রতিষ্ঠা করেন।",
+    emoji: "📚",
+    wikiUrl: "https://en.wikipedia.org/wiki/Savitribai_Phule",
   },
   {
-    id: "sarojini-naidu",
+    id: "lala",
+    nameBn: "লালা লাজপত রায়",
+    nameEn: "Lala Lajpat Rai",
+    birthMD: "01-28", birthYear: 1865,
+    deathMD: "11-17", deathYear: 1928,
+    role: "পাঞ্জাব কেশরি",
+    descBn: "সাইমন কমিশনের বিরুদ্ধে শান্তিপূর্ণ মিছিলে ব্রিটিশ লাঠির আঘাতে মৃত্যুবরণ করেন।",
+    emoji: "🦁",
+    wikiUrl: "https://en.wikipedia.org/wiki/Lala_Lajpat_Rai",
+  },
+  {
+    id: "sarojini",
     nameBn: "সরোজিনী নাইডু",
     nameEn: "Sarojini Naidu",
-    birthMD: "02-13",
-    birthYear: 1879,
-    deathMD: "03-02",
-    deathYear: 1949,
-    role: "কবি ও স্বাধীনতা সংগ্রামী",
-    descBn: "ভারতের নাইটিঙ্গেল নামে পরিচিত কবি এবং স্বাধীন ভারতের প্রথম নারী রাজ্যপাল যিনি নারী জাগরণে অগ্রণী ভূমিকা নেন।",
-    emoji: "🪶",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/সর](https://bn.wikipedia.org/wiki/সর)োজিনী_নাইডু",
-    tags: ["কবি", "স্বাধীনতা সংগ্রামী", "নারী নেত্রী"],
-    category: "indian-poets",
-    nationality: "Indian",
-    birthPlace: "হায়দরাবাদ"
+    birthMD: "02-13", birthYear: 1879,
+    role: "ভারতের কোকিল",
+    descBn: "ভারতীয় জাতীয় কংগ্রেসের প্রথম মহিলা সভাপতি। কবি ও বাগ্মী হিসেবে বিখ্যাত।",
+    emoji: "🌸",
+    wikiUrl: "https://en.wikipedia.org/wiki/Sarojini_Naidu",
   },
   {
-    id: "begum-rokeya",
-    nameBn: "বেগম রোকেয়া",
-    nameEn: "Begum Rokeya",
-    birthMD: "12-09",
-    birthYear: 1880,
-    deathMD: "12-09",
-    deathYear: 1932,
-    role: "নারী জাগরণের অগ্রদূত",
-    descBn: "অবিভক্ত বাংলায় মুসলিম নারী শিক্ষার প্রসার ও নারী অধিকার প্রতিষ্ঠার জন্য আজীবন লড়াই করা এক কালজয়ী সমাজ সংস্কারক।",
-    emoji: "✍️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/র](https://bn.wikipedia.org/wiki/র)োকেয়া_সাখাওয়াত_হোসেন",
-    tags: ["নারী অধিকার", "শিক্ষাবিদ", "লেখক"],
-    category: "bengali-philosophers",
-    nationality: "Bangladeshi",
-    birthPlace: "রংপুর"
-  },
-  {
-    id: "satyajit-ray-music",
-    nameBn: "সত্যজিৎ রায় (সংগীতকার)",
-    nameEn: "Satyajit Ray (Composer)",
-    birthMD: "05-02",
-    birthYear: 1921,
-    deathMD: "04-23",
-    deathYear: 1992,
-    role: "সুরকার ও আবহসংগীত শিল্পী",
-    descBn: "নিজের ছবির অসাধারণ আবহসংগীত ও গান সৃষ্টির মাধ্যমে সিনেমার দৃশ্যকাব্যকে এক অন্য মাত্রায় নিয়ে যাওয়া বহুমুখী প্রতিভা।",
-    emoji: "🎹",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/সত](https://bn.wikipedia.org/wiki/সত)্যজিৎ_রায়",
-    tags: ["সংগীত", "চলচ্চিত্র", "সুরকার"],
-    category: "bengali-musicians",
-    nationality: "Indian",
-    birthPlace: "কলকাতা"
-  },
-  {
-    id: "chittaranjan-das",
-    nameBn: "চিত্তরঞ্জন দাশ",
-    nameEn: "Chittaranjan Das",
-    birthMD: "11-05",
-    birthYear: 1870,
-    deathMD: "06-16",
-    deathYear: 1925,
-    role: "দেশবন্ধু ও রাজনীতিবিদ",
-    descBn: "স্বরাজ দলের প্রতিষ্ঠাতা এবং বিশিষ্ট আইনজীবী যিনি স্বাধীনতা আন্দোলনে সর্বস্ব ত্যাগ করায় দেশবন্ধু উপাধিতে ভূষিত হন।",
-    emoji: "🏛️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/চ](https://bn.wikipedia.org/wiki/চ)িত্তরঞ্জন_দাশ",
-    tags: ["নেতা", "স্বাধীনতা সংগ্রামী"],
-    category: "bengali-freedom-fighters",
-    nationality: "Indian",
-    birthPlace: "কলকাতা"
-  },
-  {
-    id: "surya-sen",
-    nameBn: "সূর্য সেন (মাস্টারদা)",
-    nameEn: "Surya Sen",
-    birthMD: "03-22",
-    birthYear: 1894,
-    deathMD: "01-12",
-    deathYear: 1934,
-    role: "বিপ্লবী নেতা",
-    descBn: "চট্টগ্রাম অস্ত্রাগার লুণ্ঠনের প্রধান নায়ক এবং ব্রিটিশ বিরোধী সশস্ত্র আন্দোলনের প্রবাদপ্রতিম শিক্ষক ও বিপ্লবী নেতা।",
-    emoji: "⚔️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/স](https://bn.wikipedia.org/wiki/স)ূর্য_সেন",
-    tags: ["বিপ্লবী", "ফাঁসি", "চট্টগ্রাম"],
-    category: "bengali-revolutionaries",
-    nationality: "Indian",
-    birthPlace: "চট্টগ্রাম"
-  },
-  {
-    id: "pritilata-waddedar",
-    nameBn: "প্রীতিলতা ওয়াদ্দেদার",
-    nameEn: "Pritilata Waddedar",
-    birthMD: "05-05",
-    birthYear: 1911,
-    deathMD: "09-23",
-    deathYear: 1932,
-    role: "অগ্নিযুগের নারী বিপ্লবী",
-    descBn: "মাস্টারদা সূর্য সেনের শিষ্যা যিনি পাহাড়তলী ইউরোপীয় ক্লাব আক্রমণে নেতৃত্ব দিয়ে দেশের জন্য আত্মাহুতি দেন।",
+    id: "bhagat",
+    nameBn: "শহীদ ভগৎ সিং",
+    nameEn: "Bhagat Singh",
+    birthMD: "09-27", birthYear: 1907,
+    deathMD: "03-23", deathYear: 1931,
+    role: "বিপ্লবী, হিন্দুস্তান সোশ্যালিস্ট রিপাবলিকান অ্যাসোসিয়েশন",
+    descBn: "মাত্র ২৩ বছর বয়সে ফাঁসির মঞ্চে \"ইনকিলাব জিন্দাবাদ\" ধ্বনি দিয়ে শহীদ হন।",
     emoji: "🔥",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/প](https://bn.wikipedia.org/wiki/প)্রীতিলতা_ওয়াদ্দেদার",
-    tags: ["বিপ্লবী", "শহীদ", "নারী নেত্রী"],
-    category: "bengali-freedom-fighters",
-    nationality: "Indian",
-    birthPlace: "চট্টগ্রাম"
+    wikiUrl: "https://en.wikipedia.org/wiki/Bhagat_Singh",
   },
   {
-    id: "khudiram-bose",
+    id: "ambedkar",
+    nameBn: "ড. ভীমরাও আম্বেদকর",
+    nameEn: "B. R. Ambedkar",
+    birthMD: "04-14", birthYear: 1891,
+    role: "সংবিধানের রূপকার",
+    descBn: "ভারতের সংবিধান প্রণয়ন কমিটির সভাপতি। দলিত সমাজের অধিকার রক্ষায় আজীবন সংগ্রাম করেন।",
+    emoji: "📜",
+    wikiUrl: "https://en.wikipedia.org/wiki/B._R._Ambedkar",
+  },
+  {
+    id: "nazrul",
+    nameBn: "কাজি নজরুল ইসলাম",
+    nameEn: "Kazi Nazrul Islam",
+    birthMD: "05-25", birthYear: 1899,
+    role: "বিদ্রোহী কবি",
+    descBn: "\"বিদ্রোহী\" কবিতা ও \"ধূমকেতু\" পত্রিকার মাধ্যমে ব্রিটিশ শাসনের বিরুদ্ধে কলম চালান।",
+    emoji: "🎶",
+    wikiUrl: "https://en.wikipedia.org/wiki/Kazi_Nazrul_Islam",
+  },
+  {
+    id: "bismil",
+    nameBn: "রাম প্রসাদ বিসমিল",
+    nameEn: "Ram Prasad Bismil",
+    birthMD: "06-11", birthYear: 1897,
+    deathYear: 1927,
+    role: "বিপ্লবী কবি",
+    descBn: "\"সরফরোশি কি তামান্না\" — এই অমর গজলের রচয়িতা। কাকোরি কাণ্ডে ফাঁসি বরণ করেন।",
+    emoji: "🖋️",
+    wikiUrl: "https://en.wikipedia.org/wiki/Ram_Prasad_Bismil",
+  },
+  {
+    id: "tilak",
+    nameBn: "বাল গঙ্গাধর তিলক",
+    nameEn: "Bal Gangadhar Tilak",
+    birthMD: "07-23", birthYear: 1856,
+    role: "লোকমান্য, স্বরাজের প্রবক্তা",
+    descBn: "\"স্বরাজ আমার জন্মগত অধিকার এবং আমি তা নেব\" — এই উক্তির জনক।",
+    emoji: "🎯",
+    wikiUrl: "https://en.wikipedia.org/wiki/Bal_Gangadhar_Tilak",
+  },
+  {
+    id: "azad",
+    nameBn: "চন্দ্রশেখর আজাদ",
+    nameEn: "Chandra Shekhar Azad",
+    birthMD: "07-23", birthYear: 1906,
+    deathMD: "02-27", deathYear: 1931,
+    role: "বিপ্লবী",
+    descBn: "জীবিত অবস্থায় ব্রিটিশের হাতে ধরা না দেওয়ার শপথ নিয়েছিলেন। আলফ্রেড পার্কে আত্মবলিদান।",
+    emoji: "🇮🇳",
+    wikiUrl: "https://en.wikipedia.org/wiki/Chandra_Shekhar_Azad",
+  },
+  {
+    id: "mangal-pandey",
+    nameBn: "মঙ্গল পাণ্ডে",
+    nameEn: "Mangal Pandey",
+    birthMD: "07-19", birthYear: 1827,
+    deathYear: 1857,
+    role: "প্রথম স্বাধীনতা সংগ্রামের অগ্রদূত",
+    descBn: "ব্যারাকপুর সেনানিবাসে ব্রিটিশ অফিসারদের বিরুদ্ধে বিদ্রোহ ঘোষণা করেন।",
+    emoji: "🫡",
+    wikiUrl: "https://en.wikipedia.org/wiki/Mangal_Pandey",
+  },
+  {
+    id: "aurobindo",
+    nameBn: "ঋষি অরবিন্দ",
+    nameEn: "Sri Aurobindo",
+    birthMD: "08-15", birthYear: 1872,
+    role: "বিপ্লবী ও দার্শনিক",
+    descBn: "প্রথমে সশস্ত্র বিপ্লবের পথিকৃৎ; পরে পন্ডিচেরিতে আশ্রম গড়ে আধ্যাত্মিক সাধনায় মগ্ন হন।",
+    emoji: "🧘",
+    wikiUrl: "https://en.wikipedia.org/wiki/Sri_Aurobindo",
+  },
+  {
+    id: "bagha-jatin",
+    nameBn: "বাঘা যতীন",
+    nameEn: "Bagha Jatin",
+    birthMD: "12-07", birthYear: 1879,
+    deathMD: "09-10", deathYear: 1915,
+    role: "যুগান্তর দলের নেতা",
+    descBn: "খালি হাতে বাঘ মেরে \"বাঘা যতীন\" নাম পান। বালেশ্বরের যুদ্ধে ব্রিটিশদের বিরুদ্ধে লড়াই করে শহীদ হন।",
+    emoji: "🐯",
+    wikiUrl: "https://en.wikipedia.org/wiki/Bagha_Jatin",
+  },
+  {
+    id: "khudiram",
     nameBn: "ক্ষুদিরাম বসু",
     nameEn: "Khudiram Bose",
-    birthMD: "12-03",
-    birthYear: 1889,
-    deathMD: "08-11",
-    deathYear: 1908,
-    role: "কনিষ্ঠ বিপ্লবী শহীদ",
-    descBn: "মাত্র ১৮ বছর বয়সে দেশের স্বাধীনতার জন্য হাসিমুখে ফাঁসির দড়ি গলায় পরা বাংলার অন্যতম জনপ্রিয় নির্ভীক বিপ্লবী।",
-    emoji: "⚖️",
-    wikiUrl: "[https://bn.wikipedia.org/wiki/ক](https://bn.wikipedia.org/wiki/ক)্ষুদিরাম_বসু",
-    tags: ["বিপ্লবী", "শহীদ", "ফাঁসি"],
-    category: "bengali-revolutionaries",
-    nationality: "Indian",
-    birthPlace: "মেদিনীপুর"
+    birthMD: "12-03", birthYear: 1889,
+    deathMD: "08-11", deathYear: 1908,
+    role: "তরুণতম শহীদ বিপ্লবী",
+    descBn: "মাত্র ১৮ বছর বয়সে ফাঁসির মঞ্চে হাসিমুখে মৃত্যুবরণ করেন। বাংলার ঘরে ঘরে বিপ্লবী চেতনা জাগিয়ে দেন।",
+    emoji: "🌹",
+    wikiUrl: "https://en.wikipedia.org/wiki/Khudiram_Bose",
   },
   {
-    id: "subramanyan-chandrasekhar",
-    nameBn: "সুব্রহ্মণ্যন চন্দ্রশেখর",
-    nameEn: "Subrahmanyan Chandrasekhar",
-    birthMD: "10-19",
+    id: "bipin",
+    nameBn: "বিপিনচন্দ্র পাল",
+    nameEn: "Bipin Chandra Pal",
+    birthMD: "11-07", birthYear: 1858,
+    role: "লাল-বাল-পাল ত্রয়ের অন্যতম",
+    descBn: "স্বদেশী, বয়কট ও জাতীয় শিক্ষার পথ দেখান। ভারতের বিপ্লবী চিন্তাধারার পথিকৃৎ।",
+    emoji: "📣",
+    wikiUrl: "https://en.wikipedia.org/wiki/Bipin_Chandra_Pal",
+  },
+  {
+    id: "nehru",
+    nameBn: "জওহরলাল নেহরু",
+    nameEn: "Jawaharlal Nehru",
+    birthMD: "11-14", birthYear: 1889,
+    role: "ভারতের প্রথম প্রধানমন্ত্রী",
+    descBn: "আধুনিক ভারতের রূপকার। শিশুদের কাছে \"চাচা নেহরু\"। ১৫ আগস্ট মধ্যরাতে Tryst with Destiny ভাষণ দেন।",
+    emoji: "🌹",
+    wikiUrl: "https://en.wikipedia.org/wiki/Jawaharlal_Nehru",
+  },
+  {
+    id: "rani-laxmibai",
+    nameBn: "রানী লক্ষ্মীবাই",
+    nameEn: "Rani Lakshmibai",
+    birthMD: "11-19", birthYear: 1828,
+    role: "ঝাঁসির রানী",
+    descBn: "\"মেরি ঝাঁসি নেহি দুঙ্গি\" — এই ঘোষণা দিয়ে ব্রিটিশদের বিরুদ্ধে যুদ্ধ করেন। অসামান্য সাহসিকতার প্রতীক।",
+    emoji: "🗡️",
+    wikiUrl: "https://en.wikipedia.org/wiki/Lakshmibai",
+  },
+  {
+    id: "azad-maulana",
+    nameBn: "মৌলানা আবুল কালাম আজাদ",
+    nameEn: "Maulana Abul Kalam Azad",
+    birthMD: "11-11", birthYear: 1888,
+    role: "স্বাধীন ভারতের প্রথম শিক্ষামন্ত্রী",
+    descBn: "হিন্দু-মুসলিম ঐক্যের প্রবক্তা। ১১ নভেম্বর তাঁর জন্মদিন \"জাতীয় শিক্ষা দিবস\" হিসেবে পালিত।",
+    emoji: "📫",
+    wikiUrl: "https://en.wikipedia.org/wiki/Maulana_Abul_Kalam_Azad",
+  },
+  {
+    id: "patel",
+    nameBn: "সরদার বল্লভভাই প্যাটেল",
+    nameEn: "Sardar Vallabhbhai Patel",
+    birthMD: "10-31", birthYear: 1875,
+    role: "ভারতের লৌহমানব, প্রথম স্বরাষ্ট্রমন্ত্রী",
+    descBn: "৫৬২টি দেশীয় রাজ্যকে স্বাধীন ভারতের সঙ্গে যুক্ত করে ভারতের ঐক্য গড়ে তোলেন।",
+    emoji: "🏛️",
+    wikiUrl: "https://en.wikipedia.org/wiki/Vallabhbhai_Patel",
+  },
+  {
+    id: "shastri",
+    nameBn: "লাল বাহাদুর শাস্ত্রী",
+    nameEn: "Lal Bahadur Shastri",
+    birthMD: "10-02", birthYear: 1904,
+    role: "ভারতের দ্বিতীয় প্রধানমন্ত্রী",
+    descBn: "\"জয় জওয়ান, জয় কিষান\" স্লোগানের জনক। ১৯৬৫-র ভারত-পাক যুদ্ধে দেশকে নেতৃত্ব দেন।",
+    emoji: "🌾",
+    wikiUrl: "https://en.wikipedia.org/wiki/Lal_Bahadur_Shastri",
+  },
+  {
+    id: "udham",
+    nameBn: "শহীদ উধম সিং",
+    nameEn: "Udham Singh",
+    birthMD: "12-26", birthYear: 1899,
+    role: "জালিয়ানওয়ালাবাগের প্রতিশোধ গ্রহণকারী",
+    descBn: "২১ বছর পর লন্ডনে গিয়ে মাইকেল ও'ডায়ারকে গুলি করে জালিয়ানওয়ালাবাগ হত্যাকাণ্ডের প্রতিশোধ নেন।",
+    emoji: "🎯",
+    wikiUrl: "https://en.wikipedia.org/wiki/Udham_Singh",
+  },
+  {
+    id: "ashfaq",
+    nameBn: "আশফাকুল্লা খান",
+    nameEn: "Ashfaqulla Khan",
+    birthMD: "10-22", birthYear: 1900,
+    deathYear: 1927,
+    role: "বিপ্লবী, কাকোরি ষড়যন্ত্রে",
+    descBn: "রাম প্রসাদ বিসমিলের অন্তরঙ্গ সহযোগী। কাকোরি ট্রেন ডাকাতির মামলায় ফাঁসি।",
+    emoji: "🌙",
+    wikiUrl: "https://en.wikipedia.org/wiki/Ashfaqulla_Khan",
+  },
+];
+
+export interface Anniversary extends Omit<Festival, "wikiUrl"> {
+  wikiUrl: string;
+  person: FamousPerson;
+  anniversaryType: "birth" | "death";
+  yearsSince: number;
+}
+
+export function getAnniversariesForDate(date: Date): Anniversary[] {
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  const md = `${mm}-${dd}`;
+  const year = date.getUTCFullYear();
+
+  const results: Anniversary[] = [];
+
+  for (const p of FAMOUS_PEOPLE) {
+    if (p.birthMD === md) {
+      results.push({
+        date: `${year}-${mm}-${dd}`,
+        nameBn: `${p.nameBn} জন্মজয়ন্তী`,
+        nameEn: `${p.nameEn} Birth Anniversary`,
+        category: "national",
+        icon: p.emoji,
+        wikiUrl: p.wikiUrl,
+        person: p,
+        anniversaryType: "birth",
+        yearsSince: year - p.birthYear,
+      });
+    }
+    if (p.deathMD === md && p.deathYear) {
+      results.push({
+        date: `${year}-${mm}-${dd}`,
+        nameBn: `${p.nameBn} — স্মরণ দিবস`,
+        nameEn: `${p.nameEn} Remembrance Day`,
+        category: "national",
+        icon: "🕯️",
+        wikiUrl: p.wikiUrl,
+        person: p,
+        anniversaryType: "death",
+        yearsSince: year - p.deathYear,
+      });
+    }
+  }
+
+  return results;
+}
