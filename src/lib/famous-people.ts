@@ -1,6 +1,3 @@
-import type { Festival } from "./festivals";
-
-```typescript
 export interface FamousPerson {
   id: string;
   nameBn: string;
@@ -121,7 +118,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "রামকৃষ্ণ মিশনের প্রতিষ্ঠাতা এবং শিকাগো ধর্মসভায় সনাতন ধর্মের বিশ্বজনীন বাণী প্রচারকারী মহান দার্শনিক।",
     emoji: "🕉️",
     wikiUrl: "https://bn.wikipedia.org/wiki/স্বামী_বিবেকানন্দ",
-    tags: ["সাধু", "دار্শনিক", "যুব আইকন"],
+    tags: ["সাধু", "দার্শনিক", "যুব আইকন"],
     category: "bengali-saints",
     nationality: "Indian",
     birthPlace: "কলকাতা"
@@ -137,7 +134,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "বিজ্ঞানী",
     descBn: "উদ্ভিদের প্রাণ আবিষ্কারক এবং বেতার তরঙ্গের অন্যতম পথপ্রদর্শক যিনি আধুনিক বিজ্ঞান গবেষণায় বাঙালিকে বিশ্বমঞ্চে তুলে ধরেন।",
     emoji: "🌱",
-    wikiUrl: "https://bn.wikipedia.org/wiki/জগদীশ_চন্দ্র_বсу",
+    wikiUrl: "https://bn.wikipedia.org/wiki/জগদীশ_চন্দ্র_বসু",
     tags: ["বিজ্ঞানী", "পদার্থবিদ", "উদ্ভিদবিদ"],
     category: "bengali-scientists",
     nationality: "Indian",
@@ -302,11 +299,11 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     birthYear: 1891,
     deathMD: "12-06",
     deathYear: 1956,
-    role: "সংविधान প্রণেতা ও সমাজ সংস্কারক",
+    role: "সংবিধান প্রণেতা ও সমাজ সংস্কারক",
     descBn: "भारतीय সংবিধানের প্রধান স্থপতি এবং দলিত ও অনগ্রসর শ্রেণীর অধিকার আদায়ের আন্দোলনের অবিসংবাদিত নেতা।",
     emoji: "⚖️",
     wikiUrl: "https://bn.wikipedia.org/wiki/ভীমরাও_রামজি_আম্বেদকর",
-    tags: ["সংविधान", "সংস্কারক", "আইনজীবী"],
+    tags: ["সংবিধান", "সংস্কারক", "আইনজীবী"],
     category: "indian-social-reformers",
     nationality: "Indian",
     birthPlace: "মহু"
@@ -320,7 +317,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "11-21",
     deathYear: 1970,
     role: "পদার্থবিজ্ঞানী",
-    descBn: "আлок বিচ্ছুরণ সংক্রান্ত 'রমন এফেক্ট' আবিষ্কারের জন্য ১৯৩০ সালে এশিয়ার প্রথম বিজ্ঞানী হিসেবে পদার্থবিদ্যায় নোবেল পান।",
+    descBn: "আলোক বিচ্ছুরণ সংক্রান্ত 'রমন এফেক্ট' আবিষ্কারের জন্য ১৯৩০ সালে এশিয়ার প্রথম বিজ্ঞানী হিসেবে পদার্থবিদ্যায় নোবেল পান।",
     emoji: "🔬",
     wikiUrl: "https://bn.wikipedia.org/wiki/চন্দ্রশেখর_ভেঙ্কট_রামন",
     tags: ["বিজ্ঞানী", "নোবেল বিজয়ী", "পদার্থবিদ"],
@@ -330,7 +327,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "mother-teresa",
-    nameBn: "মাদার তেরেসা",
+    nameBn: "মাদার تেরেসা",
     nameEn: "Mother Teresa",
     birthMD: "08-26",
     birthYear: 1910,
@@ -398,7 +395,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "srinivasa-ramanujan",
-    nameBn: "শ্রীনিবাস রামানuজন",
+    nameBn: "শ্রীনিবাস রামানুজন",
     nameEn: "Srinivasa Ramanujan",
     birthMD: "12-22",
     birthYear: 1887,
@@ -425,7 +422,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "ভারতের নাইটিঙ্গেল নামে পরিচিত কবি এবং স্বাধীন ভারতের প্রথম নারী রাজ্যপাল যিনি নারী জাগরণে অগ্রণী ভূমিকা নেন।",
     emoji: "🪶",
     wikiUrl: "https://bn.wikipedia.org/wiki/সরোজিনী_নাইডু",
-    tags: ["কবি", " স্বাধীনতা সংগ্রামী", "নারী নেত্রী"],
+    tags: ["কবি", "স্বাধীনতা সংগ্রামী", "নারী নেত্রী"],
     category: "indian-poets",
     nationality: "Indian",
     birthPlace: "হায়দরাবাদ"
@@ -439,7 +436,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "12-09",
     deathYear: 1932,
     role: "নারী জাগরণের অগ্রদূত",
-    descBn: "অবিভক্ত বাংলায় মুসলিম নারী শিক্ষার প্রসার ও নারী অধিকার প্রতিষ্ঠার জন্য আজীবন লড়াই করা এক কালজয়ী সমাজ সংস্কারক।",
+    descBn: "অবিভক্ত বাংলায় মুসলিম নারী শিক্ষার প্রসার ও নারী অধিকার প্রতিষ্ঠার জন্য আজীবন লড়াই করা এক কালজয়ী সমাজ সংস্কারক।",
     emoji: "✍️",
     wikiUrl: "https://bn.wikipedia.org/wiki/রোকেয়া_সাখাওয়াত_হোসেন",
     tags: ["নারী অধিকার", "শিক্ষাবিদ", "লেখক"],
@@ -507,7 +504,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "09-23",
     deathYear: 1932,
     role: "অগ্নিযুগের নারী বিপ্লবী",
-    descBn: "মাস্টারদা সূর্য সেনের শিষ্যা যিনি পাহাড়তলী ইউরোপীয় ক্লাব আক্রমণে নেতৃত্ব দিয়ে দেশের জন্য আত্মাহুতি দেন।",
+    descBn: "মাস্টারদা সূর্য সেনের শিষ্যা যিনি পাহাড়তলী ইউরোপীয় ক্লাব আক্রমণে নেতৃত্ব দিয়ে দেশের জন্য আত্মাহুতি দেন।",
     emoji: "🔥",
     wikiUrl: "https://bn.wikipedia.org/wiki/প্রীতিলতা_ওয়াদ্দেদার",
     tags: ["বিপ্লবী", "শহীদ", "নারী নেত্রী"],
@@ -526,7 +523,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "কনিষ্ঠ বিপ্লবী শহীদ",
     descBn: "মাত্র ১৮ বছর বয়সে দেশের স্বাধীনতার জন্য হাসিমুখে ফাঁসির দড়ি গলায় পরা বাংলার অন্যতম জনপ্রিয় নির্ভীক বিপ্লবী।",
     emoji: "⚖️",
-    wikiUrl: "https://bn.wikipedia.org/wiki/ক্ষuদিরাম_বসু",
+    wikiUrl: "https://bn.wikipedia.org/wiki/ক্ষuদিরাম_বсу",
     tags: ["বিপ্লবী", "শহীদ", "ফাঁসি"],
     category: "bengali-revolutionaries",
     nationality: "Indian",
@@ -620,9 +617,9 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "06-29",
     deathYear: 1873,
     role: "মহাকবি ও নাট্যকার",
-    descBn: "বাংলা সাহিত্যে অমিত্রাক্ষর ছন্দের প্রবর্তক এবং কালজয়ী 'মেঘনাদবধ কাব্য' এর রচয়িতা মহাকবি।",
+    descBn: "বাংলা সাহিত্যে অমিত্রাক্ষর ছন্দের প্রবর্তক এবং কালজয়ী 'মেঘনাদবধ কাব্য' এর রচয়িতা মহাকবি।",
     emoji: "✒️",
-    wikiUrl: "https://bn.wikipedia.org/wiki/মাইকেল_মধুসূদন_দত্ত",
+    wikiUrl: "https://bn.wikipedia.org/wiki/মাইকেল_مधুসূদন_দত্ত",
     tags: ["কবি", "নাট্যকার", "অমিত্রাক্ষর"],
     category: "bengali-poets",
     nationality: "Indian",
@@ -640,7 +637,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "ভারতের জাতীয় স্তোত্র 'বন্দে মাতরম' এর রচয়িতা এবং বাংলা উপন্যাসের আদি দিকপাল ও সাহিত্য সম্রাট।",
     emoji: "📖",
     wikiUrl: "https://bn.wikipedia.org/wiki/বঙ্কিমচন্দ্র_চট্টোপাধ্যায়",
-    tags: ["লেখক", "বন্দে মাতরম", "সাহিত্য সম্রাট"],
+    tags: ["লেখক", "বন্দে মাতরম", " সাহিত্য সম্রাট"],
     category: "bengali-writers",
     nationality: "Indian",
     birthPlace: "নৈহাটি"
@@ -654,7 +651,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "01-16",
     deathYear: 1938,
     role: "কথাসাহিত্যিক",
-    descBn: "দেবদাস, শ্রীকান্তের মতো জনপ্রিয় কালজয়ী উপন্যাসের স্রষ্টা যিনি সাধারণ মানুষের আবেগ নিখুঁতভাবে ফুটিয়ে তুলেছেন।",
+    descBn: "দেবদাস, শ্রীকান্তের মতো জনপ্রিয় কালজয়ী উপন্যাসের স্রষ্টা যিনি সাধারণ মানুষের আবেগ নিখুঁতভাবে ফুটিয়ে তুলেছেন।",
     emoji: "🖋️",
     wikiUrl: "https://bn.wikipedia.org/wiki/শরৎচন্দ্র_চট্টোপাধ্যায়",
     tags: ["লেখক", "কথাসাহিত্যিক", "জনপ্রিয়"],
@@ -671,7 +668,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "09-14",
     deathYear: 1971,
     role: "কথাসাহিত্যিক",
-    descBn: "রাঢ় অঞ্চলের গণজীবন, সংস্কৃতি ও সামন্ততন্ত্রের ভাঙাগড়ার নিখুঁত রূপকার যিনি জ্ঞানপীঠ পুরস্কার লাভ করেন।",
+    descBn: "রাঢ় অঞ্চলের গণজীবন, সংস্কৃতি ও সামন্ততন্ত্রের ভাঙাগড়ার নিখুঁত রূপকার যিনি জ্ঞানপীঠ পুরস্কার লাভ করেন।",
     emoji: "📜",
     wikiUrl: "https://bn.wikipedia.org/wiki/তারাশঙ্কর_বন্দ্যোপাধ্যায়",
     tags: ["লেখক", "জ্ঞানপীঠ"],
@@ -739,7 +736,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "05-13",
     deathYear: 1947,
     role: "কিশোর কবি",
-    descBn: "অল্প বয়সেই সাম্যবাদী চেতনাদীপ্ত ও বিপ্লবী কবিতা লিখে বাংলা সাহিত্যে স্থায়ী আসন করে নেওয়া প্রতিবাদী কবি।",
+    descBn: "অল্প বয়сей সাম্যবাদী চেতনাদীপ্ত ও বিপ্লবী কবিতা লিখে বাংলা সাহিত্যে স্থায়ী আসন করে নেওয়া প্রতিবাদী কবি।",
     emoji: "🔥",
     wikiUrl: "https://bn.wikipedia.org/wiki/সুকান্ত_ভট্টাচার্য",
     tags: ["কবি", "কিশোর কবি", "সাম্যবাদী"],
@@ -773,7 +770,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "12-11",
     deathYear: 2012,
     role: "সেতার বাদক ও সুরকার",
-    descBn: "বিশ্বখ্যাত সেতার মায়েস্ত্রো এবং ভারতরত্ন বিজয়ী যিনি ভারতীয় শাস্ত্রীয় সংগীতকে বিশ্বদরবারে জনপ্রিয় করেন।",
+    descBn: "বিশ্বখ্যাত সেতার মায়েস্ত্রো এবং ভারতরত্ন বিজয়ী যিনি ভারতীয় শাস্ত্রীয় সংগীতকে বিশ্বদরবারে জনপ্রিয় করেন।",
     emoji: "🎸",
     wikiUrl: "https://bn.wikipedia.org/wiki/রবি_শংকর",
     tags: ["সেতার", "ভারতরত্ন", "সংগীতজ্ঞ"],
@@ -793,7 +790,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     descBn: "মাইহার ঘরানার বিখ্যাত সরোদ বাদক যিনি আন্তর্জাতিক মঞ্চে শাস্ত্রীয় বাদ্যযন্ত্রের মূর্ছনা ছড়িয়ে দিয়েছিলেন।",
     emoji: "🪕",
     wikiUrl: "https://bn.wikipedia.org/wiki/আলী_আকবর_খাঁ",
-    tags: ["সরোদ", "শাস্ত্রীয় সংগীত"],
+    tags: ["সরোদ", "शास्त्रীয় সংগীত"],
     category: "bengali-musicians",
     nationality: "Indian",
     birthPlace: "ব্রাহ্মণবাড়িয়া"
@@ -824,7 +821,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "10-24",
     deathYear: 2013,
     role: "নেপথ্য গায়ক",
-    descBn: "শাস্ত্রীয় ও আধুনিক গানের কিংবদন্তি প্লেব্যাক গায়ক যিনি হিন্দি ও বাংলা চলচ্চিত্রে হাজার হাজার কালজয়ী গান গেয়েছেন।",
+    descBn: "शास्त्रীয় ও আধুনিক গানের কিংবদন্তি প্লেব্যাক গায়ক যিনি হিন্দি ও বাংলা চলচ্চিত্রে হাজার হাজার কালজয়ী গান গেয়েছেন।",
     emoji: "🎵",
     wikiUrl: "https://bn.wikipedia.org/wiki/মান্না_দে",
     tags: ["গায়ক", "দাদাসাহেব ফালকে"],
@@ -977,7 +974,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "09-28",
     deathYear: 1895,
     role: "অণুজীববিজ্ঞানী",
-    descBn: "জলাতঙ্ক রোগের প্রতিষেধক এবং তরল জীবাণুমুক্তকরণের 'পাস্তুরায়ন' পদ্ধতির আবিষ্কারক বিশ্বখ্যাত ফরাসি বিজ্ঞানী।",
+    descBn: "জлаতঙ্ক রোগের প্রতিষেধক এবং তরল জীবাণুমুক্তকরণের 'পাস্তুরায়ন' পদ্ধতির আবিষ্কারক বিশ্বখ্যাত ফরাসি বিজ্ঞানী।",
     emoji: "🧪",
     wikiUrl: "https://bn.wikipedia.org/wiki/লুই_পাস্তুর",
     tags: ["বিজ্ঞানী", "চিকিৎসা"],
@@ -987,7 +984,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
   },
   {
     id: "thomas-edison",
-    nameBn: "টমাস আলভা এডিসন",
+    nameBn: "টმას আলভা এডিসন",
     nameEn: "Thomas Edison",
     birthMD: "02-11",
     birthYear: 1847,
@@ -996,7 +993,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "উদ্ভাবক ও ব্যবসায়ী",
     descBn: "বৈদ্যুতিক বাল্ব, ফোনোগ্রাফ ও মোশন পিকচার ক্যামেরাসহ হাজারেরও বেশি পেটেন্টের অধিকারী ইতিহাসের শ্রেষ্ঠতম উদ্ভাবক।",
     emoji: "💡",
-    wikiUrl: "https://bn.wikipedia.org/wiki/টমাস_এডিসন",
+    wikiUrl: "https://bn.wikipedia.org/wiki/টმას_এডিসন",
     tags: ["উদ্ভাবক", "বিদ্যুৎ"],
     category: "historic-inventors",
     nationality: "American",
@@ -1010,7 +1007,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     birthYear: 1856,
     deathMD: "01-07",
     deathYear: 1943,
-    role: "তড়িৎ প্রকৌশলী ও দূরদর্শী উদ্ভাবক",
+    role: "তড়িৎ প্রকৌশলী ও দূরदर्शी উদ্ভাবক",
     descBn: "পর্যায়বৃত্ত বিদ্যুৎ প্রবাহ (AC) ব্যবস্থার রূপকার এবং বেতার প্রযুক্তির অন্যতম দূরদর্শী স্বপ্নদ্রষ্টা ও বিজ্ঞানী।",
     emoji: "⚡",
     wikiUrl: "https://bn.wikipedia.org/wiki/নিকোলা_টেসলা",
@@ -1045,7 +1042,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "01-17",
     deathYear: 2014,
     role: "কিংবদন্তি অভিনেত্রী",
-    descBn: "উত্তম-সুচিত্রা জুটির কালজয়ী নায়িকা যিনি তাঁর রহস্যময় হাসি ও অনবদ্য অভিনয়ে কোটি দর্শকের মন জয় করেছিলেন।",
+    descBn: "উত্তম-সুচিত্রা জুটির কালজয়ী নায়িকা যিনি তাঁর রহস্যময় হাসি ও অনবদ্য অভিনয়ে কোটি দর্শকের মন জয় করেছিলেন।",
     emoji: "💃",
     wikiUrl: "https://bn.wikipedia.org/wiki/সুচিত্রা_সেন",
     tags: ["চলচ্চিত্র", "অভিনেত্রী", "আইকন"],
@@ -1098,7 +1095,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "চলচ্চিত্র পরিচালক",
     descBn: "ভারতীয় সমান্তরাল সিনেমার অন্যতম পথিকৃৎ যিনি রাজনৈতিক ও সামাজিক বাস্তবতাকে সেলুলয়েডে সাহসের সঙ্গে তুলে ধরেন।",
     emoji: "🎬",
-    wikiUrl: "https://bn.wikipedia.org/wiki/মৃণাল_সেন",
+    wikiUrl: "https://bn.wikipedia.org/wiki/مৃণাল_সেন",
     tags: ["চলচ্চিত্র", "পরিচালক", "প্যারালাল সিনেমা"],
     category: "bengali-film-legends",
     nationality: "Indian",
@@ -1134,7 +1131,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     tags: ["ক্রিকেট", "ভারতরত্ন", "রেকর্ড"],
     category: "indian-sports-personalities",
     nationality: "Indian",
-    birthPlace: "مুম্বাই"
+    birthPlace: "মুম্বাই"
   },
   {
     id: "dhyan-chand",
@@ -1162,7 +1159,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "06-18",
     deathYear: 2021,
     role: "অ্যাথলেট",
-    descBn: "'ফ্লাইং শিখ' নামে পরিচিত ভারতের কিংবদন্তি দৌড়বিদ যিনি এশিয়ান গেমস ও কমনওয়েলথ গেমসে স্বর্ণপদক জিতেছিলেন।",
+    descBn: "'ফ্লাইং শিখ' নামে পরিচিত ভারতের কিংবদন্তি দৌড়বিদ যিনি এশিয়ান গেমস ও কমনওয়েলথ গেমসে স্বর্ণপদক জিতেছিলেন।",
     emoji: "🏃‍♂️",
     wikiUrl: "https://bn.wikipedia.org/wiki/মিলখা_সিং",
     tags: ["দৌড়বিদ", "ফ্লাইং শিখ"],
@@ -1211,7 +1208,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "09-10",
     deathYear: 1915,
     role: "সশস্রে বিপ্লবী নেতা",
-    descBn: "যতীন্দ্রনাথ মুখোপাধ্যায়, যিনি খালি হাতে বাঘ মেরে বাঘা যতীন খ্যাতি পান এবং বুড়িবালামের তীরে ব্রিটিশের বিরুদ্ধে সম্মুখযুদ্ধে লড়েন।",
+    descBn: "যতীন্দ্রনাথ মুখোপাধ্যায়, যিনি খালি হাতে বাঘ মেরে বাঘা যতীন খ্যাতি পান এবং বুড়িবালামের তীরে ব্রিটিশের বিরুদ্ধে সম্মুখযুদ্ধে লড়েন।",
     emoji: "🐯",
     wikiUrl: "https://bn.wikipedia.org/wiki/যতীন্দ্রনাথ_মুখোপাধ্যায়",
     tags: ["বিপ্লবী", "সম্মুখযুদ্ধ", "যুগান্তর"],
@@ -1230,7 +1227,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     role: "বিপ্লবী ও সংগঠক",
     descBn: "লর্ড হার্ডিঞ্জের ওপর বোমা হামলার মূল পরিকল্পনাকারী এবং জাপানে আজাদ হিন্দ ফৌজের প্রাথমিক ভিত্তি স্থাপনকারী মহান বিপ্লবী।",
     emoji: "💣",
-    wikiUrl: "https://bn.wikipedia.org/wiki/রাসবিহারী_বсу",
+    wikiUrl: "https://bn.wikipedia.org/wiki/রাসবিহারী_বসু",
     tags: ["বিপ্লবী", "আজাদ হিন্দ", "জাপান"],
     category: "bengali-revolutionaries",
     nationality: "Indian",
@@ -1245,10 +1242,10 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "03-23",
     deathYear: 1931,
     role: "সমাজতান্ত্রিক বিপ্লবী",
-    descBn: "'ইনকিলাব জিন্দাবাদ' স্লোগানের জনপ্রিয়তা দেওয়া এবং মাত্র ২৩ বছর বয়সে ফাঁসির মঞ্চে জীবন দেওয়া ভারতের আইকনিক বিপ্লবী।",
+    descBn: "'ইনکیলাব জিন্দাবাদ' স্লোগানের জনপ্রিয়তা দেওয়া এবং মাত্র ২৩ বছর বয়সে ফাঁসির মঞ্চে জীবন দেওয়া ভারতের আইকনিক বিপ্লবী।",
     emoji: "🚩",
     wikiUrl: "https://bn.wikipedia.org/wiki/ভগত_সিং",
-    tags: ["বিপ্লবী", "শহীদ", "ইনকিলাব"],
+    tags: ["বিপ্লবী", "শহীদ", "ইনکیলাব"],
     category: "indian-freedom-fighters",
     nationality: "Indian",
     birthPlace: "লয়ালপুর"
@@ -1262,7 +1259,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "02-27",
     deathYear: 1931,
     role: "সশস্ত্র বিপ্লবী সংগঠক",
-    descBn: "হিন্দুস্তান সোশ্যালিস্ট রিপাবলিকান অ্যাসোসিয়েশনের প্রধান যিনি প্রতিজ্ঞা করেছিলেন কখনো ব্রিটিশের হাতে ধরা দেবেন না।",
+    descBn: "हिंदुस्तान सोशलिस्ट रिपब्लिकन एसोसिएशन के प्रमुख जिन्होंने प्रतिज्ञा की थी कि वे कभी ब्रिटिश शासन के हाथ नहीं आएंगे।",
     emoji: "🔫",
     wikiUrl: "https://bn.wikipedia.org/wiki/চন্দ্র_শেখর_আজাদ",
     tags: ["বিপ্লবী", "আজাদ", "শহীদ"],
@@ -1296,7 +1293,7 @@ export const FAMOUS_PEOPLE: FamousPerson[] = [
     deathMD: "12-05",
     deathYear: 2013,
     role: "বর্ণবাদ বিরোধী নেতা ও রাষ্ট্রপতি",
-    descBn: "দক্ষিণ Африকার বর্ণবাদ বিরোধী আন্দোলনের মহানায়ক ও প্রথম কৃষ্ণাঙ্গ রাষ্ট্রপতি যিনি নোবেল শান্তি পুরস্কার লাভ করেন।",
+    descBn: "দক্ষিণ আফ্রিকার বর্ণবাদ বিরোধী আন্দোলনের মহানায়ক ও প্রথম কৃষ্ণাঙ্গ রাষ্ট্রপতি যিনি নোবেল শান্তি পুরস্কার লাভ করেন।",
     emoji: "🌍",
     wikiUrl: "https://bn.wikipedia.org/wiki/নেলসন_ম্যান্ডেলা",
     tags: ["নেতা", "শান্তি নোবেল", "বর্ণবাদ বিরোধী"],
@@ -1514,7 +1511,7 @@ export const IMPORTANT_DATES: ImportantDate[] = [
   {
     id: "childrens-day-india",
     dateMD: "11-14",
-    nameBn: "নাবাল শিশু দিবস (ভারত)",
+    nameBn: "জাতীয় শিশু দিবস (ভারত)",
     nameEn: "Children's Day",
     category: "important-international-dates",
     descBn: "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী জওহরলাল নেহেরুর জন্মদিবস, যিনি শিশুদের অত্যন্ত ভালোবাসতেন।",
@@ -1537,7 +1534,7 @@ export const IMPORTANT_DATES: ImportantDate[] = [
     nameBn: "প্রজাতন্ত্র দিবস (ভারত)",
     nameEn: "Republic Day of India",
     category: "important-international-dates",
-    descBn: "১৯输০ সালের এই ঐতিহাসিক দিনে ভারতীয় সংবিধান সম্পূর্ণ কার্যকর হয় এবং ভারত একটি গণতান্ত্রিক প্রজাতন্ত্রে পরিণত হয়।",
+    descBn: "১৯৫০ সালের এই ঐতিহাসিক দিনে ভারতীয় সংবিধান সম্পূর্ণ কার্যকর হয় এবং ভারত একটি গণতান্ত্রিক প্রজাতন্ত্রে পরিণত হয়।",
     emoji: "🎪",
     wikiUrl: "https://bn.wikipedia.org/wiki/প্রজাতন্ত্র_দিবস_(ভারত)"
   }
@@ -1581,7 +1578,7 @@ export const FESTIVALS: Festival[] = [
     nameEn: "Eid-ul-Fitr",
     descBn: "দীর্ঘ এক মাস পবিত্র রমজান মাসের সিয়াম সাধনার পর মুসলিম উম্মাহর সর্ববৃহৎ আনন্দ ও সৌহার্দ্যের ধর্মীয় উৎসব।",
     emoji: "🌙",
-    wikiUrl: "https://bn.wikipedia.org/wiki/ঈদুল_ফিতর"
+    wikiUrl: "https://bn.wikipedia.org/wiki/ঈদুল_ফিওর"
   },
   {
     id: "eid-ul-adha",
@@ -1595,12 +1592,12 @@ export const FESTIVALS: Festival[] = [
   {
     id: "christmas-day",
     recurringMD: "12-25",
-    nameBn: "বড়দিন (ক্রিসমাস)",
+    nameBn: "বড়দিন (ক্রিসমাস)",
     nameEn: "Christmas Day",
     category: "christian-observances",
     descBn: "খ্রিস্টধর্মের প্রবর্তক প্রভু যীশু খ্রিস্টের পবিত্র জন্মতিথি যা বিশ্বজুড়ে আনন্দ, শান্তি ও উপহার বিনিময়ের মাধ্যমে উদযাপিত হয়।",
     emoji: "🎄",
-    wikiUrl: "https://bn.wikipedia.org/wiki/বড়দিন"
+    wikiUrl: "https://bn.wikipedia.org/wiki/বড়দিন"
   }
 ];
 
@@ -1702,5 +1699,3 @@ export const FAMOUS_PEOPLE_DATA = generatedPeople;
 export const HISTORIC_EVENTS_DATA = generatedEvents;
 export const IMPORTANT_DATES_DATA = generatedDates;
 export const FESTIVALS_DATA = generatedFestivals;
-
-```
