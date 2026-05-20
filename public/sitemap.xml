@@ -3,141 +3,141 @@
 
   <!-- Core pages -->
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/</loc>
+    <loc>https://www.sothikbanglacalendar.live/</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/today-bengali-date</loc>
+    <loc>https://www.sothikbanglacalendar.live/today-bengali-date</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/panjika</loc>
+    <loc>https://www.sothikbanglacalendar.live/panjika</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/rashifal</loc>
+    <loc>https://www.sothikbanglacalendar.live/rashifal</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/news</loc>
+    <loc>https://www.sothikbanglacalendar.live/news</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/weather</loc>
+    <loc>https://www.sothikbanglacalendar.live/weather</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sothikbanglacalendar.vercel.app/finance</loc>
+    <loc>https://www.sothikbanglacalendar.live/finance</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Festival detail pages -->
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/durga-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/bangla-nabobarsho</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/kali-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/dol-purnima</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/saraswati-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/rath-yatra</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/lakshmi-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/rabindra-jayanti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/independence-day</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/republic-day</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/makar-sankranti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/mahalaya</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/jagaddhatri-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/maha-shivaratri</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/buddha-purnima</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/eid-ul-fitr</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/eid-ul-adha</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/christmas</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/gandhi-jayanti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/netaji-jayanti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/festival/biswakarma-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/durga-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/bangla-nabobarsho</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/kali-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/dol-purnima</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/saraswati-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/rath-yatra</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/lakshmi-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/rabindra-jayanti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/independence-day</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/republic-day</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/makar-sankranti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/mahalaya</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/jagaddhatri-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/maha-shivaratri</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/buddha-purnima</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/eid-ul-fitr</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/eid-ul-adha</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/christmas</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/gandhi-jayanti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/netaji-jayanti</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/festival/biswakarma-puja</loc><lastmod>2026-05-12</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
 
   <!-- Month pages 2025 (Bengali 1432) -->
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/boishakh/2025</loc><lastmod>2025-04-14</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/jaistha/2025</loc><lastmod>2025-05-15</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/ashar/2025</loc><lastmod>2025-06-15</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/shraban/2025</loc><lastmod>2025-07-16</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/bhadra/2025</loc><lastmod>2025-08-17</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/ashwin/2025</loc><lastmod>2025-09-17</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/kartik/2025</loc><lastmod>2025-10-17</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/agrohayon/2025</loc><lastmod>2025-11-16</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/poush/2025</loc><lastmod>2025-12-16</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/boishakh/2025</loc><lastmod>2025-04-14</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/jaistha/2025</loc><lastmod>2025-05-15</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/ashar/2025</loc><lastmod>2025-06-15</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/shraban/2025</loc><lastmod>2025-07-16</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/bhadra/2025</loc><lastmod>2025-08-17</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/ashwin/2025</loc><lastmod>2025-09-17</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/kartik/2025</loc><lastmod>2025-10-17</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/agrohayon/2025</loc><lastmod>2025-11-16</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/poush/2025</loc><lastmod>2025-12-16</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
 
   <!-- Month pages 2026 (Bengali 1432–1433) -->
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/magh/2026</loc><lastmod>2026-01-14</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/falgun/2026</loc><lastmod>2026-02-13</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/chaitra/2026</loc><lastmod>2026-03-15</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/boishakh/2026</loc><lastmod>2026-04-14</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/jaistha/2026</loc><lastmod>2026-05-12</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/ashar/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/shraban/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/bhadra/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/ashwin/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/kartik/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/agrohayon/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/poush/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/magh/2026</loc><lastmod>2026-01-14</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/falgun/2026</loc><lastmod>2026-02-13</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/chaitra/2026</loc><lastmod>2026-03-15</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/boishakh/2026</loc><lastmod>2026-04-14</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/jaistha/2026</loc><lastmod>2026-05-12</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/ashar/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/shraban/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/bhadra/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/ashwin/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/kartik/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/agrohayon/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/poush/2026</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
 
   <!-- Month pages 2027 (Bengali 1433) -->
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/magh/2027</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/falgun/2027</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/month/chaitra/2027</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/magh/2027</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/falgun/2027</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/month/chaitra/2027</loc><lastmod>2026-05-12</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
 
   <!-- Daily date pages — May 2026 -->
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/1</loc><lastmod>2026-05-01</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/2</loc><lastmod>2026-05-02</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/3</loc><lastmod>2026-05-03</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/4</loc><lastmod>2026-05-04</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/5</loc><lastmod>2026-05-05</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/6</loc><lastmod>2026-05-06</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/7</loc><lastmod>2026-05-07</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/8</loc><lastmod>2026-05-08</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/9</loc><lastmod>2026-05-12</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/10</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/11</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/12</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/13</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/14</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/15</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/16</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/17</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/18</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/19</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/20</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/21</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/22</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/23</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/24</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/25</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/26</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/27</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/28</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/29</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/30</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/5/31</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/1</loc><lastmod>2026-05-01</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/2</loc><lastmod>2026-05-02</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/3</loc><lastmod>2026-05-03</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/4</loc><lastmod>2026-05-04</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/5</loc><lastmod>2026-05-05</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/6</loc><lastmod>2026-05-06</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/7</loc><lastmod>2026-05-07</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/8</loc><lastmod>2026-05-08</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/9</loc><lastmod>2026-05-12</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/10</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/11</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/12</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/13</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/14</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/15</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/16</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/17</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/18</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/19</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/20</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/21</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/22</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/23</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/24</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/25</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/26</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/27</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/28</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/29</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/30</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/5/31</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.65</priority></url>
 
   <!-- Daily date pages — June 2026 -->
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/1</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/5</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/10</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/15</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/20</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/25</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://sothikbanglacalendar.vercel.app/date/2026/6/30</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/1</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/5</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/10</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/15</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/20</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/25</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sothikbanglacalendar.live/date/2026/6/30</loc><lastmod>2026-05-12</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
 
 </urlset>
