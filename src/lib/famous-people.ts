@@ -1,4 +1,5 @@
-```typescript
+TypeScript
+
 export interface FamousPerson {
   id: string;
   nameBn: string;
@@ -91,7 +92,7 @@ export interface FamousPerson {
     deathMD: "07-29",
     deathYear: 1891,
     role: "সমাজ সংস্কারক ও শিক্ষাবিদ",
-    descBn: "বাংলা গদ্যের জনক এবং বিধবা বিবাহ আইন পাসের প্রধান উদ্যোক্তা যিনি समाज সংস্কারে অসামান্য অবদান রাখেন।",
+    descBn: "বাংলা গদ্যের জনক এবং বিধবা বিবাহ আইন পাসের প্রধান উদ্যোক্তা যিনি সমাজ সংস্কারে অসামান্য অবদান রাখেন।",
     emoji: "📚",
     wikiUrl: "https://bn.wikipedia.org/wiki/ঈশ্বরচন্দ্র_বিদ্যাসাগর",
     tags: ["সংস্কারক", "শিক্ষাবিদ", "রেনেসাঁ"],
@@ -262,7 +263,7 @@ export interface FamousPerson {
     descBn: "অহিংস ও সত্যাগ্রহ আন্দোলনের মাধ্যমে ভারতকে ব্রিটিশ শাসন থেকে মুক্ত করার প্রধান জননেতা ও অহিংসার প্রতীক।",
     emoji: "👓",
     wikiUrl: "https://bn.wikipedia.org/wiki/মহাত্মা_গান্ধী",
-    tags: [" স্বাধীনতা সংগ্রামী", "নেতা", "অহিংসা"],
+    tags: ["স্বাধীনতা সংগ্রামী", "নেতা", "অহিংসা"],
     category: "indian-political-leaders",
     nationality: "Indian",
     birthPlace: "পোরবন্দর"
@@ -327,7 +328,7 @@ export interface FamousPerson {
     deathMD: "09-05",
     deathYear: 1997,
     role: "মানবিক সাধিকা",
-    descBn: "কলকাতার 'মিশনারিজ অব চ্যারিটি'র প্রতিষ্ঠাতা যিনি আজীবন আর্ত ও মুমূর্ষu মানুষের সেবায় আত্মনিয়োগ করে নোবেল শান্তি পুরস্কার লাভ করেন।",
+    descBn: "কলকাতার 'মিশনারিজ অব চ্যারিটি'র প্রতিষ্ঠাতা যিনি আজীবন আর্ত ও মুমূর্ষু মানুষের সেবায় আত্মনিয়োগ করে নোবেল শান্তি পুরস্কার লাভ করেন।",
     emoji: "🕊️",
     wikiUrl: "https://bn.wikipedia.org/wiki/মাদার_তেরেসা",
     tags: ["সাধু", "শান্তি নোবেল", "মানবসেবা"],
@@ -418,7 +419,7 @@ export interface FamousPerson {
     tags: ["কবি", " স্বাধীনতা সংগ্রামী", "নারী নেত্রী"],
     category: "indian-poets",
     nationality: "Indian",
-    birthPlace: "হায়دراবাদ"
+    birthPlace: "হায়দরাবাদ"
   },
   {
     id: "begum-rokeya",
@@ -530,7 +531,7 @@ export interface FamousPerson {
     birthYear: 1910,
     deathMD: "08-21",
     deathYear: 1995,
-    role: "জ্যোতির্বিজ্ঞানী",
+    role: "জ্যোতির্বিজ্ঞানী",
     descBn: "নক্ষত্রের বিবর্তন ও ব্ল্যাকহোল সংক্রান্ত 'চন্দ্রশেখর সীমা' আবিষ্কারের জন্য ১৯৮৩ সালে পদার্থবিদ্যায় নোবেল পান।",
     emoji: "🌌",
     wikiUrl: "https://bn.wikipedia.org/wiki/সুব্রহ্মণ্যন_চন্দ্রশেখর",
@@ -550,7 +551,7 @@ export interface FamousPerson {
     role: "প্রাণরসায়নবিদ",
     descBn: "জেনেটিক কোড ব্যাখ্যা এবং প্রোটিন সংশ্লেষণে এর ভূমিকা আবিষ্কারের জন্য ১৯৬৮ সালে চিকিৎসাবিজ্ঞানে নোবেল লাভ করেন।",
     emoji: "🧬",
-    wikiUrl: "https://bn.wikipedia.org/wiki/হর_গোবিন্দ_خোরানা",
+    wikiUrl: "https://bn.wikipedia.org/wiki/হর_গোবিন্দ_খোরানা",
     tags: ["বিজ্ঞানী", "নোবেল বিজয়ী", "ডিএনএ"],
     category: "indian-nobel-winners",
     nationality: "American",
@@ -577,7 +578,7 @@ export interface FamousPerson {
     nameEn: "Kailash Satyarthi",
     birthMD: "01-11",
     birthYear: 1954,
-    role: "নিপীড়িত শিশু অধিকার কর্মী",
+    role: "নিপীড়িত শিশু অধিকার কর্মী",
     descBn: "'বচপন বাঁচাও আন্দোলন' এর মাধ্যমে হাজার হাজার শিশুকে দাসত্ব থেকে মুক্ত করার জন্য ২০১৪ সালে শান্তিতে নোবেল পান।",
     emoji: "🧸",
     wikiUrl: "https://bn.wikipedia.org/wiki/কৈলাশ_সত্যার্থী",
@@ -599,7 +600,7 @@ export interface FamousPerson {
     tags: ["অর্থনীতিবিদ", "নোবেল বিজয়ী", "দারিদ্র্য"],
     category: "indian-nobel-winners",
     nationality: "American",
-    birthPlace: "مুম্বাই"
+    birthPlace: "মুম্বাই"
   },
   {
     id: "michael-madhusudan-dutt",
@@ -630,7 +631,7 @@ export interface FamousPerson {
     descBn: "ভারতের জাতীয় স্তোত্র 'বন্দে মাতরম' এর রচয়িতা এবং বাংলা উপন্যাসের আদি দিকপাল ও সাহিত্য সম্রাট।",
     emoji: "📖",
     wikiUrl: "https://bn.wikipedia.org/wiki/বঙ্কিমচন্দ্র_চট্টোপাধ্যায়",
-    tags: ["লেখক", "বন্দে মাতরম", " সাহিত্য সম্রাট"],
+    tags: ["লেখক", "বন্দে মাতরম", "সাহিত্য সম্রাট"],
     category: "bengali-writers",
     nationality: "Indian",
     birthPlace: "নৈহাটি"
@@ -729,7 +730,7 @@ export interface FamousPerson {
     deathMD: "05-13",
     deathYear: 1947,
     role: "কিশোর কবি",
-    descBn: "অল্প বয়сей সাম্যবাদী চেতনাদীপ্ত ও বিপ্লবী কবিতা লিখে বাংলা সাহিত্যে স্থায়ী আসন করে নেওয়া প্রতিবাদী কবি।",
+    descBn: "অল্প বয়সেই সাম্যবাদী চেতনাদীপ্ত ও বিপ্লবী কবিতা লিখে বাংলা সাহিত্যে স্থায়ী আসন করে নেওয়া প্রতিবাদী কবি।",
     emoji: "🔥",
     wikiUrl: "https://bn.wikipedia.org/wiki/সুকান্ত_ভট্টাচার্য",
     tags: ["কবি", "কিশোর কবি", "সাম্যবাদী"],
@@ -854,7 +855,7 @@ export interface FamousPerson {
     tags: ["পক্ষীবিদ", "প্রকৃতি"],
     category: "indian-scientists",
     nationality: "Indian",
-    birthPlace: "مুম্বাই"
+    birthPlace: "মুম্বাই"
   },
   {
     id: "homi-bhabha",
@@ -868,10 +869,10 @@ export interface FamousPerson {
     descBn: "ভারতের পরমাণু শক্তি কর্মসূচির জনক এবং টাটা ইনস্টিটিউট অব ফান্ডামেন্টাল রিসার্চের প্রতিষ্ঠাতা অধিকর্তা।",
     emoji: "⚛️",
     wikiUrl: "https://bn.wikipedia.org/wiki/হোমি_জাহাঙ্গীর_ভাবা",
-    tags: ["পরমাণu", "বিজ্ঞানী"],
+    tags: ["পরমাণু", "বিজ্ঞানী"],
     category: "indian-scientists",
     nationality: "Indian",
-    birthPlace: "مুম্বাই"
+    birthPlace: "মুম্বাই"
   },
   {
     id: "vikram-sarabhai",
@@ -990,7 +991,7 @@ export interface FamousPerson {
     tags: ["উদ্ভাবক", "বিদ্যুৎ"],
     category: "historic-inventors",
     nationality: "American",
-    birthPlace: "میلان"
+    birthPlace: "মিলান"
   },
   {
     id: "nikola-tesla",
@@ -1045,14 +1046,14 @@ export interface FamousPerson {
   },
   {
     id: "soumitra-chatterjee",
-    nameBn: "সอมিত্র চট্টোপাধ্যায়",
+    nameBn: "সৌমিত্র চট্টোপাধ্যায়",
     nameEn: "Soumitra Chatterjee",
     birthMD: "01-19",
     birthYear: 1935,
     deathMD: "11-15",
     deathYear: 2020,
     role: "অভিনেতা ও বাচিক শিল্পী",
-    descBn: "সত্যজিৎ রায়ের 'অপু' ও 'ফেলuদা' চরিত্রের অমর রূপদানকারী দাদাসাহেব ফালকে ও ফরাসি লিজিয়ন অব অনার বিজয়ী অভিনেতা।",
+    descBn: "সত্যজিৎ রায়ের 'অপু' ও 'ফেলুদা' চরিত্রের অমর রূপদানকারী দাদাসাহেব ফালকে ও ফরাসি লিজিয়ন অব অনার বিজয়ী অভিনেতা।",
     emoji: "🕵️‍♂️",
     wikiUrl: "https://bn.wikipedia.org/wiki/সৌমিত্র_চট্টোপাধ্যায়",
     tags: ["চলচ্চিত্র", "ফেলুদা", "দাদাসাহেব ফালকে"],
@@ -1079,7 +1080,7 @@ export interface FamousPerson {
   },
   {
     id: "mrinal-sen",
-    nameBn: "مৃণাল সেন",
+    nameBn: "মৃণাল সেন",
     nameEn: "Mrinal Sen",
     birthMD: "05-14",
     birthYear: 1923,
@@ -1088,7 +1089,7 @@ export interface FamousPerson {
     role: "চলচ্চিত্র পরিচালক",
     descBn: "ভারতীয় সমান্তরাল সিনেমার অন্যতম পথিকৃৎ যিনি রাজনৈতিক ও সামাজিক বাস্তবতাকে সেলুলয়েডে সাহসের সঙ্গে তুলে ধরেন।",
     emoji: "🎬",
-    wikiUrl: "https://bn.wikipedia.org/wiki/मृণাল_সেন",
+    wikiUrl: "https://bn.wikipedia.org/wiki/মৃণাল_সেন",
     tags: ["চলচ্চিত্র", "পরিচালক", "প্যারালাল সিনেমা"],
     category: "bengali-film-legends",
     nationality: "Indian",
@@ -1173,7 +1174,7 @@ export interface FamousPerson {
     tags: ["বক্সিং", "অলিম্পিক", "নারী নেত্রী"],
     category: "indian-sports-personalities",
     nationality: "Indian",
-    birthPlace: "مণিপুর"
+    birthPlace: "মণিপুর"
   },
   {
     id: "matangini-hazra",
@@ -1204,7 +1205,7 @@ export interface FamousPerson {
     descBn: "যতীন্দ্রনাথ মুখোপাধ্যায়, যিনি খালি হাতে বাঘ মেরে বাঘা যতীন খ্যাতি পান এবং বুড়িবালামের তীরে ব্রিটিশের বিরুদ্ধে সম্মুখযুদ্ধে লড়েন।",
     emoji: "🐯",
     wikiUrl: "https://bn.wikipedia.org/wiki/যতীন্দ্রনাথ_মুখোপাধ্যায়",
-    tags: ["বিপ্লবী", "সম্মুখযুদ্ধ", "যugান্তর"],
+    tags: ["বিপ্লবী", "সম্মুখযুদ্ধ", "যুগান্তর"],
     category: "bengali-revolutionaries",
     nationality: "Indian",
     birthPlace: "কয়া"
@@ -1220,7 +1221,7 @@ export interface FamousPerson {
     role: "বিপ্লবী ও সংগঠক",
     descBn: "লর্ড হার্ডিঞ্জের ওপর বোমা হামলার মূল পরিকল্পনাকারী এবং জাপানে আজাদ হিন্দ ফৌজের প্রাথমিক ভিত্তি স্থাপনকারী মহান বিপ্লবী।",
     emoji: "💣",
-    wikiUrl: "https://bn.wikipedia.org/wiki/রাসবিহারী_বসু",
+    wikiUrl: "https://bn.wikipedia.org/wiki/রাসবিহারী_বсу",
     tags: ["বিপ্লবী", "আজাদ হিন্দ", "জাপান"],
     category: "bengali-revolutionaries",
     nationality: "Indian",
@@ -1279,16 +1280,16 @@ export interface FamousPerson {
   },
   {
     id: "nelson-mandela",
-    nameBn: "ネルソン・マンデラ",
+    nameBn: "নেলসন ম্যান্ডেলা",
     nameEn: "Nelson Mandela",
     birthMD: "07-18",
     birthYear: 1918,
     deathMD: "12-05",
     deathYear: 2013,
     role: "বর্ণবাদ বিরোধী নেতা ও রাষ্ট্রপতি",
-    descBn: "দক্ষিণ আফ্রিকার বর্ণবাদ বিরোধী আন্দোলনের মহানায়ক ও প্রথম কৃষ্ণাঙ্গ রাষ্ট্রপতি যিনি নোবেল শান্তি পুরস্কার লাভ করেন।",
+    descBn: "দক্ষিণ Африকার বর্ণবাদ বিরোধী আন্দোলনের মহানায়ক ও প্রথম কৃষ্ণাঙ্গ রাষ্ট্রপতি যিনি নোবেল শান্তি পুরস্কার লাভ করেন।",
     emoji: "🌍",
-    wikiUrl: "https://bn.wikipedia.org/wiki/ネルソン・マンデラ",
+    wikiUrl: "https://bn.wikipedia.org/wiki/নেলসন_ম্যান্ডেলা",
     tags: ["নেতা", "শান্তি নোবেল", "বর্ণবাদ বিরোধী"],
     category: "world-leaders",
     nationality: "South African",
@@ -1463,7 +1464,7 @@ export interface FamousPerson {
     nameBn: "আন্তর্জাতিক মাতৃভাষা দিবস",
     nameEn: "International Mother Language Day",
     category: "un-international-observance-days",
-    descBn: "ইউনেস্কো কর্তৃক স্বীকৃতিপ্রাপ্ত বৈশ্বিক দিবস, যা ১৯৫২ সালের বাঙালি ভাষা শহীদদের স্মরণে বিশ্বজুড়ে পালিত হয়।",
+    descBn: "ইউনেস্কো কর্তৃক স্বীকৃতিপ্রাপ্ত বৈশ্বিক দিবস, যা ১৯৫২ সালের বাঙালি ভাষা শহীদদের স্মরণে বিশ্বজুড়ে পালিত হয়।",
     emoji: "🗣️",
     wikiUrl: "https://bn.wikipedia.org/wiki/আন্তর্জাতিক_মাতৃভাষা_দিবস"
   },
@@ -1473,7 +1474,7 @@ export interface FamousPerson {
     nameBn: "বিশ্ব পরিবেশ দিবস",
     nameEn: "World Environment Day",
     category: "un-international-observance-days",
-    descBn: "পরিবেশ সুরক্ষায় বিশ্বব্যাপী সচেতনতা বৃদ্ধির লক্ষ্যে জাতিসংঘের উদ্যোগে উদযাপিত একটি প্রধান আন্তর্জাতিক দিবস।",
+    descBn: "পরিবেশ সুরক্ষায় বিশ্বব্যাপী সচেতনতা বৃদ্ধির লক্ষ্যে জাতিসংঘের উদ্যোগে উদযাপিত একটি প্রধান আন্তর্জাতিক দিবস।",
     emoji: "🌱",
     wikiUrl: "https://bn.wikipedia.org/wiki/বিশ্ব_পরিবেশ_দিবস"
   },
@@ -1493,17 +1494,17 @@ export interface FamousPerson {
     nameBn: "শিক্ষক দিবস (ভারত)",
     nameEn: "National Teachers' Day",
     category: "important-international-dates",
-    descBn: "মহীয়সী শিক্ষাবিদ ও ভারতের প্রাক্তন রাষ্ট্রপতি ড. সর্বপল্লী রাধাকৃষ্ণনের জন্মদিনে শিক্ষকদের প্রতি সম্মান জানানোর জাতীয় দিবস।",
+    descBn: "মহান শিক্ষাবিদ ও ভারতের প্রাক্তন রাষ্ট্রপতি ড. সর্বপল্লী রাধাকৃষ্ণনের জন্মদিনে শিক্ষকদের প্রতি সম্মান জানানোর জাতীয় দিবস।",
     emoji: "👨‍🏫",
     wikiUrl: "https://bn.wikipedia.org/wiki/শিক্ষক_দিবস"
   },
   {
     id: "childrens-day-india",
     dateMD: "11-14",
-    nameBn: "জাতীয় শিশু দিবস (ভারত)",
+    nameBn: "নাবাল শিশু দিবস (ভারত)",
     nameEn: "Children's Day",
     category: "important-international-dates",
-    descBn: "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী জওহরলাল নেহেরুর জন্মতিথি উপলক্ষে শিশুদের আনন্দ ও কল্যাণের উদ্দেশ্যে উদযাপিত দিন।",
+    descBn: "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী জওহরলাল নেহেরুর জন্মদিবস, যিনি শিশুদের অত্যন্ত ভালোবাসতেন।",
     emoji: "🧸",
     wikiUrl: "https://bn.wikipedia.org/wiki/শিশু_দিবস"
   },
@@ -1523,7 +1524,7 @@ export interface FamousPerson {
     nameBn: "প্রজাতন্ত্র দিবস (ভারত)",
     nameEn: "Republic Day of India",
     category: "important-international-dates",
-    descBn: "১৯৫০ সালের এই ঐতিহাসিক দিনে ভারতীয় সংবিধান সম্পূর্ণ কার্যকর হয় এবং ভারত একটি গণতান্ত্রিক প্রজাতন্ত্রে পরিণত হয়।",
+    descBn: "১৯输০ সালের এই ঐতিহাসিক দিনে ভারতীয় সংবিধান সম্পূর্ণ কার্যকর হয় এবং ভারত একটি গণতান্ত্রিক প্রজাতন্ত্রে পরিণত হয়।",
     emoji: "🎪",
     wikiUrl: "https://bn.wikipedia.org/wiki/প্রজাতন্ত্র_দিবস_(ভারত)"
   }
@@ -1572,7 +1573,7 @@ export interface FamousPerson {
     category: "islamic-observances",
     nameBn: "ঈদুল আজহা",
     nameEn: "Eid-ul-Adha",
-    descBn: "হযরত ইব্রাহিমের মহান ت্যাগের স্মৃতিবিজড়িত কোরবানি ঈদ, যা আল্লাহর প্রতি পরম আনুগত্য ও আত্মত্যাগের প্রতীক।",
+    descBn: "হযরত ইব্রাহিমের মহান ত্যাগের স্মৃতিবিজড়িত কোরবানি ঈদ, যা আল্লাহর প্রতি পরম আনুগত্য ও আত্মত্যাগের প্রতীক।",
     emoji: "🐐",
     wikiUrl: "https://bn.wikipedia.org/wiki/ঈদুল_আজহা"
   },
@@ -1658,5 +1659,3 @@ export interface FamousPerson {
   });
   festivalCounter++;
 }export const FAMOUS_PEOPLE_DATA = generatedPeople;export const HISTORIC_EVENTS_DATA = generatedEvents;export const IMPORTANT_DATES_DATA = generatedDates;export const FESTIVALS_DATA = generatedFestivals;
-
-```
