@@ -24,7 +24,7 @@ import { FESTIVALS } from "../src/lib/festivals";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
-const SITE = "https://sothikbanglacalendar.vercel.app";
+const SITE = "https://sothikbanglacalendar.live";
 
 // ── utilities ─────────────────────────────────────────────────────────────
 
