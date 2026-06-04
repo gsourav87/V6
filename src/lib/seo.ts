@@ -1,4 +1,4 @@
-export const SITE_URL = "https://https://www.sothikbanglacalendar.live";
+export const SITE_URL = "https://www.sothikbanglacalendar.live";
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.svg`;
 export const DEFAULT_TITLE =
   "আজকের বাংলা তারিখ, তিথি ও বাংলা ক্যালেন্ডার ২০২৬ | সঠিক বাংলা ক্যালেন্ডার";
