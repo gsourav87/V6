@@ -17,9 +17,12 @@ import { fileURLToPath } from "node:url";
 
 // These files are plain data — no browser APIs, relative imports only.
 import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
-import { FESTIVALS } from "../src/lib/festivals";
-import { OBSERVANCES } from "../src/lib/observances";
+import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
+import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
+import { convertToBengali } from "../src/lib/bengali-calendar";
+import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
+import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
 
 // ── constants ─────────────────────────────────────────────────────────────
 
@@ -346,9 +349,70 @@ for (const o of OBSERVANCES) {
   if (o.slug) dateSet.add(nextOccurrence(o.md));
 }
 
+console.log("\n🗓  Date pages (computed panchang)");
+
+const pad4 = (n: number) => String(n).padStart(4, "0");
+
 for (const d of [...dateSet].sort()) {
-  const [y, m, day] = d.split("-");
-  addUrl(`${SITE}/date/${+y}/${+m}/${+day}`, "0.6", "monthly");
+  const [y, m, day] = d.split("-").map(Number);
+  const route     = `/date/${y}/${m}/${day}`;
+  const canonical = `${SITE}${route}`;
+  const utc       = new Date(Date.UTC(y, m - 1, day));
+
+  const bnDate    = convertToBengali(y, m, day);
+  const tithi     = getTithiAtSunrise(utc);
+  const nak       = getNakshatraAtSunrise(utc);
+  const events    = getAllEventsForDate(utc);            // festivals + observances + anniversaries
+  const annivs    = getAllAnniversariesForDate(utc);     // person cards
+  const festObs   = [...getFestivalsForDate(utc), ...getObservancesForDate(utc)]; // for Event schema
+
+  const title = `${bn(bnDate.day)} ${bnDate.monthNameBn} ${bn(bnDate.year)} — তিথি ${tithi.nameBn}, নক্ষত্র ${nak.nameBn} | বাংলা পঞ্জিকা`;
+  const desc  = `${bn(bnDate.day)} ${bnDate.monthNameBn} ${bn(bnDate.year)} বঙ্গাব্দ (${day}/${m}/${y}) — তিথি: ${tithi.nameBn} (${tithi.pakshaBn}), নক্ষত্র: ${nak.nameBn}। সম্পূর্ণ বাংলা পঞ্জিকা তথ্য দেখুন।`;
+
+  const eventsHtml = events.length
+    ? `<h2>উৎসব ও বিশেষ দিন</h2><ul>${events.map(e => `<li>${e.icon} ${esc(e.nameBn)}</li>`).join("")}</ul>`
+    : "";
+  const body = [
+    `<h1>${bn(bnDate.day)} ${bnDate.monthNameBn} ${bn(bnDate.year)} বঙ্গাব্দ — পঞ্জিকা</h1>`,
+    `<p><strong>গ্রেগরিয়ান তারিখ:</strong> ${day}/${m}/${y} (${bnDate.dayNameBn})</p>`,
+    `<p><strong>তিথি:</strong> ${esc(tithi.nameBn)} (${esc(tithi.pakshaBn)}) &nbsp;|&nbsp; <strong>নক্ষত্র:</strong> ${esc(nak.nameBn)}</p>`,
+    eventsHtml,
+    `<p>বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে কলকাতার সূর্যোদয় অনুসারে গণনা করা সম্পূর্ণ পঞ্জিকা — তিথি, নক্ষত্র, যোগ, করণ, সূর্যোদয়, সূর্যাস্ত ও রাহু কাল।</p>`,
+    `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডার</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
+  ].filter(Boolean).join("\n");
+
+  const graph: object[] = [
+    { "@type": "WebPage", "name": title, "description": desc, "url": canonical, "inLanguage": "bn",
+      "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" } },
+    ...annivs.map(a => ({
+      "@type": "Person",
+      "name": a.person.nameBn,
+      "alternateName": a.person.nameEn,
+      "birthDate": `${pad4(a.person.birthYear)}-${a.person.birthMD}`,
+      ...(a.person.deathYear
+        ? { "deathDate": a.person.deathMD ? `${pad4(a.person.deathYear)}-${a.person.deathMD}` : pad4(a.person.deathYear) }
+        : {}),
+      "jobTitle": a.person.role,
+      "description": a.person.descBn,
+      "sameAs": a.person.wikiUrl,
+      "nationality": "Indian",
+    })),
+    ...festObs.map(f => ({
+      "@type": "Event",
+      "name": f.nameEn,
+      "alternateName": f.nameBn,
+      "startDate": f.date,
+      ...(f.descBn ? { "description": f.descBn } : {}),
+      "inLanguage": "bn",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "url": f.slug ? `${SITE}/festival/${f.slug}` : canonical,
+    })),
+  ];
+  const schema = { "@context": "https://schema.org", "@graph": graph };
+
+  let html = swapHead(template, { title, description: desc, canonical, schema });
+  html = swapBody(html, body);
+  emit(route, html, "0.6", "monthly");
 }
 
 // ── write sitemap.xml ───────────────────────────────────────────────────────
