@@ -182,7 +182,7 @@ export default function FinancePage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-background pb-16">
+    <div className="min-h-screen pb-16">
       <NavBar />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6">

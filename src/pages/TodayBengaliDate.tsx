@@ -84,7 +84,7 @@ export default function TodayBengaliDate() {
   }, [title, description, bnDateStr, bnDate, tithi, nakshatra, yoga, sunTimes]);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen pb-20">
       <main className="max-w-2xl mx-auto px-4 py-10">
 
         {/* Breadcrumb */}

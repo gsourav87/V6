@@ -169,7 +169,7 @@ export default function NewsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen pb-20">
       <NavBar />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">

@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from "react";
 import { useRoute, Link } from "wouter";
 import { NavBar } from "@/components/NavBar";
+import { ShareButton } from "@/components/ShareButton";
 import { applyPageSEO, removeSchema, SITE_URL } from "@/lib/seo";
 import { getFestivalDetail, getCategoryLabel } from "@/lib/festival-details";
 import { getUpcomingDatesForSlug } from "@/lib/festivals";
+import { getObservanceDatesForSlug } from "@/lib/observances";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
@@ -51,8 +53,10 @@ export default function FestivalPage() {
   const detail = getFestivalDetail(slug);
 
   const upcomingDates = detail
-    ? getUpcomingDatesForSlug(slug, new Date(), 6)
+    ? [...getUpcomingDatesForSlug(slug, new Date(), 6), ...getObservanceDatesForSlug(slug, new Date(), 6)]
         .filter((f, i, arr) => arr.findIndex(x => x.date === f.date) === i) // dedupe dates
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 6)
     : [];
 
   // Derive unique Bengali month links from upcoming dates (up to 2)
@@ -103,7 +107,7 @@ export default function FestivalPage() {
 
   if (!detail) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <NavBar />
         <main className="max-w-2xl mx-auto px-4 py-20 text-center font-bengali">
           <div className="text-5xl mb-4">🔍</div>
@@ -118,7 +122,7 @@ export default function FestivalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen pb-20">
       <NavBar />
 
       {/* Hero header */}
@@ -146,6 +150,7 @@ export default function FestivalPage() {
               <ExternalLink className="w-3 h-3" />
               Wikipedia
             </a>
+            <ShareButton variant="compact" text={`🎉 ${detail.nameBn}\n${detail.tagline}`} />
           </div>
         </div>
       </div>

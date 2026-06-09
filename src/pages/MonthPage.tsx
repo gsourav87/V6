@@ -1,7 +1,10 @@
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { useEffect, useMemo } from "react";
 import { Link } from "wouter";
+import { Download } from "lucide-react";
 import { CalendarGrid } from "@/components/CalendarGrid";
+import { MonthSpecialDays } from "@/components/MonthSpecialDays";
+import { ShareButton } from "@/components/ShareButton";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { FESTIVALS } from "@/lib/festivals";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
@@ -36,6 +39,7 @@ function toBengaliYear(gregYear: number, monthIdx: number): number {
 
 export default function MonthPage() {
   const [, params] = useRoute("/month/:month/:year");
+  const [, navigate] = useLocation();
 
   const slug     = params?.month ?? "boishakh";
   const gregYear = Number(params?.year ?? new Date().getFullYear());
@@ -81,15 +85,15 @@ export default function MonthPage() {
   }, [monthIndex, banglaYear]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-4 py-10">
+    <div className="min-h-screen text-foreground px-4 py-10">
       <main className="max-w-4xl mx-auto">
 
         {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-slate-400 font-bengali">
+        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted-foreground font-bengali">
           <ol className="flex items-center gap-1.5 flex-wrap">
-            <li><Link href="/" className="hover:text-white transition-colors">হোম</Link></li>
+            <li><Link href="/" className="hover:text-foreground transition-colors">হোম</Link></li>
             <li aria-hidden="true">/</li>
-            <li className="text-white font-semibold">{nameBn} {toBengaliNumerals(banglaYear)}</li>
+            <li className="text-foreground font-semibold">{nameBn} {toBengaliNumerals(banglaYear)}</li>
           </ol>
         </nav>
 
@@ -97,23 +101,52 @@ export default function MonthPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-center mb-2 font-bengali">
           {nameBn} {toBengaliNumerals(banglaYear)} বঙ্গাব্দ বাংলা ক্যালেন্ডার
         </h1>
-        <p className="text-center text-slate-400 text-sm mb-8 font-bengali">
+        <p className="text-center text-muted-foreground text-sm mb-6 font-bengali">
           {nameEn} {gregYear} · তিথি, নক্ষত্র ও সম্পূর্ণ পঞ্জিকা
         </p>
 
-        {/* Calendar grid — using correct Bengali year */}
-        <div className="rounded-2xl overflow-hidden">
+        {/* Actions — hidden when printing */}
+        <div className="no-print flex flex-wrap items-center justify-center gap-2 mb-8">
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-bengali font-semibold text-sm px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity shadow-sm"
+          >
+            <Download className="w-4 h-4" />
+            PDF ডাউনলোড করুন
+          </button>
+          <ShareButton
+            variant="compact"
+            text={`📅 ${nameBn} ${toBengaliNumerals(banglaYear)} বঙ্গাব্দ বাংলা ক্যালেন্ডার — তিথি, নক্ষত্র ও পঞ্জিকা`}
+          />
+        </div>
+
+        {/* Calendar grid — wrapped as the print area so PDF = just this calendar */}
+        <div className="print-area rounded-2xl overflow-hidden">
+          {/* Print-only header (branding + month) */}
+          <div className="hidden print:block text-center mb-3 text-black">
+            <div className="text-2xl font-bold font-bengali">
+              {nameBn} {toBengaliNumerals(banglaYear)} বঙ্গাব্দ — বাংলা ক্যালেন্ডার
+            </div>
+            <div className="text-sm font-bengali">{nameEn} {gregYear} · সঠিক বাংলা ক্যালেন্ডার · sothikbanglacalendar.live</div>
+          </div>
           <CalendarGrid
             year={banglaYear}
             month={monthIndex}
             todayDate={today}
-            onDateClick={() => {}}
+            onDateClick={(date) =>
+              navigate(`/date/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`)
+            }
           />
         </div>
 
+        {/* Special days this month (not part of the printable PDF) */}
+        <div className="no-print mt-6">
+          <MonthSpecialDays banglaYear={banglaYear} banglaMonth={monthIndex} />
+        </div>
+
         {/* Rich SEO content */}
-        <div className="mt-8 space-y-4 text-slate-300 text-sm font-bengali leading-relaxed">
-          <h2 className="text-lg font-bold text-white">
+        <div className="mt-8 space-y-4 text-muted-foreground text-sm font-bengali leading-relaxed">
+          <h2 className="text-lg font-bold text-foreground">
             {nameBn} {toBengaliNumerals(banglaYear)} বঙ্গাব্দ পঞ্জিকা
           </h2>
           <p>
@@ -128,20 +161,20 @@ export default function MonthPage() {
           {/* Festivals this month */}
           {monthFestivals.length > 0 && (
             <div>
-              <h3 className="text-base font-bold text-white mb-2">{nameBn} মাসের উৎসব</h3>
+              <h3 className="text-base font-bold text-foreground mb-2">{nameBn} মাসের উৎসব</h3>
               <div className="flex flex-wrap gap-2">
                 {monthFestivals.map(f =>
                   f.slug ? (
                     <Link
                       key={f.slug}
                       href={`/festival/${f.slug}`}
-                      className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bengali font-medium px-3 py-1.5 rounded-full transition-colors"
+                      className="inline-flex items-center gap-1.5 bg-card hover:bg-accent border border-border text-foreground text-xs font-bengali font-medium px-3 py-1.5 rounded-full transition-colors"
                     >
                       <span>{f.icon}</span>
                       <span>{f.nameBn}</span>
                     </Link>
                   ) : (
-                    <span key={f.nameBn} className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white text-xs font-bengali font-medium px-3 py-1.5 rounded-full">
+                    <span key={f.nameBn} className="inline-flex items-center gap-1.5 bg-card border border-border text-foreground text-xs font-bengali font-medium px-3 py-1.5 rounded-full">
                       <span>{f.icon}</span>
                       <span>{f.nameBn}</span>
                     </span>
@@ -153,29 +186,29 @@ export default function MonthPage() {
 
           {/* Navigation to adjacent months */}
           <div className="flex flex-wrap gap-4 pt-2">
-            <Link href="/" className="text-primary hover:text-amber-300 transition-colors font-semibold">
+            <Link href="/" className="text-primary hover:text-primary transition-colors font-semibold">
               ← পূর্ণ ক্যালেন্ডারে ফিরুন
             </Link>
-            <Link href="/today-bengali-date" className="text-primary hover:text-amber-300 transition-colors font-semibold">
+            <Link href="/today-bengali-date" className="text-primary hover:text-primary transition-colors font-semibold">
               আজকের বাংলা তারিখ দেখুন →
             </Link>
           </div>
         </div>
 
         {/* FAQ */}
-        <div className="mt-8 bg-slate-800/60 border border-slate-700 rounded-2xl p-5 text-sm font-bengali space-y-4 text-slate-200">
-          <h3 className="font-bold text-white text-base">প্রশ্ন ও উত্তর</h3>
+        <div className="mt-8 bg-card border border-border rounded-2xl p-5 text-sm font-bengali space-y-4 text-foreground">
+          <h3 className="font-bold text-foreground text-base">প্রশ্ন ও উত্তর</h3>
 
           <div>
-            <p className="font-semibold text-slate-100">{nameBn} {banglaYear} বঙ্গাব্দ কোন মাসে পড়ে?</p>
-            <p className="mt-1 text-slate-400">
+            <p className="font-semibold text-foreground">{nameBn} {banglaYear} বঙ্গাব্দ কোন মাসে পড়ে?</p>
+            <p className="mt-1 text-muted-foreground">
               {nameBn} ({nameEn}) বাংলা বর্ষের {monthIndex + 1} নম্বর মাস। গ্রেগরিয়ান ক্যালেন্ডারে এটি {gregYear} সালে পড়ে।
             </p>
           </div>
 
           <div>
-            <p className="font-semibold text-slate-100">এই মাসের তিথি ও নক্ষত্র কীভাবে দেখব?</p>
-            <p className="mt-1 text-slate-400">
+            <p className="font-semibold text-foreground">এই মাসের তিথি ও নক্ষত্র কীভাবে দেখব?</p>
+            <p className="mt-1 text-muted-foreground">
               উপরের ক্যালেন্ডারে যেকোনো তারিখে ক্লিক করুন — সেই দিনের তিথি, নক্ষত্র, যোগ, করণ ও রাহু কাল দেখতে পাবেন।
             </p>
           </div>

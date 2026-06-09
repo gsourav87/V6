@@ -2,8 +2,12 @@ import { useRoute, useLocation } from "wouter";
 import { useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import { DayDetailsModal } from "@/components/DayDetailsModal";
+import { ShareButton } from "@/components/ShareButton";
 import { convertToBengali, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { getTithiAtSunrise, getNakshatraAtSunrise } from "@/lib/panjika";
+import { getFestivalsForDate } from "@/lib/festivals";
+import { getObservancesForDate } from "@/lib/observances";
+import { getAllAnniversariesForDate } from "@/lib/calendar-events";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 
 export default function DatePage() {
@@ -81,74 +85,115 @@ export default function DatePage() {
     });
     injectSchema("date-breadcrumb-schema", breadcrumbSchema);
 
+    // Person (anniversaries) + Event (festivals/observances) structured data
+    const utc = new Date(Date.UTC(year, month - 1, day));
+    const pad4 = (n: number) => String(n).padStart(4, "0");
+    const personEntities = getAllAnniversariesForDate(utc).map(a => ({
+      "@type": "Person",
+      "name": a.person.nameBn,
+      "alternateName": a.person.nameEn,
+      "birthDate": `${pad4(a.person.birthYear)}-${a.person.birthMD}`,
+      ...(a.person.deathYear
+        ? { "deathDate": a.person.deathMD ? `${pad4(a.person.deathYear)}-${a.person.deathMD}` : pad4(a.person.deathYear) }
+        : {}),
+      "jobTitle": a.person.role,
+      "description": a.person.descBn,
+      "sameAs": a.person.wikiUrl,
+      "nationality": "Indian",
+    }));
+    const eventEntities = [...getFestivalsForDate(utc), ...getObservancesForDate(utc)].map(f => ({
+      "@type": "Event",
+      "name": f.nameEn,
+      "alternateName": f.nameBn,
+      "startDate": f.date,
+      ...(f.descBn ? { "description": f.descBn } : {}),
+      "inLanguage": "bn",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "url": f.slug ? `${SITE_URL}/festival/${f.slug}` : `${SITE_URL}/date/${year}/${month}/${day}`,
+    }));
+    const graph = [...personEntities, ...eventEntities];
+    if (graph.length > 0) {
+      injectSchema("date-entities-schema", { "@context": "https://schema.org", "@graph": graph });
+    }
+
     return () => {
       removeSchema("date-faq-schema");
       removeSchema("date-breadcrumb-schema");
+      removeSchema("date-entities-schema");
     };
   }, [title, description, year, month, day, bnDate, tithi, nakshatra]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center px-4 py-10">
+    <main className="min-h-screen flex flex-col items-center px-4 py-10">
 
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="w-full max-w-2xl mb-6 text-xs text-slate-400 font-bengali">
+      <nav aria-label="Breadcrumb" className="w-full max-w-2xl mb-6 text-xs text-muted-foreground font-bengali">
         <ol className="flex items-center gap-1.5 flex-wrap">
-          <li><Link href="/" className="hover:text-white transition-colors">হোম</Link></li>
+          <li><Link href="/" className="hover:text-foreground transition-colors">হোম</Link></li>
           <li aria-hidden="true">/</li>
-          <li className="text-white font-semibold">{toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}, {toBengaliNumerals(bnDate.year)} বঙ্গাব্দ</li>
+          <li className="text-foreground font-semibold">{toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}, {toBengaliNumerals(bnDate.year)} বঙ্গাব্দ</li>
         </ol>
       </nav>
 
-      <div className="w-full max-w-md">
-        <h1 className="text-xl text-white font-bold text-center mb-5 font-bengali leading-snug">
+      <div className="w-full max-w-2xl">
+        <h1 className="text-xl text-foreground font-bold text-center mb-4 font-bengali leading-snug">
           {toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn} {toBengaliNumerals(bnDate.year)} বঙ্গাব্দ — পঞ্জিকা
         </h1>
+
+        <div className="flex justify-center mb-5">
+          <ShareButton
+            text={
+              `🗓 ${bnDate.dayNameBn}, ${toBengaliNumerals(bnDate.day)} ${bnDate.monthNameBn} ${toBengaliNumerals(bnDate.year)} বঙ্গাব্দ\n` +
+              `তিথি: ${tithi.nameBn} (${tithi.pakshaBn}) · নক্ষত্র: ${nakshatra.nameBn}`
+            }
+          />
+        </div>
 
         <DayDetailsModal date={date} onClose={() => navigate("/")} />
       </div>
 
       {/* SEO content with real computed data */}
-      <div className="mt-8 text-slate-300 text-sm leading-relaxed text-center max-w-xl font-bengali space-y-3">
+      <div className="mt-8 text-muted-foreground text-sm leading-relaxed text-center max-w-xl font-bengali space-y-3">
         <p>
-          <strong className="text-white">{toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}, {toBengaliNumerals(bnDate.year)} বঙ্গাব্দ</strong> —
-          তিথি <strong className="text-amber-300">{tithi.nameBn}</strong> ({tithi.pakshaBn}),
-          নক্ষত্র <strong className="text-amber-300">{nakshatra.nameBn}</strong>।
+          <strong className="text-foreground">{toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}, {toBengaliNumerals(bnDate.year)} বঙ্গাব্দ</strong> —
+          তিথি <strong className="text-primary">{tithi.nameBn}</strong> ({tithi.pakshaBn}),
+          নক্ষত্র <strong className="text-primary">{nakshatra.nameBn}</strong>।
         </p>
         <p>
           এই পেজে সম্পূর্ণ পঞ্জিকা তথ্য পাওয়া যাচ্ছে — তিথি, নক্ষত্র, যোগ, করণ, সূর্যোদয়, সূর্যাস্ত ও রাহু কাল।
         </p>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           বিশুদ্ধ সিদ্ধান্ত পদ্ধতি ও কলকাতার স্থানীয় সময় অনুযায়ী গণনা।
         </p>
       </div>
 
       {/* Visible FAQ section */}
-      <div className="mt-8 w-full max-w-xl bg-slate-800/60 border border-slate-700 rounded-2xl p-5 text-slate-200 text-sm font-bengali space-y-4">
-        <h2 className="font-bold text-white text-base">প্রশ্ন ও উত্তর</h2>
+      <div className="mt-8 w-full max-w-xl bg-card border border-border rounded-2xl p-5 text-foreground text-sm font-bengali space-y-4">
+        <h2 className="font-bold text-foreground text-base">প্রশ্ন ও উত্তর</h2>
 
         <div>
-          <p className="font-semibold text-slate-100">{day}/{month}/{year} তারিখের বাংলা তারিখ কী?</p>
-          <p className="mt-1 text-slate-400">
+          <p className="font-semibold text-foreground">{day}/{month}/{year} তারিখের বাংলা তারিখ কী?</p>
+          <p className="mt-1 text-muted-foreground">
             {toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}, {toBengaliNumerals(bnDate.year)} বঙ্গাব্দ ({bnDate.dayNameBn})।
           </p>
         </div>
 
         <div>
-          <p className="font-semibold text-slate-100">{toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}-এর তিথি কী?</p>
-          <p className="mt-1 text-slate-400">
+          <p className="font-semibold text-foreground">{toBengaliNumerals(bnDate.day)} {bnDate.monthNameBn}-এর তিথি কী?</p>
+          <p className="mt-1 text-muted-foreground">
             তিথি: {tithi.nameBn} ({tithi.pakshaBn}), নক্ষত্র: {nakshatra.nameBn}।
           </p>
         </div>
 
         <div>
-          <p className="font-semibold text-slate-100">বাংলা পঞ্জিকা কেন গুরুত্বপূর্ণ?</p>
-          <p className="mt-1 text-slate-400">
+          <p className="font-semibold text-foreground">বাংলা পঞ্জিকা কেন গুরুত্বপূর্ণ?</p>
+          <p className="mt-1 text-muted-foreground">
             শুভ কাজ, পূজা ও সাংস্কৃতিক অনুষ্ঠানের তারিখ নির্ধারণে বাংলা পঞ্জিকা অপরিহার্য।
           </p>
         </div>
       </div>
 
-      <Link href="/" className="mt-8 text-sm text-slate-400 hover:text-white transition-colors font-bengali">
+      <Link href="/" className="mt-8 text-sm text-muted-foreground hover:text-foreground transition-colors font-bengali">
         ← মূল ক্যালেন্ডারে ফিরে যান
       </Link>
     </main>

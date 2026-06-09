@@ -2,7 +2,7 @@ import { Link } from "wouter";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
 
         {/* Large 404 */}

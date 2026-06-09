@@ -11,7 +11,6 @@ const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
-import SeoContent from "./components/SeoContent";
 import { useState } from "react";
 import { Route, Switch, Router as WouterRouter, Link, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,14 +27,19 @@ import { NavBar } from "@/components/NavBar";
 import { LiveClock } from "@/components/LiveClock";
 import { MonthNavigator } from "@/components/MonthNavigator";
 import { CalendarGrid } from "@/components/CalendarGrid";
-import { DateConverter } from "@/components/DateConverter";
-import { MuhurtaCalc } from "@/components/MuhurtaCalc";
+import { MonthSpecialDays } from "@/components/MonthSpecialDays";
 import { RahuKalamCard } from "@/components/RahuKalamCard";
+
+// Below-the-fold widgets — lazy so they stay out of the initial bundle.
+const DateConverter = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
+const MuhurtaCalc   = lazy(() => import("@/components/MuhurtaCalc").then(m => ({ default: m.MuhurtaCalc })));
+const SeoContent    = lazy(() => import("./components/SeoContent"));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
 import { LoginPage } from "@/components/LoginPage";
 import { DayDetailsModal } from "@/components/DayDetailsModal";
 import { AstronomicalFooter } from "@/components/AstronomicalFooter";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +65,7 @@ function Home() {
   const todayD = now.getDate();
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen pb-20">
       <NavBar />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
@@ -75,20 +79,22 @@ function Home() {
         <LiveClock />
 
         {/* Page navigation cards */}
-        <div className="grid grid-cols-5 gap-2 mt-4">
+        <div className="grid grid-cols-5 gap-2 sm:gap-3 mt-4">
           {([
-            { href: "/panjika",  icon: "📅", label: "পঞ্জিকা",  desc: "তিথি · নক্ষত্র · রাহু কাল" },
-            { href: "/rashifal", icon: "⭐", label: "রাশিফল",  desc: "আজকের রাশিফল" },
-            { href: "/news",     icon: "📰", label: "সংবাদ",   desc: "বাংলা খবর" },
-            { href: "/weather",  icon: "🌤️", label: "আবহাওয়া", desc: "৭ দিনের পূর্বাভাস" },
-            { href: "/finance",  icon: "💰", label: "বাজার",   desc: "মুদ্রা · জ্বালানি · শেয়ার" },
-          ] as const).map(({ href, icon, label, desc }) => (
+            { href: "/panjika",  icon: "📅", label: "পঞ্জিকা",  desc: "তিথি · নক্ষত্র · রাহু কাল", tile: "from-orange-500 to-rose-600" },
+            { href: "/rashifal", icon: "⭐", label: "রাশিফল",  desc: "আজকের রাশিফল",            tile: "from-violet-500 to-indigo-600" },
+            { href: "/news",     icon: "📰", label: "সংবাদ",   desc: "বাংলা খবর",              tile: "from-sky-500 to-blue-600" },
+            { href: "/weather",  icon: "🌤️", label: "আবহাওয়া", desc: "৭ দিনের পূর্বাভাস",       tile: "from-cyan-500 to-teal-600" },
+            { href: "/finance",  icon: "💰", label: "বাজার",   desc: "মুদ্রা · জ্বালানি · শেয়ার", tile: "from-amber-500 to-yellow-600" },
+          ] as const).map(({ href, icon, label, desc, tile }, i) => (
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center gap-1.5 bg-card border border-border rounded-xl p-3 hover:border-primary/50 hover:shadow-sm transition-all text-center"
+              className={`group card-lift animate-fade-up stagger-${i + 1} flex flex-col items-center gap-2 bg-card border border-border/70 rounded-2xl p-3 hover:border-primary/40 hover:shadow-premium text-center`}
             >
-              <span className="text-2xl">{icon}</span>
+              <span className={`grid place-items-center w-11 h-11 rounded-xl bg-gradient-to-br ${tile} text-2xl shadow-md ring-1 ring-white/20 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3`}>
+                {icon}
+              </span>
               <span className="text-xs font-bengali font-bold text-foreground leading-tight">{label}</span>
               <span className="text-[10px] font-bengali text-muted-foreground leading-tight hidden sm:block">{desc}</span>
             </Link>
@@ -128,12 +134,12 @@ function Home() {
         </nav>
 
         {/* Festival spotlight */}
-        <div className="mt-5">
+        <div className="mt-5 animate-fade-up stagger-2">
           <FestivalSpotlight />
         </div>
 
         {/* Weather widget */}
-        <div className="mt-3">
+        <div className="mt-3 animate-fade-up stagger-3">
           <WeatherWidget />
         </div>
 
@@ -161,20 +167,26 @@ function Home() {
           />
 
           <div className="mt-6">
+            <MonthSpecialDays banglaYear={selectedYear} banglaMonth={selectedMonth} />
+          </div>
+
+          <div className="mt-6">
             <RahuKalamCard />
           </div>
 
-          <div className="mt-6">
-            <DateConverter />
-          </div>
+          <Suspense fallback={null}>
+            <div className="mt-6">
+              <DateConverter />
+            </div>
 
-          <div className="mt-6">
-            <MuhurtaCalc />
-          </div>
+            <div className="mt-6">
+              <MuhurtaCalc />
+            </div>
 
-          <div className="mt-10">
-            <SeoContent />
-          </div>
+            <div className="mt-10">
+              <SeoContent />
+            </div>
+          </Suspense>
         </div>
       </main>
 
@@ -185,7 +197,7 @@ function Home() {
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setSelectedDate(null)}
           />
-          <div className="relative z-50 w-full max-w-md">
+          <div className="relative z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
             <DayDetailsModal
               date={selectedDate}
               onClose={() => setSelectedDate(null)}
@@ -229,7 +241,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Suspense fallback={<div className="min-h-screen bg-background" />}>
+              <Suspense fallback={<div className="min-h-screen" />}>
               <Switch>
                 <Route path="/">
                   <Home />
@@ -277,6 +289,7 @@ function App() {
               </Switch>
               </Suspense>
             </WouterRouter>
+            <InstallPrompt />
             <Toaster />
           </TooltipProvider>
         </QueryClientProvider>
