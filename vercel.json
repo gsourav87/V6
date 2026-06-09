@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "sothikbanglacalendar.live" }],
+      "destination": "https://www.sothikbanglacalendar.live/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
   ],
@@ -10,7 +18,7 @@
       ]
     },
     {
-      "source": "/og-image.svg",
+      "source": "/og-image.png",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]

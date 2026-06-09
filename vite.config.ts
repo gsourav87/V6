@@ -18,6 +18,21 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Split heavy vendor libs into their own cached chunks so the main
+        // app bundle is smaller and the browser can fetch them in parallel.
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react-dom") || id.includes("/react/") || id.includes("scheduler")) return "react-vendor";
+            if (id.includes("@tanstack")) return "query";
+            if (id.includes("lucide-react")) return "icons";
+            if (id.includes("date-fns")) return "date";
+            if (id.includes("wouter")) return "router";
+          }
+        },
+      },
+    },
   },
   server: {
     host: "0.0.0.0",

@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 // These files are plain data — no browser APIs, relative imports only.
 import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
 import { FESTIVALS } from "../src/lib/festivals";
+import { OBSERVANCES } from "../src/lib/observances";
 
 // ── constants ─────────────────────────────────────────────────────────────
 
@@ -68,11 +69,26 @@ function swapHead(html: string, m: HeadMeta): string {
   html = html.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/,  `$1${ogTitle}$2`);
   html = html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/,`$1${ogDesc}$2`);
 
+  // hreflang — point the template's self-referential tags at this page's URL.
+  for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
+    html = html.replace(
+      new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`),
+      `$1${url}$2`
+    );
+  }
+
   if (m.schema) {
     const tag = `<script type="application/ld+json">${JSON.stringify(m.schema)}</script>`;
     html = html.replace("</head>", `${tag}\n</head>`);
   }
   return html;
+}
+
+// ── sitemap collection ──────────────────────────────────────────────────────
+const NOW_ISO = new Date().toISOString().slice(0, 10);
+const sitemap: Array<{ loc: string; priority: string; changefreq: string }> = [];
+function addUrl(loc: string, priority = "0.7", changefreq = "weekly") {
+  sitemap.push({ loc, priority, changefreq });
 }
 
 /** Replace the content inside <div id="seo-static"> with route-specific HTML. */
@@ -83,11 +99,12 @@ function swapBody(html: string, content: string): string {
   );
 }
 
-/** Write the HTML to dist/<route>/index.html (skips root). */
-function emit(route: string, html: string): void {
+/** Write the HTML to dist/<route>/index.html (skips root) and record for sitemap. */
+function emit(route: string, html: string, priority = "0.7", changefreq = "weekly"): void {
   const dir  = path.join(DIST, route);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
+  addUrl(`${SITE}${route}`, priority, changefreq);
   console.log(`  ✓  ${route}`);
 }
 
@@ -100,9 +117,19 @@ const template = fs.readFileSync(path.join(DIST, "index.html"), "utf-8");
 const today = new Date().toISOString().slice(0, 10);
 
 function firstUpcoming(slug: string): string | undefined {
-  return FESTIVALS
+  const fromFestivals = FESTIVALS
     .filter(f => f.slug === slug && f.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
+  if (fromFestivals) return fromFestivals;
+
+  // Recurring observances/events: next annual occurrence of its MM-DD.
+  const obs = OBSERVANCES.find(o => o.slug === slug);
+  if (obs) {
+    const y = new Date().getUTCFullYear();
+    const thisYear = `${y}-${obs.md}`;
+    return thisYear >= today ? thisYear : `${y + 1}-${obs.md}`;
+  }
+  return undefined;
 }
 
 console.log("\n📄 Festival pages");
@@ -282,10 +309,46 @@ for (const p of staticPages) {
   emit(p.route, html);
 }
 
+// ── sitemap: home + high-value date pages ───────────────────────────────────
+
+// Home (highest priority, changes daily).
+sitemap.unshift({ loc: `${SITE}/`, priority: "1.0", changefreq: "daily" });
+
+// Date pages for every festival/event falling in a ~15-month window — these are
+// the rich, computed pages users search for ("durga puja 2026 date" etc.).
+function shift(days: number): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+const winStart = shift(-30);
+const winEnd   = shift(460);
+const dateSet  = new Set<string>([today]);
+for (const f of FESTIVALS) {
+  if (f.date >= winStart && f.date <= winEnd) dateSet.add(f.date);
+}
+for (const d of [...dateSet].sort()) {
+  const [y, m, day] = d.split("-");
+  addUrl(`${SITE}/date/${+y}/${+m}/${+day}`, "0.6", "monthly");
+}
+
+// ── write sitemap.xml ───────────────────────────────────────────────────────
+
+const xml = [
+  `<?xml version="1.0" encoding="UTF-8"?>`,
+  `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+  ...sitemap.map(u =>
+    `  <url><loc>${u.loc}</loc><lastmod>${NOW_ISO}</lastmod><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`
+  ),
+  `</urlset>`,
+].join("\n");
+fs.writeFileSync(path.join(DIST, "sitemap.xml"), xml, "utf-8");
+
 // ── summary ───────────────────────────────────────────────────────────────
 
 const festCount  = Object.keys(FESTIVAL_DETAILS).length;
 const monthCount = 3 * 12; // 3 years × 12 months
 const staticCount = staticPages.length;
 
-console.log(`\n✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static = ${festCount + monthCount + staticCount} pages\n`);
+console.log(`\n🗺  sitemap.xml — ${sitemap.length} URLs`);
+console.log(`✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static pages\n`);
