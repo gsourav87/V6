@@ -17,6 +17,8 @@ export interface Festival {
   icon: string;
   wikiUrl?: string;
   slug?: string;  // links to /festival/:slug detail page
+  descBn?: string;    // optional Bengali significance (used by recurring observances)
+  yearRef?: number;   // optional source year (for historical events)
 }
 
 export function getFestivalBySlug(slug: string): Festival | undefined {

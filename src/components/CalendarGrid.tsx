@@ -3,6 +3,7 @@ import { bengaliMonthDays, BANGLA_DAYS } from "@/lib/bengali-calendar";
 import { Festival } from "@/lib/festivals";
 import { getAllEventsForDate } from "@/lib/calendar-events";
 import { getTithiAtSunrise } from "@/lib/panjika";
+import { cn } from "@/lib/utils";
 import { DayCell } from "./DayCell";
 
 interface CalendarGridProps {
@@ -14,11 +15,16 @@ interface CalendarGridProps {
 
 export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGridProps) {
   const currentMonthDays = useMemo(() => {
-    return bengaliMonthDays(year, month).map(dayObj => ({
-      ...dayObj,
-      festivals:   getAllEventsForDate(dayObj.gregDate),
-      tithiNumber: getTithiAtSunrise(dayObj.gregDate).number,
-    }));
+    return bengaliMonthDays(year, month).map(dayObj => {
+      const t = getTithiAtSunrise(dayObj.gregDate);
+      return {
+        ...dayObj,
+        festivals:   getAllEventsForDate(dayObj.gregDate),
+        tithiNumber: t.number,
+        tithiNameBn: t.nameBn,
+        isShukla:    t.isShukla,
+      };
+    });
   }, [year, month]);
 
   const startDayOfWeek = currentMonthDays[0].gregDate.getUTCDay();
@@ -26,7 +32,7 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
   const paddingStart = Array.from({ length: startDayOfWeek }).map((_, i) => {
     const d = new Date(currentMonthDays[0].gregDate);
     d.setUTCDate(d.getUTCDate() - (startDayOfWeek - i));
-    return { gregDate: d, bengaliDay: 0, festivals: [] as Festival[], tithiNumber: undefined, isCurrentMonth: false };
+    return { gregDate: d, bengaliDay: 0, festivals: [] as Festival[], tithiNumber: undefined, tithiNameBn: undefined, isShukla: undefined, isCurrentMonth: false };
   });
 
   const totalCells    = paddingStart.length + currentMonthDays.length;
@@ -35,7 +41,7 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
   const paddingEnd = Array.from({ length: paddingEndCount }).map((_, i) => {
     const d = new Date(currentMonthDays[currentMonthDays.length - 1].gregDate);
     d.setUTCDate(d.getUTCDate() + i + 1);
-    return { gregDate: d, bengaliDay: 0, festivals: [] as Festival[], tithiNumber: undefined, isCurrentMonth: false };
+    return { gregDate: d, bengaliDay: 0, festivals: [] as Festival[], tithiNumber: undefined, tithiNameBn: undefined, isShukla: undefined, isCurrentMonth: false };
   });
 
   const allCells = [
@@ -50,13 +56,16 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
     d1.getUTCDate()     === d2.getDate();
 
   return (
-    <div className="bg-card rounded-3xl shadow-lg border-2 border-border/20 overflow-hidden backdrop-blur-sm">
+    <div className="bg-card rounded-3xl glow-focus border border-primary/15 overflow-hidden animate-fade-up">
       {/* Header Row */}
-      <div className="grid grid-cols-7 border-b-2 border-gradient-to-r from-primary/30 via-primary/20 to-primary/30 bg-gradient-to-b from-primary/5 to-transparent">
+      <div className="grid grid-cols-7 bg-gradient-to-br from-primary via-primary to-primary/85 text-primary-foreground">
         {BANGLA_DAYS.map((day, i) => (
-          <div key={i} className="p-2 sm:p-3 text-center border-r border-border/20 last:border-r-0">
-            <div className="font-bold font-bengali text-foreground text-sm sm:text-base md:text-lg">{day.short}</div>
-            <div className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground uppercase tracking-wider hidden sm:block">
+          <div key={i} className="py-2.5 sm:py-3 text-center">
+            <div className={cn(
+              "font-bold font-bengali text-sm sm:text-base md:text-lg",
+              (i === 0 || i === 6) ? "text-amber-200" : "text-primary-foreground",
+            )}>{day.short}</div>
+            <div className="text-[8px] sm:text-[10px] md:text-xs text-primary-foreground/70 uppercase tracking-wider hidden sm:block">
               {day.en}
             </div>
           </div>
@@ -64,7 +73,7 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
       </div>
 
       {/* Days Grid */}
-      <div className="grid grid-cols-7 gap-px bg-gradient-to-b from-border/20 to-border/10">
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2 p-1.5 sm:p-2.5 bg-gradient-to-b from-secondary/35 via-muted/40 to-secondary/25">
         {allCells.map((cell, i) => (
           <DayCell
             key={i}
@@ -74,6 +83,8 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
             festivals={cell.festivals}
             isCurrentMonth={cell.isCurrentMonth}
             tithiNumber={cell.tithiNumber}
+            tithiNameBn={cell.tithiNameBn}
+            isShukla={cell.isShukla}
             onClick={cell.isCurrentMonth && onDateClick
               ? () => onDateClick(cell.gregDate)
               : undefined}

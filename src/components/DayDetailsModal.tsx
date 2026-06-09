@@ -7,6 +7,7 @@ import {
 } from "@/lib/panjika";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { getFestivalsForDate } from "@/lib/festivals";
+import { getObservancesForDate } from "@/lib/observances";
 import { getAllAnniversariesForDate } from "@/lib/calendar-events";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -53,7 +54,7 @@ export function DayDetailsModal({ date, onClose }: Props) {
   const karana       = getKaranaAtSunrise(utcDate);
   const sunTimes     = getSunTimes(utcDate);
   const rahu         = getRahuKalamInfo(utcDate);
-  const festivals    = getFestivalsForDate(utcDate);
+  const festivals    = [...getFestivalsForDate(utcDate), ...getObservancesForDate(utcDate)];
   const anniversaries = getAllAnniversariesForDate(utcDate);
   const bnDate       = toBengaliDate(date);
   const dayOfWeek    = utcDate.getUTCDay();
@@ -112,24 +113,32 @@ export function DayDetailsModal({ date, onClose }: Props) {
         {festivals.length > 0 && (
           <>
             <SectionHead>উৎসব ও বিশেষ দিন</SectionHead>
-            <div className="flex flex-wrap gap-2 mb-1">
-              {festivals.map((f, i) =>
-                f.slug ? (
-                  <Link
-                    key={i}
-                    href={`/festival/${f.slug}`}
-                    className="inline-flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 text-xs font-bengali font-medium px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors"
-                  >
-                    <span>{f.icon}</span>
-                    <span>{f.nameBn}</span>
+            <div className="space-y-1.5 mb-1">
+              {festivals.map((f, i) => {
+                const inner = (
+                  <>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base shrink-0">{f.icon}</span>
+                      <span className="font-bengali font-semibold text-sm text-foreground leading-tight">
+                        {f.nameBn}{f.yearRef ? ` (${toBengaliNumerals(f.yearRef)})` : ""}
+                      </span>
+                    </div>
+                    {f.descBn && (
+                      <p className="text-xs text-muted-foreground font-bengali mt-0.5 leading-relaxed pl-6">{f.descBn}</p>
+                    )}
+                  </>
+                );
+                return f.slug ? (
+                  <Link key={i} href={`/festival/${f.slug}`}
+                    className="block bg-primary/5 border border-primary/15 rounded-xl px-3 py-2 hover:bg-primary/10 transition-colors">
+                    {inner}
                   </Link>
                 ) : (
-                  <div key={i} className="inline-flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 text-xs font-bengali font-medium px-3 py-1.5 rounded-full">
-                    <span>{f.icon}</span>
-                    <span>{f.nameBn}</span>
+                  <div key={i} className="bg-primary/5 border border-primary/15 rounded-xl px-3 py-2">
+                    {inner}
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
           </>
         )}
@@ -186,28 +195,32 @@ export function DayDetailsModal({ date, onClose }: Props) {
           </>
         )}
 
-        {/* Panchang */}
-        <SectionHead>পঞ্চাঙ্গ</SectionHead>
-        <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
-          <InfoRow icon="🌓" label="তিথি"    value={tithi.nameBn}     sub={tithi.pakshaBn} />
-          <InfoRow icon="⭐" label="নক্ষত্র"  value={nakshatra.nameBn} sub={nakshatra.nameEn} />
-          <InfoRow icon={yoga.nature === "good" ? "✨" : "⚠️"} label="যোগ" value={yoga.nameBn} sub={yoga.nameEn} />
-          <InfoRow icon="🔆" label="করণ"     value={karana.nameBn}    sub={karana.nameEn} />
-        </div>
+        {/* Panchang data — single column on mobile, two columns on wider screens */}
+        <div className="md:grid md:grid-cols-2 md:gap-x-5">
+          <div>
+            <SectionHead>পঞ্চাঙ্গ</SectionHead>
+            <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
+              <InfoRow icon="🌓" label="তিথি"    value={tithi.nameBn}     sub={tithi.pakshaBn} />
+              <InfoRow icon="⭐" label="নক্ষত্র"  value={nakshatra.nameBn} sub={nakshatra.nameEn} />
+              <InfoRow icon={yoga.nature === "good" ? "✨" : "⚠️"} label="যোগ" value={yoga.nameBn} sub={yoga.nameEn} />
+              <InfoRow icon="🔆" label="করণ"     value={karana.nameBn}    sub={karana.nameEn} />
+            </div>
 
-        {/* Sun times */}
-        <SectionHead>সূর্য</SectionHead>
-        <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
-          <InfoRow icon="☀️"  label="সূর্যোদয়" value={formatKolkataTime(sunTimes.sunrise)} sub="IST" />
-          <InfoRow icon="🌅" label="সূর্যাস্ত"  value={formatKolkataTime(sunTimes.sunset)}  sub="IST" />
-        </div>
+            <SectionHead>সূর্য</SectionHead>
+            <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
+              <InfoRow icon="☀️"  label="সূর্যোদয়" value={formatKolkataTime(sunTimes.sunrise)} sub="IST" />
+              <InfoRow icon="🌅" label="সূর্যাস্ত"  value={formatKolkataTime(sunTimes.sunset)}  sub="IST" />
+            </div>
+          </div>
 
-        {/* Inauspicious periods */}
-        <SectionHead className="text-destructive/70">অশুভ সময়</SectionHead>
-        <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
-          <InfoRow icon="🔴" label="রাহু কাল"  value={`${formatKolkataTime(rahu.rahuKalam.start)} – ${formatKolkataTime(rahu.rahuKalam.end)}`} />
-          <InfoRow icon="🟠" label="গুলিক কাল" value={`${formatKolkataTime(rahu.gulikaKalam.start)} – ${formatKolkataTime(rahu.gulikaKalam.end)}`} />
-          <InfoRow icon="🟡" label="যমগণ্ড"    value={`${formatKolkataTime(rahu.yamaganda.start)} – ${formatKolkataTime(rahu.yamaganda.end)}`} />
+          <div>
+            <SectionHead className="text-destructive/70">অশুভ সময়</SectionHead>
+            <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
+              <InfoRow icon="🔴" label="রাহু কাল"  value={`${formatKolkataTime(rahu.rahuKalam.start)} – ${formatKolkataTime(rahu.rahuKalam.end)}`} />
+              <InfoRow icon="🟠" label="গুলিক কাল" value={`${formatKolkataTime(rahu.gulikaKalam.start)} – ${formatKolkataTime(rahu.gulikaKalam.end)}`} />
+              <InfoRow icon="🟡" label="যমগণ্ড"    value={`${formatKolkataTime(rahu.yamaganda.start)} – ${formatKolkataTime(rahu.yamaganda.end)}`} />
+            </div>
+          </div>
         </div>
 
       </div>
