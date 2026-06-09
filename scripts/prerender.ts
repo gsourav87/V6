@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
 import { FESTIVALS } from "../src/lib/festivals";
 import { OBSERVANCES } from "../src/lib/observances";
+import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
 
 // ── constants ─────────────────────────────────────────────────────────────
 
@@ -314,19 +315,37 @@ for (const p of staticPages) {
 // Home (highest priority, changes daily).
 sitemap.unshift({ loc: `${SITE}/`, priority: "1.0", changefreq: "daily" });
 
-// Date pages for every festival/event falling in a ~15-month window — these are
-// the rich, computed pages users search for ("durga puja 2026 date" etc.).
+// High-value date pages — the rich, computed pages users search for:
+//   • festivals/events in a ~2-year window ("durga puja 2026 date")
+//   • every famous person's birth/death anniversary ("rabindranath tagore birthday")
+//   • the recurring observance/event anniversaries
 function shift(days: number): string {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
 }
+/** Next annual occurrence of an "MM-DD", as YYYY-MM-DD (this year or next). */
+function nextOccurrence(md: string): string {
+  const y = new Date().getUTCFullYear();
+  const thisYear = `${y}-${md}`;
+  return thisYear >= today ? thisYear : `${y + 1}-${md}`;
+}
+
 const winStart = shift(-30);
-const winEnd   = shift(460);
+const winEnd   = shift(730);
 const dateSet  = new Set<string>([today]);
+
 for (const f of FESTIVALS) {
   if (f.date >= winStart && f.date <= winEnd) dateSet.add(f.date);
 }
+for (const p of FAMOUS_PEOPLE) {
+  dateSet.add(nextOccurrence(p.birthMD));
+  if (p.deathMD) dateSet.add(nextOccurrence(p.deathMD));
+}
+for (const o of OBSERVANCES) {
+  if (o.slug) dateSet.add(nextOccurrence(o.md));
+}
+
 for (const d of [...dateSet].sort()) {
   const [y, m, day] = d.split("-");
   addUrl(`${SITE}/date/${+y}/${+m}/${+day}`, "0.6", "monthly");
