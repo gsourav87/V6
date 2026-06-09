@@ -1,9 +1,10 @@
 import { format } from "date-fns";
-import { Moon, Sun, Share2 } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
 import { formatKolkataTime } from "@/lib/panjika";
 import { useTodayInfo } from "@/hooks/useTodayInfo";
 import { useTheme } from "@/components/ThemeProvider";
+import { ShareButton } from "@/components/ShareButton";
 import { cn } from "@/lib/utils";
 
 function PanchangChip({
@@ -13,7 +14,7 @@ function PanchangChip({
 }) {
   return (
     <div className={cn(
-      "bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl px-3 py-2 flex flex-col min-w-0",
+      "glass-dark rounded-xl px-3 py-2 flex flex-col min-w-0",
       className
     )}>
       <span className="text-primary-foreground/55 text-[9px] sm:text-[10px] uppercase tracking-wider font-medium mb-0.5 whitespace-nowrap">
@@ -67,30 +68,17 @@ export function LiveClock() {
     `তিথি: ${tithiInfo.icon} ${tithiInfo.nameBn} (${tithiInfo.pakshaBn})\n` +
     `নক্ষত্র: 🌙 ${nakshatraInfo.nameBn}\n` +
     `যোগ: ${yogaInfo.nameBn}  করণ: ${karanaInfo.nameBn}\n` +
-    `☀️ সূর্যোদয়: ${formatKolkataTime(sunTimes.sunrise)}  🌅 সূর্যাস্ত: ${formatKolkataTime(sunTimes.sunset)}\n\n` +
-    `📲 ${window.location.href}`;
+    `☀️ সূর্যোদয়: ${formatKolkataTime(sunTimes.sunrise)}  🌅 সূর্যাস্ত: ${formatKolkataTime(sunTimes.sunset)}`;
 
   return (
-    <div className="relative bg-primary text-primary-foreground rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
+    <div className="aurora relative bg-primary text-primary-foreground rounded-2xl sm:rounded-3xl shadow-premium overflow-hidden animate-fade-up">
 
-      {/* Atmospheric background layers */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-white/5 pointer-events-none" />
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/8 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-black/15 rounded-full blur-2xl pointer-events-none" />
+      {/* Atmospheric base gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-white/10 pointer-events-none" />
 
       {/* Top action bar */}
       <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
-        <button
-          onClick={() => {
-            const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-            window.open(url, "_blank", "noopener,noreferrer");
-          }}
-          className="flex items-center gap-1.5 bg-green-500/90 hover:bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full transition-colors shadow-sm"
-          aria-label="Share on WhatsApp"
-        >
-          <Share2 className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Share</span>
-        </button>
+        <ShareButton text={shareText} variant="compact" />
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="bg-white/15 hover:bg-white/25 p-1.5 rounded-full transition-colors"
@@ -164,14 +152,14 @@ export function LiveClock() {
 
             {/* Sunrise / Sunset row */}
             <div className="flex gap-2">
-              <div className="bg-black/20 border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2 text-sm">
+              <div className="glass-dark rounded-xl px-3 py-2 flex items-center gap-2 text-sm">
                 <SunRiseSetIcon type="rise" />
                 <div>
                   <div className="text-[9px] text-primary-foreground/50 uppercase tracking-wide">সূর্যোদয়</div>
                   <div className="font-semibold text-xs sm:text-sm tabular-nums">{formatKolkataTime(sunTimes.sunrise)}</div>
                 </div>
               </div>
-              <div className="bg-black/20 border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2 text-sm">
+              <div className="glass-dark rounded-xl px-3 py-2 flex items-center gap-2 text-sm">
                 <SunRiseSetIcon type="set" />
                 <div>
                   <div className="text-[9px] text-primary-foreground/50 uppercase tracking-wide">সূর্যাস্ত</div>

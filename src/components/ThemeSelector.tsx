@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const THEMES: { id: Theme; labelBn: string; bg: string; accent: string }[] = [
   { id: "light",  labelBn: "আলো",    bg: "#e8d9c0", accent: "#bb511b" },
-  { id: "dark",   labelBn: "রাত",    bg: "#201810", accent: "#de8a48" },
-  { id: "forest", labelBn: "বন",     bg: "#bed4be", accent: "#2c854b" },
+  { id: "dark",   labelBn: "রাত",    bg: "#16100a", accent: "#f2a25c" },
   { id: "ocean",  labelBn: "সমুদ্র", bg: "#baccde", accent: "#1b6aba" },
 ];
 
@@ -44,7 +43,7 @@ export function ThemeSelector() {
           <p className="text-xs font-bengali font-semibold text-muted-foreground mb-2.5 px-0.5">
             থিম বেছে নিন
           </p>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-3 gap-1.5">
             {THEMES.map(t => (
               <button
                 key={t.id}

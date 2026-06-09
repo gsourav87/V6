@@ -18,7 +18,16 @@ export function NavBar() {
   return (
     <nav className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border mb-6">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center gap-1">
-        <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none flex-1 min-w-0">
+        <Link href="/" aria-label="সঠিক বাংলা ক্যালেন্ডার — হোম" className="shrink-0 mr-2">
+          <img
+            src="/logo-128.png"
+            alt="সঠিক বাংলা ক্যালেন্ডার"
+            width={52}
+            height={52}
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full object-cover ring-1 ring-border"
+          />
+        </Link>
+        <div className="flex items-center gap-1.5 overflow-x-auto py-2.5 scrollbar-none flex-1 min-w-0">
           {NAV_LINKS.map(({ href, label, icon }) => {
             const isActive = href === "/" ? location === "/" : location.startsWith(href);
             return (
@@ -26,13 +35,13 @@ export function NavBar() {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bengali font-medium whitespace-nowrap transition-colors shrink-0",
+                  "flex items-center gap-1.5 px-3.5 py-2 rounded-full text-base font-bengali font-medium whitespace-nowrap transition-colors shrink-0",
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 )}
               >
-                <span>{icon}</span>
+                <span className="text-lg">{icon}</span>
                 <span>{label}</span>
               </Link>
             );

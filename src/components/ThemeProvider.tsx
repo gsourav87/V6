@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type Theme = "light" | "dark" | "forest" | "ocean";
+export type Theme = "light" | "dark" | "ocean";
 
-const VALID_THEMES: Theme[] = ["light", "dark", "forest", "ocean"];
+const VALID_THEMES: Theme[] = ["light", "dark", "ocean"];
 
 function isValidTheme(v: unknown): v is Theme {
   return VALID_THEMES.includes(v as Theme);
@@ -13,7 +13,6 @@ const ALL_THEME_CLASSES = ["theme-light", "dark", "theme-forest", "theme-ocean"]
 const THEME_CLASS: Record<Theme, string> = {
   light:  "theme-light",
   dark:   "dark",           // keeps Tailwind dark: variant working
-  forest: "theme-forest",
   ocean:  "theme-ocean",
 };
 
