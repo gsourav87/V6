@@ -1,8 +1,7 @@
 // Vercel Node function — sends the daily Bengali panchang push.
 // Triggered by the scheduled GitHub Actions workflow (3 slots/day).
 // Reuses the app's own panchang computation so content is always accurate.
-import crypto from "node:crypto";
-import { db, messaging } from "../src/server/firebase-admin";
+import { fsListTokens, fsDeleteToken, fcmSend } from "../src/server/google";
 import { convertToBengali, toBengaliNumerals } from "../src/lib/bengali-calendar";
 import { getTithiAtSunrise, getSunTimes, formatKolkataTime } from "../src/lib/panjika";
 import { getAllEventsForDate } from "../src/lib/calendar-events";
@@ -78,39 +77,27 @@ export default async function handler(req: any, res: any) {
   if (!msg) return res.status(200).json({ ok: true, slot, skipped: "nothing to send" });
 
   try {
-    const snap = await db().collection("pushTokens").get();
-    const docs = snap.docs;
-    if (docs.length === 0) return res.status(200).json({ ok: true, slot, sent: 0, note: "no subscribers" });
+    const subs = await fsListTokens(); // [{ id, token }]
+    if (subs.length === 0) return res.status(200).json({ ok: true, slot, sent: 0, note: "no subscribers" });
 
     let sent = 0, failed = 0;
     const stale: string[] = [];
 
-    // FCM multicast supports up to 500 tokens per call.
-    for (let i = 0; i < docs.length; i += 500) {
-      const batch = docs.slice(i, i + 500);
-      const tokens = batch.map(doc => doc.data().token as string);
-      const resp = await messaging().sendEachForMulticast({
-        tokens,
-        // Data-only so our SW's onBackgroundMessage is the single display path.
-        data: { title: msg.title, body: msg.body, link: msg.link },
-        webpush: { headers: { Urgency: "high" }, fcmOptions: { link: msg.link } },
-      });
-      sent += resp.successCount;
-      failed += resp.failureCount;
-      resp.responses.forEach((r, idx) => {
-        if (!r.success) {
-          const code = (r.error as any)?.code || "";
-          if (code.includes("registration-token-not-registered") || code.includes("invalid-registration-token")) {
-            stale.push(crypto.createHash("sha256").update(tokens[idx]).digest("hex"));
-          }
-        }
-      });
+    // Send in parallel chunks (FCM HTTP v1 is one token per call).
+    const CHUNK = 50;
+    for (let i = 0; i < subs.length; i += CHUNK) {
+      const chunk = subs.slice(i, i + CHUNK);
+      const results = await Promise.all(chunk.map(s => fcmSend(s.token, msg).then(r => ({ s, r }))));
+      for (const { s, r } of results) {
+        if (r.ok) sent++;
+        else { failed++; if (r.unregistered) stale.push(s.id); }
+      }
     }
 
     // Prune dead tokens so the list stays clean.
-    await Promise.all(stale.map(id => db().collection("pushTokens").doc(id).delete().catch(() => {})));
+    await Promise.all(stale.map(id => fsDeleteToken(id)));
 
-    return res.status(200).json({ ok: true, slot, subscribers: docs.length, sent, failed, pruned: stale.length });
+    return res.status(200).json({ ok: true, slot, subscribers: subs.length, sent, failed, pruned: stale.length });
   } catch (e: any) {
     return res.status(500).json({ error: String(e?.message || e) });
   }
