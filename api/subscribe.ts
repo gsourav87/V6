@@ -19,3 +19,5 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response(JSON.stringify({ error: String(e?.message || e) }), { status: 500, headers: CORS });
   }
 }
+
+export const config = { runtime: "edge" };

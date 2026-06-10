@@ -83,3 +83,5 @@ export default async function handler(req: Request): Promise<Response> {
     return json({ error: String(e?.message || e) }, 500);
   }
 }
+
+export const config = { runtime: "edge" };
