@@ -1,21 +1,21 @@
-// Vercel Node function — stores an FCM web-push token in Firestore (REST).
-import crypto from "node:crypto";
-import { fsSetToken } from "../src/server/google";
+// Stores an FCM web-push token in Firestore. Web-standard handler (runtime-agnostic).
+import { sha256Hex, fsSetToken } from "../src/server/google";
 
-export default async function handler(req: any, res: any) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "method not allowed" });
+const CORS = { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" };
+
+export default async function handler(req: Request): Promise<Response> {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
+  if (req.method !== "POST") return new Response(JSON.stringify({ error: "method not allowed" }), { status: 405, headers: CORS });
 
   try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
+    const body = await req.json().catch(() => ({} as any));
     const token = body.token as string | undefined;
-    if (!token) return res.status(400).json({ error: "missing token" });
+    if (!token) return new Response(JSON.stringify({ error: "missing token" }), { status: 400, headers: CORS });
 
-    const id = crypto.createHash("sha256").update(token).digest("hex");
+    const id = await sha256Hex(token);
     await fsSetToken(id, token, body.ua || "");
-    return res.status(200).json({ ok: true });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: CORS });
   } catch (e: any) {
-    return res.status(500).json({ error: String(e?.message || e) });
+    return new Response(JSON.stringify({ error: String(e?.message || e) }), { status: 500, headers: CORS });
   }
 }
