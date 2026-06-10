@@ -40,6 +40,7 @@ import { LoginPage } from "@/components/LoginPage";
 import { DayDetailsModal } from "@/components/DayDetailsModal";
 import { AstronomicalFooter } from "@/components/AstronomicalFooter";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { NotifyPrompt } from "@/components/NotifyPrompt";
 
 const queryClient = new QueryClient();
 
@@ -290,6 +291,7 @@ function App() {
               </Suspense>
             </WouterRouter>
             <InstallPrompt />
+            <NotifyPrompt />
             <Toaster />
           </TooltipProvider>
         </QueryClientProvider>

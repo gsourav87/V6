@@ -116,6 +116,45 @@ function emit(route: string, html: string, priority = "0.7", changefreq = "weekl
 
 const template = fs.readFileSync(path.join(DIST, "index.html"), "utf-8");
 
+// ── firebase-messaging-sw.js (FCM background push) ──────────────────────────
+// Generated from env so the (public) Firebase web config isn't committed.
+{
+  const cfg = {
+    apiKey:            process.env.VITE_FIREBASE_API_KEY || "",
+    authDomain:        process.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+    projectId:         process.env.VITE_FIREBASE_PROJECT_ID || "",
+    storageBucket:     process.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+    appId:             process.env.VITE_FIREBASE_APP_ID || "",
+  };
+  const sw = `/* Auto-generated — FCM background push handler */
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
+firebase.initializeApp(${JSON.stringify(cfg)});
+const messaging = firebase.messaging();
+messaging.onBackgroundMessage(function (payload) {
+  var d = payload.data || {};
+  self.registration.showNotification(d.title || 'সঠিক বাংলা ক্যালেন্ডার', {
+    body: d.body || '',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    lang: 'bn',
+    data: { link: d.link || '/' }
+  });
+});
+self.addEventListener('notificationclick', function (e) {
+  e.notification.close();
+  var url = (e.notification.data && e.notification.data.link) || '/';
+  e.waitUntil(clients.matchAll({ type: 'window' }).then(function (list) {
+    for (var i = 0; i < list.length; i++) { if ('focus' in list[i]) { list[i].navigate(url); return list[i].focus(); } }
+    return clients.openWindow(url);
+  }));
+});
+`;
+  fs.writeFileSync(path.join(DIST, "firebase-messaging-sw.js"), sw, "utf-8");
+  console.log(cfg.apiKey ? "  ✓  firebase-messaging-sw.js (config from env)" : "  ⚠  firebase-messaging-sw.js written WITHOUT config (env vars missing)");
+}
+
 // ── festival pages ────────────────────────────────────────────────────────
 
 const today = new Date().toISOString().slice(0, 10);
