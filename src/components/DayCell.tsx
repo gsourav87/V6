@@ -74,46 +74,67 @@ export function DayCell({
         </span>
       </div>
 
-      {/* Tithi line — shown on every day */}
-      {isCurrentMonth && tithiNameBn && (
+      {/* Tithi line — compact on mobile (paksha + number), full name on larger screens */}
+      {isCurrentMonth && tithiNameBn && tithiNumber && (
         <div className={cn(
-          "relative z-10 mt-1 text-[10px] sm:text-xs md:text-sm font-bengali leading-tight truncate",
+          "relative z-10 mt-0.5 sm:mt-1 font-bengali leading-tight",
           isPurnima  ? "font-bold text-amber-700 dark:text-amber-300"
           : isAmavasya ? "font-bold text-slate-600 dark:text-slate-300"
           : "text-muted-foreground",
         )}>
-          {isPurnima ? "🌕 পূর্ণিমা" : isAmavasya ? "🌑 অমাবস্যা" : (
-            <><span className="text-primary/70 font-semibold">{isShukla ? "শু" : "কৃ"}</span> {tithiNameBn}</>
-          )}
+          {/* Mobile: শু ৪ / কৃ ১২ (always fits, no truncation) */}
+          <span className="sm:hidden text-[11px]">
+            {isPurnima ? "🌕" : isAmavasya ? "🌑" : (
+              <><span className="text-primary/80 font-semibold">{isShukla ? "শু" : "কৃ"}</span> {toBengaliNumerals(((tithiNumber - 1) % 15) + 1)}</>
+            )}
+          </span>
+          {/* Larger screens: full tithi name */}
+          <span className="hidden sm:block text-xs md:text-sm truncate">
+            {isPurnima ? "🌕 পূর্ণিমা" : isAmavasya ? "🌑 অমাবস্যা" : (
+              <><span className="text-primary/70 font-semibold">{isShukla ? "শু" : "কৃ"}</span> {tithiNameBn}</>
+            )}
+          </span>
         </div>
       )}
 
-      {/* Bottom: festival badges */}
+      {/* Bottom: festivals — emoji-only icons on mobile, labelled pills on larger screens */}
       {isCurrentMonth && festivals.length > 0 && (
-        <div className="relative z-10 mt-auto pt-1 flex flex-col gap-0.5">
-          {festivals.slice(0, 2).map((f, i) => (
-            <div
-              key={i}
-              title={f.nameBn}
-              className={cn(
-                "flex items-center gap-0.5 text-[9px] sm:text-[11px] font-bengali font-medium px-1 py-0.5 rounded min-w-0",
-                f.category === "national"
-                  ? "bg-green-600/80 text-white"
-                  : f.category === "religious"
-                  ? "bg-primary/80 text-primary-foreground"
-                  : "bg-violet-500/80 text-white",
-              )}
-            >
-              <span className="shrink-0 text-[11px] sm:text-sm">{f.icon}</span>
-              <span className="truncate">{f.nameBn}</span>
-            </div>
-          ))}
+        <div className="relative z-10 mt-auto pt-1">
+          {/* Mobile: clean row of emoji (no truncated text) */}
+          <div className="flex sm:hidden flex-wrap items-center gap-x-1 gap-y-0.5 leading-none">
+            {festivals.slice(0, 4).map((f, i) => (
+              <span key={i} title={f.nameBn} className="text-sm">{f.icon}</span>
+            ))}
+            {festivals.length > 4 && (
+              <span className="text-[9px] text-muted-foreground font-medium">+{toBengaliNumerals(festivals.length - 4)}</span>
+            )}
+          </div>
 
-          {festivals.length > 2 && (
-            <div className="text-[9px] sm:text-[11px] text-muted-foreground font-medium pl-0.5">
-              +{toBengaliNumerals(festivals.length - 2)} আরো
-            </div>
-          )}
+          {/* sm+: labelled pills */}
+          <div className="hidden sm:flex flex-col gap-0.5">
+            {festivals.slice(0, 2).map((f, i) => (
+              <div
+                key={i}
+                title={f.nameBn}
+                className={cn(
+                  "flex items-center gap-0.5 text-[11px] font-bengali font-medium px-1 py-0.5 rounded min-w-0",
+                  f.category === "national"
+                    ? "bg-green-600/80 text-white"
+                    : f.category === "religious"
+                    ? "bg-primary/80 text-primary-foreground"
+                    : "bg-violet-500/80 text-white",
+                )}
+              >
+                <span className="shrink-0 text-sm">{f.icon}</span>
+                <span className="truncate">{f.nameBn}</span>
+              </div>
+            ))}
+            {festivals.length > 2 && (
+              <div className="text-[11px] text-muted-foreground font-medium pl-0.5">
+                +{toBengaliNumerals(festivals.length - 2)} আরো
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
