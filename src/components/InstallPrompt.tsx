@@ -1,76 +1,35 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
+import { useInstall } from "@/hooks/useInstall";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
-const DISMISS_KEY = "sbc-install-dismissed";
-
-function isStandalone() {
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    // iOS Safari
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true
-  );
-}
+const DISMISS_KEY = "sbc-install-dismissed-at";
+const RESHOW_AFTER = 3 * 24 * 3600 * 1000; // re-offer after 3 days
 
 /**
- * Floating "Install app" banner. Appears once the browser fires
- * `beforeinstallprompt` (Android/Chromium/desktop). On iOS — which has no such
- * event — it shows a short Add-to-Home-Screen hint instead. Dismissal is
- * remembered so we never nag.
+ * Floating "Install app" banner. Uses the install event captured early in
+ * index.html (so it never misses it). On iOS it shows an Add-to-Home-Screen hint.
+ * Dismissal is temporary — it re-offers after a few days.
  */
 export function InstallPrompt() {
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const { canInstall, iosInstall, promptInstall } = useInstall();
   const [show, setShow] = useState(false);
-  const [iosHint, setIosHint] = useState(false);
 
   useEffect(() => {
-    if (isStandalone()) return;
-    if (localStorage.getItem(DISMISS_KEY) === "1") return;
-
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferred(e as BeforeInstallPromptEvent);
-      setShow(true);
-    };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-
-    const onInstalled = () => {
-      setShow(false);
-      localStorage.setItem(DISMISS_KEY, "1");
-    };
-    window.addEventListener("appinstalled", onInstalled);
-
-    // iOS has no beforeinstallprompt — offer a manual hint after a short delay.
-    const ua = window.navigator.userAgent;
-    const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
-    const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS/.test(ua);
-    let t: number | undefined;
-    if (isIOS && isSafari) {
-      t = window.setTimeout(() => { setIosHint(true); setShow(true); }, 3500);
-    }
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-      if (t) clearTimeout(t);
-    };
-  }, []);
+    if (!canInstall && !iosInstall) return;
+    const at = Number(localStorage.getItem(DISMISS_KEY) || 0);
+    if (Date.now() - at < RESHOW_AFTER) return;
+    const t = window.setTimeout(() => setShow(true), iosInstall ? 4000 : 1500);
+    return () => clearTimeout(t);
+  }, [canInstall, iosInstall]);
 
   const dismiss = () => {
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
     setShow(false);
-    localStorage.setItem(DISMISS_KEY, "1");
   };
 
   const install = async () => {
-    if (!deferred) return;
-    await deferred.prompt();
-    await deferred.userChoice;
-    setDeferred(null);
-    setShow(false);
+    const r = await promptInstall();
+    if (r !== "unavailable") dismiss();
   };
 
   if (!show) return null;
@@ -83,7 +42,7 @@ export function InstallPrompt() {
           <div className="font-bengali font-bold text-foreground text-sm leading-tight">
             অ্যাপ হিসেবে ইনস্টল করুন
           </div>
-          {iosHint ? (
+          {iosInstall ? (
             <div className="font-bengali text-[11px] text-muted-foreground mt-0.5 leading-snug">
               Share <span className="font-sans">⎋</span> চেপে “Add to Home Screen” বেছে নিন।
             </div>
@@ -93,7 +52,7 @@ export function InstallPrompt() {
             </div>
           )}
         </div>
-        {!iosHint && (
+        {!iosInstall && (
           <button
             onClick={install}
             className="shrink-0 inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-bengali font-semibold text-sm px-4 py-2 rounded-full hover:opacity-90 transition-opacity"

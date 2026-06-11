@@ -1,6 +1,8 @@
 import { Link, useLocation } from "wouter";
+import { Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { useInstall } from "@/hooks/useInstall";
 
 const NAV_LINKS = [
   { href: "/",                  label: "ক্যালেন্ডার", icon: "📅" },
@@ -14,6 +16,7 @@ const NAV_LINKS = [
 
 export function NavBar() {
   const [location] = useLocation();
+  const { canInstall, promptInstall } = useInstall();
 
   return (
     <nav className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border mb-6">
@@ -47,7 +50,17 @@ export function NavBar() {
             );
           })}
         </div>
-        <div className="shrink-0 pl-1 border-l border-border ml-1">
+        <div className="shrink-0 flex items-center gap-1 pl-1 border-l border-border ml-1">
+          {canInstall && (
+            <button
+              onClick={() => promptInstall()}
+              className="flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-sm font-bengali font-semibold whitespace-nowrap hover:opacity-90 transition-opacity"
+              title="অ্যাপ ইনস্টল করুন"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">ইনস্টল</span>
+            </button>
+          )}
           <ThemeSelector />
         </div>
       </div>

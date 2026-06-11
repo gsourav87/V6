@@ -75,6 +75,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="বাংলা ক্যালেন্ডার" />
 
+    <!-- Capture the install prompt as early as possible (it fires before React mounts) -->
+    <script>
+      window.__installEvt = null;
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        window.__installEvt = e;
+        window.dispatchEvent(new Event('installable-change'));
+      });
+      window.addEventListener('appinstalled', function () {
+        window.__installEvt = null;
+        window.dispatchEvent(new Event('installable-change'));
+      });
+    </script>
+
     <!-- Fonts: preconnect then load non-render-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
