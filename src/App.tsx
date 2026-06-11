@@ -11,7 +11,7 @@ const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Route, Switch, Router as WouterRouter, Link, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -235,6 +235,16 @@ function Home() {
   );
 }
 
+// Reset scroll to the top whenever the route changes, so a new page (e.g. a
+// date opened from low in the month grid) never appears scrolled to its footer.
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -242,6 +252,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <ScrollToTop />
               <Suspense fallback={<div className="min-h-screen" />}>
               <Switch>
                 <Route path="/">

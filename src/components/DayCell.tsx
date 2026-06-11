@@ -20,7 +20,6 @@ export function DayCell({
 }: DayCellProps) {
   const isPurnima  = tithiNumber === 15;
   const isAmavasya = tithiNumber === 30;
-  const pakshaDay  = tithiNumber ? ((tithiNumber - 1) % 15) + 1 : 0;
 
   // Weekend marking (panjika convention): Sunday = holiday (red), Saturday = yellow.
   const dow        = gregDate.getUTCDay();
@@ -86,7 +85,7 @@ export function DayCell({
       <div className="flex items-start justify-between gap-0.5 leading-none">
         <span className={cn(
           "font-bold font-bengali tabular-nums leading-none",
-          "text-base sm:text-2xl md:text-3xl",
+          "text-xl sm:text-3xl md:text-4xl",
           dayNumColor,
         )}>
           {isCurrentMonth ? toBengaliNumerals(bengaliDay) : ""}
@@ -103,12 +102,12 @@ export function DayCell({
 
       {isCurrentMonth && (
         <div className="relative z-10 mt-auto min-w-0">
-          {/* ── Mobile: compact, complete (no truncation) ── */}
+          {/* ── Mobile: paksha initial + tithi name (in words) ── */}
           <div className="sm:hidden">
-            {tithiNumber && (
-              <div className={cn("text-[9px] font-bengali leading-tight tabular-nums", tithiColor)}>
+            {tithiNameBn && tithiNumber && (
+              <div className={cn("text-[10px] font-bengali leading-tight truncate", tithiColor)}>
                 {isPurnima ? "🌕 পূর্ণিমা" : isAmavasya ? "🌑 অমাবস্যা" : (
-                  <><span className="text-primary/80 font-semibold">{isShukla ? "শু" : "কৃ"}</span>{toBengaliNumerals(pakshaDay)}</>
+                  <><span className="text-primary/80 font-semibold">{isShukla ? "শু " : "কৃ "}</span>{tithiNameBn}</>
                 )}
               </div>
             )}

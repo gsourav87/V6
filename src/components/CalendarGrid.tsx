@@ -27,6 +27,15 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
     });
   }, [year, month]);
 
+  // Guard against an empty month (bad year/month input) so the page never blanks.
+  if (currentMonthDays.length === 0) {
+    return (
+      <div className="bg-card rounded-2xl border border-primary/15 p-8 text-center font-bengali text-muted-foreground">
+        এই মাসের তথ্য পাওয়া যায়নি।
+      </div>
+    );
+  }
+
   const startDayOfWeek = currentMonthDays[0].gregDate.getUTCDay();
 
   const paddingStart = Array.from({ length: startDayOfWeek }).map((_, i) => {

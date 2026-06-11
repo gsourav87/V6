@@ -100,9 +100,11 @@ export function bengaliMonthStart(banglaYear: number, banglaMonth: number): Date
   const gregYear = banglaYear + 593;
 
   // Approximate Gregorian month for this Bengali month
-  // Boishakh ~ April, so shift by ~3.5 months
+  // Boishakh ~ April, so shift by ~3.5 months.
+  // Boishakh–Poush (idx 0–8) fall in `gregYear`; Magh–Chaitra (idx 9–11)
+  // are Jan–Mar, which land in the FOLLOWING Gregorian year.
   const approxGregMonth = ((banglaMonth + 3) % 12) + 1;
-  const approxGregYear  = banglaMonth < 9 ? gregYear : gregYear - 1;
+  const approxGregYear  = banglaMonth < 9 ? gregYear : gregYear + 1;
 
   // Build search window: ±25 days around approximate date
   const approxDate = new Date(approxGregYear, approxGregMonth - 1, 1);
