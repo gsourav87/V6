@@ -31,30 +31,23 @@ export function DayCell({
     <div
       onClick={isCurrentMonth && onClick ? onClick : undefined}
       className={cn(
-        // Square cells, uniform at every screen size
-        "relative aspect-square",
-        "p-1 sm:p-2 md:p-2.5 rounded-lg sm:rounded-xl border",
+        // Borderless table cell — shares grid lines with neighbours, no gaps
+        "relative min-h-[62px] sm:min-h-[92px] md:min-h-[112px]",
+        "p-1 sm:p-2 md:p-2.5",
         "flex flex-col overflow-hidden",
-        "transition-all duration-200 select-none",
-        isCurrentMonth && onClick && "cursor-pointer card-lift hover:shadow-premium hover:border-primary/50",
-        !isCurrentMonth && "opacity-40 pointer-events-none border-transparent bg-transparent",
+        "border-r border-b border-border/50",
+        "transition-colors duration-150 select-none",
+        isCurrentMonth && onClick && "cursor-pointer hover:bg-accent/40",
+        !isCurrentMonth && "opacity-40 pointer-events-none bg-muted/20",
         isCurrentMonth && (
-          isToday
-            ? "bg-primary/12 dark:bg-primary/20 border-primary shadow-sm ring-1 ring-primary/40"
-            : isPurnima  ? "bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800/60"
-            : isAmavasya ? "bg-slate-100 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700"
-            : "bg-card border-card-border shadow-sm"
+          isToday       ? "bg-primary/12 dark:bg-primary/20 ring-1 ring-inset ring-primary/50"
+          : isPurnima   ? "bg-amber-50 dark:bg-amber-950/25"
+          : isAmavasya  ? "bg-slate-100 dark:bg-slate-900/40"
+          : "bg-card"
         ),
       )}
     >
       {isToday && <div className="absolute top-0 inset-x-0 h-1 bg-primary" />}
-
-      {/* Moon watermark for Purnima / Amavasya */}
-      {isCurrentMonth && (isPurnima || isAmavasya) && (
-        <span className="absolute -bottom-1 -right-1 text-2xl sm:text-4xl opacity-20 pointer-events-none select-none">
-          {isPurnima ? "🌕" : "🌑"}
-        </span>
-      )}
 
       {/* Top: Bengali day + Gregorian date */}
       <div className="flex items-start justify-between gap-0.5 leading-none">

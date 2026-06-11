@@ -56,7 +56,7 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
     d1.getUTCDate()     === d2.getDate();
 
   return (
-    <div className="bg-card rounded-3xl glow-focus border border-primary/15 overflow-hidden animate-fade-up">
+    <div className="-mx-2 sm:mx-0 bg-card rounded-2xl sm:rounded-3xl glow-focus border border-primary/15 overflow-hidden animate-fade-up">
       {/* Header Row */}
       <div className="grid grid-cols-7 bg-gradient-to-br from-primary via-primary to-primary/85 text-primary-foreground">
         {BANGLA_DAYS.map((day, i) => (
@@ -72,8 +72,8 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
         ))}
       </div>
 
-      {/* Days Grid */}
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2 p-1.5 sm:p-2.5 bg-gradient-to-b from-secondary/35 via-muted/40 to-secondary/25">
+      {/* Days Grid — borderless table (no gaps), cells share grid lines */}
+      <div className="grid grid-cols-7">
         {allCells.map((cell, i) => (
           <DayCell
             key={i}
