@@ -4,11 +4,15 @@ import { NavBar } from "@/components/NavBar";
 import { RefreshCw, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { applyPageSEO } from "@/lib/seo";
 
-// ── Static fuel prices (Kolkata) ──────────────────────────────────
+// ── Fuel prices (Kolkata) ─────────────────────────────────────────
+// NOTE: India has no reliable free live fuel-price API, so these are entered by
+// hand. To keep them accurate, update the prices AND the FUEL_UPDATED date below
+// whenever rates change (typically rare — petrol/diesel revise occasionally).
+const FUEL_UPDATED = "১১ জুন ২০২৬"; // ← update this date when you edit prices
 const FUEL: { icon: string; label: string; price: number; unit: string }[] = [
-  { icon: "⛽", label: "পেট্রোল",             price: 103.94, unit: "প্রতি লিটার" },
-  { icon: "🛢️", label: "ডিজেল",              price: 90.76,  unit: "প্রতি লিটার" },
-  { icon: "🔵", label: "এলপিজি (১৪.২ কেজি)", price: 929.00, unit: "প্রতি সিলিন্ডার" },
+  { icon: "⛽", label: "পেট্রোল",             price: 105.41, unit: "প্রতি লিটার" },
+  { icon: "🛢️", label: "ডিজেল",              price: 92.02,  unit: "প্রতি লিটার" },
+  { icon: "🔵", label: "এলপিজি (১৪.২ কেজি)", price: 879.00, unit: "প্রতি সিলিন্ডার" },
   { icon: "💨", label: "সিএনজি",             price: 89.43,  unit: "প্রতি কেজি" },
 ];
 
@@ -240,8 +244,11 @@ export default function FinancePage() {
 
         {/* ── Fuel ── */}
         <section className="mb-6">
-          <h2 className="text-sm font-bold font-bengali text-muted-foreground uppercase tracking-widest mb-3">
+          <h2 className="flex items-center gap-2 text-sm font-bold font-bengali text-muted-foreground uppercase tracking-widest mb-3">
             ⛽ জ্বালানির দাম (কলকাতা)
+            <span className="normal-case tracking-normal text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
+              আনুমানিক
+            </span>
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {FUEL.map(f => (
@@ -256,7 +263,7 @@ export default function FinancePage() {
             ))}
           </div>
           <p className="text-[11px] text-muted-foreground font-bengali mt-2">
-            * সূত্র: IOCL। জ্বালানির দাম প্রতিদিন সকাল ৬টায় নির্ধারিত হয়।
+            * আনুমানিক দর (কলকাতা) — হাতে হালনাগাদ করা, {FUEL_UPDATED} অনুযায়ী। দাম এলাকাভেদে কিছুটা ভিন্ন হতে পারে; সঠিক দরের জন্য স্থানীয় পেট্রোল পাম্পে যোগাযোগ করুন।
           </p>
         </section>
 
@@ -310,6 +317,11 @@ export default function FinancePage() {
               <p>সার্ভার সংযোগ পরীক্ষা করুন বা পৃষ্ঠা রিফ্রেশ করুন। বাজার বন্ধ থাকাকালীন Yahoo Finance থেকে শেষ বন্ধের দর দেখানো হয়।</p>
             </div>
           )}
+          {!isLoading && hasStocks && (
+            <p className="text-[11px] text-muted-foreground font-bengali mt-2">
+              * Yahoo Finance থেকে নেওয়া। Google বা ব্রোকারের লাইভ দরের সাথে কিছুটা পার্থক্য থাকতে পারে।
+            </p>
+          )}
         </section>
 
         {/* ── Market guide ── */}
@@ -317,14 +329,14 @@ export default function FinancePage() {
           <h2 className="text-sm font-bold font-bengali text-primary mb-3">📌 বাজার গাইড</h2>
           <ul className="space-y-2 text-xs font-bengali text-foreground/80 leading-relaxed">
             <li className="flex gap-2"><span className="text-primary shrink-0">•</span>মুদ্রার দর মিড-মার্কেট রেফারেন্স রেট — দৈনিক একবার আপডেট হয়। Google বা ব্যাংকের দরের সাথে সামান্য পার্থক্য স্বাভাবিক।</li>
-            <li className="flex gap-2"><span className="text-primary shrink-0">•</span>জ্বালানির দাম প্রতিদিন সকাল ৬টায় IOCL-এর ডিলারদের দ্বারা নির্ধারিত হয়।</li>
+            <li className="flex gap-2"><span className="text-primary shrink-0">•</span>জ্বালানির দাম এখানে হাতে হালনাগাদ করা আনুমানিক দর (কলকাতা) — লাইভ নয়। প্রকৃত দাম পেট্রোল পাম্পে যাচাই করুন।</li>
             <li className="flex gap-2"><span className="text-primary shrink-0">•</span>শেয়ার বাজারের তথ্য Yahoo Finance থেকে আনা হয়, ৫ মিনিট অন্তর আপডেট হয়।</li>
             <li className="flex gap-2"><span className="text-primary shrink-0">•</span>NSE/BSE বাজার সোমবার–শুক্রবার সকাল ৯:১৫ থেকে বিকেল ৩:৩০ পর্যন্ত খোলা থাকে।</li>
           </ul>
         </section>
 
         <p className="text-center text-[11px] text-muted-foreground font-bengali pb-4">
-          তথ্যসূত্র: ExchangeRate-API, Yahoo Finance, IOCL। বিনিয়োগের আগে বিশেষজ্ঞের পরামর্শ নিন।
+          তথ্যসূত্র: মুদ্রা — ExchangeRate-API (দৈনিক) · শেয়ার — Yahoo Finance · জ্বালানি — হাতে হালনাগাদ। বিনিয়োগের আগে বিশেষজ্ঞের পরামর্শ নিন।
         </p>
       </main>
     </div>
