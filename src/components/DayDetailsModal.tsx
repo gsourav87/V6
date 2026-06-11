@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { X, ExternalLink } from "lucide-react";
 import {
   getTithiAtSunrise, getNakshatraAtSunrise, getYogaAtSunrise,
-  getKaranaAtSunrise, getSunTimes, getRahuKalamInfo, formatKolkataTime,
+  getKaranaAtSunrise, getSunTimes, getRahuKalamInfo, formatKolkataTime, formatTimeBn,
 } from "@/lib/panjika";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { getFestivalsForDate } from "@/lib/festivals";
@@ -201,6 +201,8 @@ export function DayDetailsModal({ date, onClose }: Props) {
             <SectionHead>পঞ্চাঙ্গ</SectionHead>
             <div className="bg-background rounded-xl px-3 divide-y divide-border/50">
               <InfoRow icon="🌓" label="তিথি"    value={tithi.nameBn}     sub={tithi.pakshaBn} />
+              <InfoRow icon="⏳" label="তিথি আরম্ভ"  value={formatTimeBn(tithi.startsAt) || "পূর্ববর্তী দিনে"} />
+              <InfoRow icon="⌛" label="তিথি সমাপ্তি" value={formatTimeBn(tithi.endsAt)   || "পরবর্তী দিনে"} />
               <InfoRow icon="⭐" label="নক্ষত্র"  value={nakshatra.nameBn} sub={nakshatra.nameEn} />
               <InfoRow icon={yoga.nature === "good" ? "✨" : "⚠️"} label="যোগ" value={yoga.nameBn} sub={yoga.nameEn} />
               <InfoRow icon="🔆" label="করণ"     value={karana.nameBn}    sub={karana.nameEn} />

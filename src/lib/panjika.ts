@@ -34,6 +34,8 @@ export interface TithiInfo {
   pakshaBn: string;
   pakshaEn: string;
   isShukla: boolean;
+  /** UTC time when the tithi began (JS Date). null if it began > the search window ago. */
+  startsAt: Date | null;
   /** UTC time when the tithi ends (JS Date). null if tithi spans > the search window. */
   endsAt: Date | null;
   /** Moon phase icon */
@@ -88,7 +90,9 @@ export function getTithiAtSunrise(date: Date): TithiInfo {
 
   // Find when this tithi ends (elongation hits next multiple of 12°)
   const targetElong = tNum * 12; // degrees
-  const endsAt = findTithiEnd(sunriseJDE, tNum, targetElong);
+  const endsAt   = findTithiEnd(sunriseJDE, tNum, targetElong);
+  // …and when it began (elongation last crossed into this tithi)
+  const startsAt = findTithiStart(sunriseJDE, tNum);
 
   return {
     number:   tNum,
@@ -98,6 +102,7 @@ export function getTithiAtSunrise(date: Date): TithiInfo {
     pakshaBn: isShukla ? PAKSHA_BN.shukla : PAKSHA_BN.krishna,
     pakshaEn: isShukla ? PAKSHA_EN.shukla : PAKSHA_EN.krishna,
     isShukla,
+    startsAt,
     endsAt,
     icon:     moonIcon(tNum),
   };
@@ -134,6 +139,32 @@ function findTithiEnd(startJDE: number, currentTithi: number, _targetElong: numb
       return new Date(endMs);
     }
     prevElong = curElong;
+  }
+  return null;
+}
+
+// Find the UTC time when the current tithi BEGAN — search backward ~26 hours
+// from sunrise for the moment elongation last crossed into `currentTithi`.
+function findTithiStart(sunriseJDE: number, currentTithi: number): Date | null {
+  const beginJDE = sunriseJDE - 1.1; // search back ~26 hours
+  const step = 10 / 1440;            // 10-minute steps
+  let nextElong = norm360(moonTropicalLon(sunriseJDE) - sunTropicalLon(sunriseJDE));
+  for (let jde = sunriseJDE - step; jde >= beginJDE; jde -= step) {
+    const curElong  = norm360(moonTropicalLon(jde) - sunTropicalLon(jde));
+    const curTithi  = Math.floor(curElong  / 12) + 1;
+    const nextTithi = Math.floor(nextElong / 12) + 1;
+    // Boundary: earlier sample is the previous tithi, later sample is this one.
+    if (curTithi !== nextTithi && nextTithi === currentTithi) {
+      let blo = jde, bhi = jde + step;
+      for (let i = 0; i < 20; i++) {
+        const bmid = (blo + bhi) / 2;
+        const bt = Math.floor(norm360(moonTropicalLon(bmid) - sunTropicalLon(bmid)) / 12) + 1;
+        if (bt === currentTithi) bhi = bmid; else blo = bmid;
+      }
+      const startMs = ((blo + bhi) / 2 - 2440587.5) * 86400000;
+      return new Date(startMs);
+    }
+    nextElong = curElong;
   }
   return null;
 }
@@ -405,6 +436,22 @@ export function formatKolkataTime(utcDate: Date | null): string {
   const ampm = h >= 12 ? "PM" : "AM";
   h = h % 12 || 12;
   return `${h}:${String(m).padStart(2, "0")} ${ampm}`;
+}
+
+// Format a UTC time in Bengali clock style with day-period word: "সকাল ০৮:১২"
+export function formatTimeBn(utcDate: Date | null): string {
+  if (!utcDate) return "";
+  const local = new Date(utcDate.getTime() + KOLKATA_UTC_OFFSET * 3600000);
+  const h = local.getUTCHours();
+  const m = local.getUTCMinutes();
+  const BN = ["০","১","২","৩","৪","৫","৬","৭","৮","৯"];
+  const pad = (n: number) => String(n).padStart(2,"0").replace(/[0-9]/g, d => BN[parseInt(d)]);
+  let period = "রাত";
+  if (h >= 4  && h < 12) period = "সকাল";
+  else if (h >= 12 && h < 16) period = "দুপুর";
+  else if (h >= 16 && h < 19) period = "বিকাল";
+  else if (h >= 19 && h < 21) period = "সন্ধ্যা";
+  return `${period} ${pad(h % 12 || 12)}:${pad(m)}`;
 }
 
 // Format tithi end time as Bengali style: "সকাল ০৮:১২ পর্যন্ত"
