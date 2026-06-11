@@ -5,7 +5,7 @@
  *  - Hashed build assets + fonts/icons: cache-first (they're content-hashed / immutable).
  *  - /api/* : always network (never cached).
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const APP_CACHE = `sbc-app-${VERSION}`;
 const RUNTIME_CACHE = `sbc-runtime-${VERSION}`;
 const CORE = ["/", "/offline.html", "/manifest.webmanifest", "/icon-192.png"];
