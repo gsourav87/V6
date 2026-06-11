@@ -85,7 +85,7 @@ export default function MonthPage() {
   }, [monthIndex, banglaYear]);
 
   return (
-    <div className="min-h-screen text-foreground px-4 py-10">
+    <div className="min-h-screen text-foreground px-2 sm:px-4 py-10">
       <main className="max-w-4xl mx-auto">
 
         {/* Breadcrumb */}

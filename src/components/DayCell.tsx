@@ -22,10 +22,49 @@ export function DayCell({
   const isAmavasya = tithiNumber === 30;
   const pakshaDay  = tithiNumber ? ((tithiNumber - 1) % 15) + 1 : 0;
 
-  const tithiColor = isPurnima
-    ? "text-amber-700 dark:text-amber-300 font-bold"
-    : isAmavasya ? "text-slate-600 dark:text-slate-300 font-bold"
+  // Weekend marking (panjika convention): Sunday = holiday (red), Saturday = yellow.
+  const dow        = gregDate.getUTCDay();
+  const isSunday   = dow === 0;
+  const isSaturday = dow === 6;
+  const onDark     = isCurrentMonth && isAmavasya;   // Amavasya cells have a dark bg
+
+  // Background: lunar events + today own the fill; weekends get a soft tint.
+  const bgClass = !isCurrentMonth
+    ? "opacity-40 pointer-events-none bg-muted/20"
+    : isToday
+      ? "bg-primary/12 dark:bg-primary/20 ring-1 ring-inset ring-primary/50"
+    : isPurnima
+      ? "bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/55 dark:to-amber-800/40 ring-1 ring-inset ring-amber-400/70 shadow-[inset_0_0_18px_rgba(251,191,36,0.55)]"
+    : isAmavasya
+      ? "bg-slate-800 dark:bg-slate-950 ring-1 ring-inset ring-slate-600/60"
+    : isSunday
+      ? "bg-red-50 dark:bg-red-950/30"
+    : isSaturday
+      ? "bg-yellow-50 dark:bg-yellow-950/25"
+    : "bg-card";
+
+  // Day-number colour: weekend hue wins, but stays light on the dark Amavasya fill.
+  const dayNumColor = isToday
+    ? "text-primary"
+    : onDark
+      ? (isSunday ? "text-red-300" : isSaturday ? "text-yellow-300" : "text-slate-100")
+    : isSunday
+      ? "text-red-600 dark:text-red-400"
+    : isSaturday
+      ? "text-yellow-700 dark:text-yellow-300"
+    : isPurnima
+      ? "text-amber-700 dark:text-amber-200"
+    : "text-foreground";
+
+  const tithiColor = onDark
+    ? "text-slate-200 font-semibold"
+    : isPurnima ? "text-amber-800 dark:text-amber-200 font-bold"
+    : isSunday  ? "text-red-600/90 dark:text-red-300"
     : "text-muted-foreground";
+
+  const engDateClass = onDark
+    ? "text-slate-300 sm:bg-slate-700/50"
+    : "text-muted-foreground sm:bg-muted/70";
 
   return (
     <div
@@ -37,14 +76,8 @@ export function DayCell({
         "flex flex-col overflow-hidden",
         "border-r border-b border-border/50",
         "transition-colors duration-150 select-none",
-        isCurrentMonth && onClick && "cursor-pointer hover:bg-accent/40",
-        !isCurrentMonth && "opacity-40 pointer-events-none bg-muted/20",
-        isCurrentMonth && (
-          isToday       ? "bg-primary/12 dark:bg-primary/20 ring-1 ring-inset ring-primary/50"
-          : isPurnima   ? "bg-amber-50 dark:bg-amber-950/25"
-          : isAmavasya  ? "bg-slate-100 dark:bg-slate-900/40"
-          : "bg-card"
-        ),
+        isCurrentMonth && onClick && "cursor-pointer hover:brightness-95 dark:hover:brightness-110",
+        bgClass,
       )}
     >
       {isToday && <div className="absolute top-0 inset-x-0 h-1 bg-primary" />}
@@ -54,15 +87,15 @@ export function DayCell({
         <span className={cn(
           "font-bold font-bengali tabular-nums leading-none",
           "text-base sm:text-2xl md:text-3xl",
-          isToday      ? "text-primary"
-          : isPurnima  ? "text-amber-600 dark:text-amber-400"
-          : isAmavasya ? "text-slate-600 dark:text-slate-300"
-          : "text-foreground",
+          dayNumColor,
         )}>
           {isCurrentMonth ? toBengaliNumerals(bengaliDay) : ""}
         </span>
         {isCurrentMonth && (
-          <span className="shrink-0 mt-0.5 text-[9px] sm:text-[11px] text-muted-foreground tabular-nums leading-none sm:bg-muted/70 sm:px-1.5 sm:py-0.5 sm:rounded">
+          <span className={cn(
+            "shrink-0 mt-0.5 text-[9px] sm:text-[11px] tabular-nums leading-none sm:px-1.5 sm:py-0.5 sm:rounded",
+            engDateClass,
+          )}>
             {format(gregDate, "d")}
           </span>
         )}
