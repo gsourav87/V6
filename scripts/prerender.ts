@@ -53,6 +53,7 @@ interface HeadMeta {
   canonical: string;
   ogTitle?: string;
   ogDesc?: string;
+  ogImage?: string;
   schema?: object;
 }
 
@@ -72,6 +73,11 @@ function swapHead(html: string, m: HeadMeta): string {
   html = html.replace(/(<meta\s+property="og:url"\s+content=")[^"]*(")/,     `$1${url}$2`);
   html = html.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/,  `$1${ogTitle}$2`);
   html = html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/,`$1${ogDesc}$2`);
+  if (m.ogImage) {
+    const img = esc(m.ogImage);
+    html = html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/, `$1${img}$2`);
+    html = html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/, `$1${img}$2`);
+  }
 
   // hreflang — point the template's self-referential tags at this page's URL.
   for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
@@ -184,6 +190,12 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
   const title    = `${detail.nameBn} ${year} — তারিখ, ইতিহাস ও তাৎপর্য | সঠিক বাংলা ক্যালেন্ডার`;
   const desc     = `${detail.tagline}। ${detail.descBn[0].slice(0, 130)}…`;
 
+  // Per-festival 1200×630 OG image (generated into public/og/) — Google
+  // Discover requires large unique images in both OG tags and JSON-LD.
+  const ogImage = fs.existsSync(path.join(ROOT, "public", "og", `${slug}.png`))
+    ? `${SITE}/og/${slug}.png`
+    : undefined;
+
   const upcoming = firstUpcoming(slug);
   const schema: object = upcoming
     ? {
@@ -193,6 +205,7 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
         "alternateName": detail.nameBn,
         "description": detail.descBn[0],
         "url": canonical,
+        ...(ogImage ? { image: [ogImage] } : {}),
         "startDate": upcoming,
         "inLanguage": "bn",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
@@ -205,6 +218,7 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
         "description": detail.descBn[0],
         "url": canonical,
         "inLanguage": "bn",
+        ...(ogImage ? { image: ogImage } : {}),
         "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
       };
 
@@ -215,7 +229,7 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
     `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
   ].join("\n");
 
-  let html = swapHead(template, { title, description: desc, canonical, schema });
+  let html = swapHead(template, { title, description: desc, canonical, ogImage, schema });
   html = swapBody(html, body);
   emit(route, html);
 }
