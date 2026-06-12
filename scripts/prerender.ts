@@ -20,7 +20,7 @@ import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
 import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
-import { convertToBengali } from "../src/lib/bengali-calendar";
+import { convertToBengali, BANGLA_DAYS } from "../src/lib/bengali-calendar";
 import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
 import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
 
@@ -165,6 +165,39 @@ self.addEventListener('notificationclick', function (e) {
 
 const today = new Date().toISOString().slice(0, 10);
 
+const GREG_MONTHS_BN = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
+];
+
+/** "2026-10-16" → "১৬ অক্টোবর ২০২৬, শুক্রবার" */
+function bnDateLong(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const weekday = BANGLA_DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()].bn;
+  return `${bn(d)} ${GREG_MONTHS_BN[m - 1]} ${bn(y)}, ${weekday}`;
+}
+
+/** Parenthetical day name from a FESTIVALS entry, e.g. "দুর্গা পূজা (মহাষষ্ঠী)" → "মহাষষ্ঠী". */
+function subName(nameBn: string): string | undefined {
+  return nameBn.match(/\(([^)]+)\)/)?.[1];
+}
+
+/**
+ * Self-contained Bengali sentence answering "<festival> <year> কবে?" for the
+ * given year's occurrence(s) — the direct-answer line AI engines extract.
+ */
+function dateAnswer(nameBn: string, entries: Array<{ date: string; nameBn: string }>): string {
+  const year = bn(Number(entries[0].date.slice(0, 4)));
+  if (entries.length === 1) {
+    return `${nameBn} ${year} সালের ${bnDateLong(entries[0].date)} তারিখে পালিত হবে।`;
+  }
+  const first = entries[0];
+  const last = entries[entries.length - 1];
+  const firstLabel = subName(first.nameBn) ? ` (${subName(first.nameBn)})` : "";
+  const lastLabel = subName(last.nameBn) ? ` (${subName(last.nameBn)})` : "";
+  return `${year} সালে ${nameBn} ${bnDateLong(first.date)}${firstLabel} থেকে ${bnDateLong(last.date)}${lastLabel} পর্যন্ত পালিত হবে।`;
+}
+
 function firstUpcoming(slug: string): string | undefined {
   const fromFestivals = FESTIVALS
     .filter(f => f.slug === slug && f.date >= today)
@@ -197,9 +230,28 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
     : undefined;
 
   const upcoming = firstUpcoming(slug);
-  const schema: object = upcoming
+
+  // GEO: question–answer pairs surfaced both as visible FAQ content and as
+  // FAQPage JSON-LD, so AI engines get clean extractable sentences.
+  const upcomingEntries = FESTIVALS
+    .filter(f => f.slug === slug && f.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const faqYears = [...new Set(upcomingEntries.map(e => e.date.slice(0, 4)))].slice(0, 2);
+  const faq: Array<{ q: string; a: string }> = faqYears.map(y => ({
+    q: `${detail.nameBn} ${bn(Number(y))} কবে?`,
+    a: dateAnswer(detail.nameBn, upcomingEntries.filter(e => e.date.startsWith(y))),
+  }));
+  if (faq.length === 0 && upcoming) {
+    faq.push({
+      q: `${detail.nameBn} ${bn(Number(upcoming.slice(0, 4)))} কবে?`,
+      a: dateAnswer(detail.nameBn, [{ date: upcoming, nameBn: detail.nameBn }]),
+    });
+  }
+  const answerLine = faq[0]?.a;
+  faq.push({ q: `${detail.nameBn} কী?`, a: `${detail.tagline}। ${detail.descBn[0]}` });
+
+  const mainSchema: object = upcoming
     ? {
-        "@context": "https://schema.org",
         "@type": "Event",
         "name": detail.nameEn,
         "alternateName": detail.nameBn,
@@ -212,7 +264,6 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
         "organizer": { "@type": "Organization", "name": "সঠিক বাংলা ক্যালেন্ডার", "url": SITE },
       }
     : {
-        "@context": "https://schema.org",
         "@type": "WebPage",
         "name": title,
         "description": detail.descBn[0],
@@ -222,10 +273,24 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
         "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
       };
 
+  const faqSchema = {
+    "@type": "FAQPage",
+    "mainEntity": faq.map(({ q, a }) => ({
+      "@type": "Question",
+      "name": q,
+      "acceptedAnswer": { "@type": "Answer", "text": a },
+    })),
+  };
+  const schema = { "@context": "https://schema.org", "@graph": [mainSchema, faqSchema] };
+
   const body = [
     `<h1>${detail.icon} ${detail.nameBn} — ${year}</h1>`,
+    // direct-answer line first: AI engines and featured snippets lift this
+    ...(answerLine ? [`<p><strong>${answerLine}</strong></p>`] : []),
     `<p><strong>${detail.tagline}</strong></p>`,
     ...detail.descBn.map(p => `<p>${p}</p>`),
+    `<h2>সাধারণ প্রশ্ন</h2>`,
+    ...faq.map(({ q, a }) => `<h3>${q}</h3>\n<p>${a}</p>`),
     `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
   ].join("\n");
 
