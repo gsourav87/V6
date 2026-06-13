@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useRoute, Link } from "wouter";
 import { NavBar } from "@/components/NavBar";
 import { ShareButton } from "@/components/ShareButton";
+import { TelegramCTA } from "@/components/TelegramCTA";
 import { applyPageSEO, removeSchema, SITE_URL } from "@/lib/seo";
 import { getFestivalDetail, getCategoryLabel } from "@/lib/festival-details";
 import { getUpcomingDatesForSlug } from "@/lib/festivals";
@@ -203,6 +204,9 @@ export default function FestivalPage() {
             </div>
           </section>
         )}
+
+        {/* Telegram channel CTA */}
+        <TelegramCTA />
 
         {/* Internal nav */}
         <section className="border-t border-border pt-6">

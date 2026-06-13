@@ -36,6 +36,7 @@ const DateConverter = lazy(() => import("@/components/DateConverter").then(m => 
 const SeoContent    = lazy(() => import("./components/SeoContent"));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
+import { TelegramCTA } from "@/components/TelegramCTA";
 import { LoginPage } from "@/components/LoginPage";
 import { DayDetailsModal } from "@/components/DayDetailsModal";
 import { AstronomicalFooter } from "@/components/AstronomicalFooter";
@@ -142,6 +143,11 @@ function Home() {
         {/* Weather widget */}
         <div className="mt-3 animate-fade-up stagger-3">
           <WeatherWidget />
+        </div>
+
+        {/* Telegram channel CTA */}
+        <div className="mt-3 animate-fade-up stagger-4">
+          <TelegramCTA />
         </div>
 
         <div className="mt-8">
