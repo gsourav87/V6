@@ -6,6 +6,7 @@ const MonthPage        = lazy(() => import("./pages/MonthPage"));
 const RashifalPage     = lazy(() => import("./pages/RashifalPage"));
 const NewsPage         = lazy(() => import("./pages/NewsPage"));
 const PanjikaPage      = lazy(() => import("./pages/PanjikaPage"));
+const MuhurtaPage      = lazy(() => import("./pages/MuhurtaPage"));
 const WeatherPage      = lazy(() => import("./pages/WeatherPage"));
 const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
@@ -32,7 +33,6 @@ import { RahuKalamCard } from "@/components/RahuKalamCard";
 
 // Below-the-fold widgets — lazy so they stay out of the initial bundle.
 const DateConverter = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
-const MuhurtaCalc   = lazy(() => import("@/components/MuhurtaCalc").then(m => ({ default: m.MuhurtaCalc })));
 const SeoContent    = lazy(() => import("./components/SeoContent"));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
@@ -180,10 +180,6 @@ function Home() {
               <DateConverter />
             </div>
 
-            <div className="mt-6">
-              <MuhurtaCalc />
-            </div>
-
             <div className="mt-10">
               <SeoContent />
             </div>
@@ -273,6 +269,10 @@ function App() {
 
                 <Route path="/panjika">
                   <PanjikaPage />
+                </Route>
+
+                <Route path="/muhurta">
+                  <MuhurtaPage />
                 </Route>
 
                 <Route path="/rashifal">
