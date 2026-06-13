@@ -69,7 +69,7 @@ function Home() {
     <div className="min-h-screen pb-20">
       <NavBar />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
+      <main className="max-w-6xl mx-auto px-3 sm:px-5 md:px-6">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4 mt-2">

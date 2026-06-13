@@ -70,7 +70,7 @@ export function DayCell({
       onClick={isCurrentMonth && onClick ? onClick : undefined}
       className={cn(
         // Borderless table cell — shares grid lines with neighbours, no gaps
-        "relative min-h-[62px] sm:min-h-[92px] md:min-h-[112px]",
+        "relative min-h-[64px] sm:min-h-[104px] md:min-h-[132px] lg:min-h-[150px]",
         "p-1 sm:p-2 md:p-2.5",
         "flex flex-col overflow-hidden",
         "border-r border-b border-border/50",
@@ -85,7 +85,7 @@ export function DayCell({
       <div className="flex items-start justify-between gap-0.5 leading-none">
         <span className={cn(
           "font-bold font-bengali tabular-nums leading-none",
-          "text-xl sm:text-3xl md:text-4xl",
+          "text-2xl sm:text-3xl md:text-5xl lg:text-6xl",
           dayNumColor,
         )}>
           {isCurrentMonth ? toBengaliNumerals(bengaliDay) : ""}
