@@ -10,6 +10,9 @@
   "rewrites": [
     { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
   ],
+  "crons": [
+    { "path": "/api/telegram-post", "schedule": "30 1 * * *" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
