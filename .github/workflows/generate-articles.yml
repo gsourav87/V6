@@ -1,0 +1,100 @@
+name: Generate Articles (AI)
+
+# Two ways to trigger:
+#  1. Manually (Actions tab → "Generate Articles (AI)" → Run workflow) —
+#     paste topics, one per line: topic | slug | category | dates(optional)
+#  2. Automatically every Monday 02:00 UTC — takes the FIRST pending line
+#     from topic-queue.txt, generates it, and removes it from the queue.
+#
+# Setup (one time): repo Settings → Secrets and variables → Actions →
+#   add secret GEMINI_API_KEY (free key from https://aistudio.google.com)
+#
+# Every generated article is auto-interlinked and validated (broken internal
+# links or <3 interlinks = not saved). The commit triggers Vercel deploy.
+
+on:
+  workflow_dispatch:
+    inputs:
+      topics:
+        description: "One per line: topic | slug | category | dates(optional)"
+        required: true
+        type: string
+  schedule:
+    - cron: "0 2 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-articles
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build topic list
+        env:
+          TOPICS: ${{ github.event.inputs.topics }}
+        run: |
+          if [ -n "$TOPICS" ]; then
+            printf '%s\n' "$TOPICS" > /tmp/topics.txt
+          elif [ -f topic-queue.txt ]; then
+            grep -v '^[[:space:]]*#' topic-queue.txt | grep -v '^[[:space:]]*$' | head -1 > /tmp/topics.txt || true
+          else
+            : > /tmp/topics.txt
+          fi
+          echo "── topics to generate ──"
+          cat /tmp/topics.txt || true
+
+      - name: Generate articles
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          if [ ! -s /tmp/topics.txt ]; then
+            echo "Queue is empty — nothing to do."
+            exit 0
+          fi
+          ok=0; fail=0
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue ;; esac
+            echo "──────────────────────────────────────"
+            if node scripts/ai-article.mjs "$line"; then
+              ok=$((ok+1))
+            else
+              fail=$((fail+1))
+            fi
+            sleep 3
+          done < /tmp/topics.txt
+          echo "══ done: $ok generated, $fail failed ══"
+          if [ "$ok" -eq 0 ] && [ "$fail" -gt 0 ]; then exit 1; fi
+
+      - name: Remove processed line from queue (scheduled runs only)
+        if: github.event_name == 'schedule'
+        run: |
+          line=$(cat /tmp/topics.txt || true)
+          if [ -n "$line" ] && [ -f topic-queue.txt ]; then
+            grep -vxF "$line" topic-queue.txt > /tmp/queue.new || true
+            mv /tmp/queue.new topic-queue.txt
+          fi
+
+      - name: Commit & push (triggers Vercel deploy)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/content/articles topic-queue.txt 2>/dev/null || git add src/content/articles
+          if git diff --cached --quiet; then
+            echo "No new articles to commit."
+          else
+            git commit -m "content: AI-generated article(s) [automated]"
+            git push
+          fi

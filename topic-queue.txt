@@ -1,0 +1,20 @@
+# ── AI article queue ─────────────────────────────────────────────────────
+# One topic per line, format:
+#
+#   topic | slug | category | verified dates (optional)
+#
+# category must be one of: festival | person | history | observance | facts
+# Lines starting with # are ignored.
+#
+# Every Monday 02:00 UTC the "Generate Articles (AI)" workflow takes the
+# FIRST line below, writes the article with AI, validates the interlinks,
+# commits it (Vercel deploys automatically), and removes the line.
+#
+# ⚠ For date-specific topics (festivals, anniversaries) ALWAYS include the
+# verified date from sothikbanglacalendar.live — otherwise the AI is
+# instructed to avoid specific dates altogether.
+#
+# Examples (remove the # to activate):
+# সত্যজিৎ রায় — জীবন, চলচ্চিত্র ও অজানা কথা | satyajit-ray | person |
+# হাওড়া ব্রিজের ইতিহাস — রবীন্দ্র সেতুর অজানা কাহিনি | howrah-bridge-itihas | history |
+# জগদীশচন্দ্র বসু — বিজ্ঞানের বিস্মৃত পথিকৃৎ | jagadish-chandra-bose | person |

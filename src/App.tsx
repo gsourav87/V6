@@ -10,6 +10,8 @@ const MuhurtaPage      = lazy(() => import("./pages/MuhurtaPage"));
 const WeatherPage      = lazy(() => import("./pages/WeatherPage"));
 const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
+const ArticlesPage     = lazy(() => import("./pages/ArticlesPage"));
+const ArticlePage      = lazy(() => import("./pages/ArticlePage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import { useState, useEffect } from "react";
@@ -107,6 +109,7 @@ function Home() {
         <nav aria-label="Quick links" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-4 text-sm font-bengali font-semibold text-primary">
           <Link href={`/date/${todayY}/${todayM}/${todayD}`}>আজকের বাংলা তারিখ ও পঞ্জিকা</Link>
           <Link href="/today-bengali-date">আজকের বাংলা তারিখ</Link>
+          <Link href="/articles">বাংলার ঐতিহ্য ও ইতিহাস — নিবন্ধ</Link>
         </nav>
 
         {/* All 12 Bengali months */}
@@ -299,6 +302,14 @@ function App() {
 
                 <Route path="/finance">
                   <FinancePage />
+                </Route>
+
+                <Route path="/articles">
+                  <ArticlesPage />
+                </Route>
+
+                <Route path="/articles/:slug">
+                  <ArticlePage />
                 </Route>
 
                 <Route>

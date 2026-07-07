@@ -23,6 +23,7 @@ import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
 import { convertToBengali, BANGLA_DAYS } from "../src/lib/bengali-calendar";
 import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
 import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
+import { parseArticle, renderBlocksToHtml, extractFaq, ARTICLE_CATEGORIES, type Article } from "../src/lib/article-parser";
 
 // ── constants ─────────────────────────────────────────────────────────────
 
@@ -442,6 +443,121 @@ for (const p of staticPages) {
   emit(p.route, html);
 }
 
+// ── article pages (বাংলার ঐতিহ্য ও ইতিহাস) ────────────────────────────────────────────
+
+console.log("\n📚 Article pages");
+
+const ARTICLES_DIR = path.join(ROOT, "src", "content", "articles");
+const articles: Article[] = fs.existsSync(ARTICLES_DIR)
+  ? fs.readdirSync(ARTICLES_DIR)
+      .filter(f => f.endsWith(".md"))
+      .map(f => parseArticle(fs.readFileSync(path.join(ARTICLES_DIR, f), "utf-8"), f.replace(/\.md$/, "")))
+      .sort((a, b) => b.date.localeCompare(a.date))
+  : [];
+
+for (const a of articles) {
+  const route     = `/articles/${a.slug}`;
+  const canonical = `${SITE}${route}`;
+  const title     = `${a.title} | বাংলার ঐতিহ্য ও ইতিহাস — সঠিক বাংলা ক্যালেন্ডার`;
+  const ogImage   = a.image ? `${SITE}${a.image}` : undefined;
+  const cat       = ARTICLE_CATEGORIES[a.category];
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": a.title,
+        "description": a.excerpt,
+        ...(ogImage ? { image: [ogImage] } : {}),
+        "datePublished": a.date,
+        "inLanguage": "bn",
+        "url": canonical,
+        "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+        "author": { "@type": "Organization", "name": "সঠিক বাংলা ক্যালেন্ডার", "url": SITE },
+        "publisher": { "@type": "Organization", "name": "সঠিক বাংলা ক্যালেন্ডার", "url": SITE },
+        "keywords": a.tags.join(", "),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "হোম", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": "বাংলার ঐতিহ্য ও ইতিহাস", "item": `${SITE}/articles` },
+          { "@type": "ListItem", "position": 3, "name": a.title, "item": canonical },
+        ],
+      },
+      ...(extractFaq(a.blocks).length > 0
+        ? [{
+            "@type": "FAQPage",
+            "mainEntity": extractFaq(a.blocks).map(({ q, a: ans }) => ({
+              "@type": "Question",
+              "name": q,
+              "acceptedAnswer": { "@type": "Answer", "text": ans },
+            })),
+          }]
+        : []),
+    ],
+  };
+
+  const body = [
+    `<p><a href="/articles">← বাংলার ঐতিহ্য ও ইতিহাস</a></p>`,
+    `<h1>${esc(a.title)}</h1>`,
+    `<p><strong>${cat.icon} ${cat.labelBn}</strong>${a.date ? ` &nbsp;·&nbsp; ${bnDateLong(a.date)}` : ""}</p>`,
+    ...(a.excerpt ? [`<p><strong>${esc(a.excerpt)}</strong></p>`] : []),
+    renderBlocksToHtml(a.blocks),
+    ...(a.related.length
+      ? [`<h2>সম্পর্কিত পাতা</h2><ul>${a.related.map(l => `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>`).join("")}</ul>`]
+      : []),
+    `<p><a href="/articles">← বাংলার ঐতিহ্য ও ইতিহাস</a> &nbsp;|&nbsp; <a href="/">সঠিক বাংলা ক্যালেন্ডার</a></p>`,
+  ].join("\n");
+
+  let html = swapHead(template, { title, description: a.excerpt, canonical, ogImage, schema });
+  html = swapBody(html, body);
+  emit(route, html, "0.7", "monthly");
+}
+
+// Article index page
+{
+  const route     = "/articles";
+  const canonical = `${SITE}${route}`;
+  const title     = "বাংলার ঐতিহ্য ও ইতিহাস — উৎসব, ব্যক্তিত্ব ও অজানা তথ্যের নিবন্ধ | সঠিক বাংলা ক্যালেন্ডার";
+  const desc      = "বাংলার ঐতিহ্য ও ইতিহাস — বাংলার উৎসব, বিখ্যাত ব্যক্তিত্ব, ঐতিহাসিক ঘটনা, অজানা তথ্য ও বিশেষ দিন নিয়ে বাংলা নিবন্ধ সংগ্রহ। ইতিহাস, তাৎপর্য ও তারিখসহ বিস্তারিত পড়ুন।";
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "বাংলার ঐতিহ্য ও ইতিহাস",
+    "description": desc,
+    "url": canonical,
+    "inLanguage": "bn",
+    "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": articles.slice(0, 20).map((a, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": a.title,
+        "url": `${SITE}/articles/${a.slug}`,
+      })),
+    },
+  };
+
+  const body = [
+    `<h1>বাংলার ঐতিহ্য ও ইতিহাস</h1>`,
+    `<p>বাংলার উৎসব, বিখ্যাত ব্যক্তিত্ব, ঐতিহাসিক ঘটনা, অজানা তথ্য ও বিশেষ দিন — ইতিহাস, তাৎপর্য ও তারিখসহ বাছাই করা নিবন্ধের সংগ্রহ।</p>`,
+    `<ul>`,
+    ...articles.map(a =>
+      `<li><a href="/articles/${esc(a.slug)}">${esc(a.title)}</a>${a.excerpt ? ` — ${esc(a.excerpt)}` : ""}</li>`
+    ),
+    `</ul>`,
+    `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
+  ].join("\n");
+
+  let html = swapHead(template, { title, description: desc, canonical, schema });
+  html = swapBody(html, body);
+  emit(route, html, "0.8", "weekly");
+}
+
 // ── sitemap: home + high-value date pages ───────────────────────────────────
 
 // Home (highest priority, changes daily).
@@ -563,4 +679,4 @@ const monthCount = 3 * 12; // 3 years × 12 months
 const staticCount = staticPages.length;
 
 console.log(`\n🗺  sitemap.xml — ${sitemap.length} URLs`);
-console.log(`✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static pages\n`);
+console.log(`✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static + ${articles.length + 1} article pages\n`);
