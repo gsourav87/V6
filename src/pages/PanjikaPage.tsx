@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { format, addDays, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { NavBar } from "@/components/NavBar";
-import { applyPageSEO, removeSchema } from "@/lib/seo";
+import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import {
   getTithiAtSunrise, getNakshatraAtSunrise, getYogaAtSunrise,
   getKaranaAtSunrise, getRahuKalamInfo, formatKolkataTime, formatTithiEndBn,
@@ -85,7 +85,18 @@ export default function PanjikaPage() {
         "datePublished": date.toISOString().split("T")[0],
       },
     });
-    return () => removeSchema(SCHEMA_ID);
+    injectSchema("panjika-breadcrumb-schema", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "আজকের পঞ্জিকা", "item": `${SITE_URL}/panjika` },
+      ],
+    });
+    return () => {
+      removeSchema(SCHEMA_ID);
+      removeSchema("panjika-breadcrumb-schema");
+    };
   }, [date, bnDate, tithi, nakshatra, yoga, rahu]);
 
   function goTo(d: Date) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { NavBar } from "@/components/NavBar";
-import { applyPageSEO, removeSchema, SITE_URL } from "@/lib/seo";
+import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import {
   CITIES, City, fetchWeather, WeatherData, describeCode, uvLabel, formatDateBn,
 } from "@/lib/weather";
@@ -143,7 +143,18 @@ export default function WeatherPage() {
         "isPartOf": { "@type": "WebSite", "url": SITE_URL },
       },
     });
-    return () => removeSchema(SCHEMA_ID);
+    injectSchema("weather-breadcrumb-schema", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "আবহাওয়া পূর্বাভাস", "item": `${SITE_URL}/weather` },
+      ],
+    });
+    return () => {
+      removeSchema(SCHEMA_ID);
+      removeSchema("weather-breadcrumb-schema");
+    };
   }, []);
 
   return (

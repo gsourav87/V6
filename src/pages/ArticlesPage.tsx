@@ -4,7 +4,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { NavBar } from "@/components/NavBar";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { ArticleCard } from "@/components/ArticleCard";
-import { applyPageSEO, removeSchema, SITE_URL } from "@/lib/seo";
+import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { getAllArticles } from "@/lib/articles";
 import { ARTICLE_CATEGORIES, type ArticleCategory } from "@/lib/article-parser";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
@@ -50,7 +50,18 @@ export default function ArticlesPage() {
         },
       },
     });
-    return () => removeSchema(SCHEMA_ID);
+    injectSchema("articles-breadcrumb-schema", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "বাংলার ঐতিহ্য ও ইতিহাস", "item": `${SITE_URL}/articles` },
+      ],
+    });
+    return () => {
+      removeSchema(SCHEMA_ID);
+      removeSchema("articles-breadcrumb-schema");
+    };
   }, [articles]);
 
   return (

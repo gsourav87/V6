@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import { DayDetailsModal } from "@/components/DayDetailsModal";
 import { ShareButton } from "@/components/ShareButton";
-import { convertToBengali, toBengaliNumerals } from "@/lib/bengali-calendar";
+import { convertToBengali, toBengaliNumerals, BN_MONTH_SLUG } from "@/lib/bengali-calendar";
 import { getTithiAtSunrise, getNakshatraAtSunrise } from "@/lib/panjika";
 import { getFestivalsForDate } from "@/lib/festivals";
 import { getObservancesForDate } from "@/lib/observances";
@@ -66,13 +66,16 @@ export default function DatePage() {
       ]
     };
 
+    const monthSlug = BN_MONTH_SLUG[bnDate.monthNameBn];
     const breadcrumbSchema = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
-        { "@type": "ListItem", "position": 2, "name": `${bnDate.monthNameBn} ${year}`, "item": `${SITE_URL}/date/${year}/${month}/${day}` },
-        { "@type": "ListItem", "position": 3, "name": `${toBengaliNumerals(bnDate.day)} ${bnDate.monthNameBn}`, "item": `${SITE_URL}/date/${year}/${month}/${day}` }
+        ...(monthSlug
+          ? [{ "@type": "ListItem", "position": 2, "name": `${bnDate.monthNameBn} ${year}`, "item": `${SITE_URL}/month/${monthSlug}/${year}` }]
+          : []),
+        { "@type": "ListItem", "position": monthSlug ? 3 : 2, "name": `${toBengaliNumerals(bnDate.day)} ${bnDate.monthNameBn}`, "item": `${SITE_URL}/date/${year}/${month}/${day}` }
       ]
     };
 

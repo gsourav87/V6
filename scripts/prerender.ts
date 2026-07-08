@@ -20,7 +20,7 @@ import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
 import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
-import { convertToBengali, BANGLA_DAYS } from "../src/lib/bengali-calendar";
+import { convertToBengali, BANGLA_DAYS, BN_MONTH_SLUG } from "../src/lib/bengali-calendar";
 import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
 import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
 import { parseArticle, renderBlocksToHtml, extractFaq, ARTICLE_CATEGORIES, type Article } from "../src/lib/article-parser";
@@ -282,7 +282,14 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
       "acceptedAnswer": { "@type": "Answer", "text": a },
     })),
   };
-  const schema = { "@context": "https://schema.org", "@graph": [mainSchema, faqSchema] };
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+      { "@type": "ListItem", "position": 2, "name": detail.nameBn, "item": canonical },
+    ],
+  };
+  const schema = { "@context": "https://schema.org", "@graph": [mainSchema, breadcrumbSchema, faqSchema] };
 
   const body = [
     `<h1>${detail.icon} ${detail.nameBn} — ${year}</h1>`,
@@ -334,12 +341,23 @@ for (const gregYear of [2025, 2026, 2027]) {
 
     const schema = {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": title,
-      "description": desc,
-      "url": canonical,
-      "inLanguage": "bn",
-      "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "name": title,
+          "description": desc,
+          "url": canonical,
+          "inLanguage": "bn",
+          "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+            { "@type": "ListItem", "position": 2, "name": `${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ`, "item": canonical },
+          ],
+        },
+      ],
     };
 
     const body = [
@@ -362,6 +380,7 @@ console.log("\n🗂  Static pages");
 const staticPages = [
   {
     route: "/today-bengali-date",
+    crumb: "আজকের বাংলা তারিখ",
     title: "আজকের বাংলা তারিখ ২০২৬ — তিথি ও নক্ষত্র | সঠিক বাংলা ক্যালেন্ডার",
     desc:  "আজকের সঠিক বাংলা তারিখ, তিথি ও নক্ষত্র দেখুন। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা করা সঠিক বাংলা ক্যালেন্ডার।",
     body: [
@@ -374,6 +393,7 @@ const staticPages = [
   },
   {
     route: "/panjika",
+    crumb: "আজকের পঞ্জিকা",
     title: "আজকের পঞ্জিকা ২০২৬ — তিথি, নক্ষত্র, রাহু কাল | সঠিক বাংলা ক্যালেন্ডার",
     desc:  "আজকের বাংলা পঞ্জিকা — তিথি, নক্ষত্র, যোগ, করণ, সূর্যোদয়, সূর্যাস্ত ও রাহু কাল। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা।",
     body: [
@@ -385,6 +405,7 @@ const staticPages = [
   },
   {
     route: "/muhurta",
+    crumb: "শুভ মুহূর্ত",
     title: "শুভ মুহূর্ত ২০২৬ — বিবাহ, গৃহপ্রবেশ, যাত্রার শুভ দিন | সঠিক বাংলা ক্যালেন্ডার",
     desc:  "আগামী ১০ দিনের শুভ মুহূর্ত — বিবাহ, গৃহপ্রবেশ, যাত্রা, ব্যবসা, নামকরণ ও অন্নপ্রাশনের শুভ দিন। তিথি, নক্ষত্র, যোগ ও করণ বিচার করে কলকাতার সূর্যোদয় অনুসারে গণনা।",
     body: [
@@ -396,6 +417,7 @@ const staticPages = [
   },
   {
     route: "/rashifal",
+    crumb: "আজকের রাশিফল",
     title: "আজকের রাশিফল ২০২৬ — সব রাশির ভবিষ্যৎ বাংলায় | সঠিক বাংলা ক্যালেন্ডার",
     desc:  "আজকের রাশিফল — মেষ থেকে মীন পর্যন্ত সব রাশির ভবিষ্যৎ বাংলায় পড়ুন। প্রতিদিন আপডেট।",
     body: [
@@ -407,6 +429,7 @@ const staticPages = [
   },
   {
     route: "/weather",
+    crumb: "আবহাওয়া পূর্বাভাস",
     title: "আবহাওয়া পূর্বাভাস ২০২৬ — ১৫ দিনের আবহাওয়া বাংলায় | সঠিক বাংলা ক্যালেন্ডার",
     desc:  "কলকাতা, ঢাকা, চট্টগ্রাম, আগরতলা ও শিলিগুড়ির আবহাওয়া পূর্বাভাস। ১৫ দিনের বিস্তারিত আবহাওয়া বাংলায়।",
     body: [
@@ -421,12 +444,23 @@ for (const p of staticPages) {
   const canonical = `${SITE}${p.route}`;
   const schema = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": p.title,
-    "description": p.desc,
-    "url": canonical,
-    "inLanguage": "bn",
-    "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": p.title,
+        "description": p.desc,
+        "url": canonical,
+        "inLanguage": "bn",
+        "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": p.crumb, "item": canonical },
+        ],
+      },
+    ],
   };
   let html = swapHead(template, { title: p.title, description: p.desc, canonical, schema });
   html = swapBody(html, p.body);
@@ -515,21 +549,32 @@ for (const a of articles) {
 
   const schema = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "বাংলার ঐতিহ্য ও ইতিহাস",
-    "description": desc,
-    "url": canonical,
-    "inLanguage": "bn",
-    "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
-    "mainEntity": {
-      "@type": "ItemList",
-      "itemListElement": articles.slice(0, 20).map((a, i) => ({
-        "@type": "ListItem",
-        "position": i + 1,
-        "name": a.title,
-        "url": `${SITE}/articles/${a.slug}`,
-      })),
-    },
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "name": "বাংলার ঐতিহ্য ও ইতিহাস",
+        "description": desc,
+        "url": canonical,
+        "inLanguage": "bn",
+        "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+        "mainEntity": {
+          "@type": "ItemList",
+          "itemListElement": articles.slice(0, 20).map((a, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": a.title,
+            "url": `${SITE}/articles/${a.slug}`,
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": "বাংলার ঐতিহ্য ও ইতিহাস", "item": canonical },
+        ],
+      },
+    ],
   };
 
   const body = [
@@ -616,9 +661,20 @@ for (const d of [...dateSet].sort()) {
     `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডার</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
   ].filter(Boolean).join("\n");
 
+  const monthSlug = BN_MONTH_SLUG[bnDate.monthNameBn];
   const graph: object[] = [
     { "@type": "WebPage", "name": title, "description": desc, "url": canonical, "inLanguage": "bn",
       "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" } },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+        ...(monthSlug
+          ? [{ "@type": "ListItem", "position": 2, "name": `${bnDate.monthNameBn} ${y}`, "item": `${SITE}/month/${monthSlug}/${y}` }]
+          : []),
+        { "@type": "ListItem", "position": monthSlug ? 3 : 2, "name": `${bn(bnDate.day)} ${bnDate.monthNameBn}`, "item": canonical },
+      ],
+    },
     ...annivs.map(a => ({
       "@type": "Person",
       "name": a.person.nameBn,

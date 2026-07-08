@@ -3,21 +3,14 @@ import { useRoute, Link } from "wouter";
 import { NavBar } from "@/components/NavBar";
 import { ShareButton } from "@/components/ShareButton";
 import { TelegramCTA } from "@/components/TelegramCTA";
-import { applyPageSEO, removeSchema, SITE_URL } from "@/lib/seo";
+import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { getFestivalDetail, getCategoryLabel } from "@/lib/festival-details";
 import { getUpcomingDatesForSlug } from "@/lib/festivals";
 import { getObservanceDatesForSlug } from "@/lib/observances";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
+import { toBengaliDate, toBengaliNumerals, BN_MONTH_SLUG } from "@/lib/bengali-calendar";
 import { ArrowLeft, ExternalLink, Calendar, CalendarDays } from "lucide-react";
-
-const BN_MONTH_SLUG: Record<string, string> = {
-  "বৈশাখ": "boishakh", "জ্যৈষ্ঠ": "jaistha", "আষাঢ়": "ashar",
-  "শ্রাবণ": "shraban", "ভাদ্র": "bhadra", "আশ্বিন": "ashwin",
-  "কার্তিক": "kartik", "অগ্রহায়ণ": "agrohayon", "পৌষ": "poush",
-  "মাঘ": "magh", "ফাল্গুন": "falgun", "চৈত্র": "chaitra",
-};
 
 
 function DateCard({ date }: { date: string }) {
@@ -103,7 +96,19 @@ export default function FestivalPage() {
       } : undefined,
     });
 
-    return () => removeSchema(SCHEMA_ID);
+    injectSchema(`festival-${slug}-breadcrumb`, {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": detail.nameBn, "item": `${SITE_URL}/festival/${slug}` },
+      ],
+    });
+
+    return () => {
+      removeSchema(SCHEMA_ID);
+      removeSchema(`festival-${slug}-breadcrumb`);
+    };
   }, [slug, detail]);
 
   if (!detail) {

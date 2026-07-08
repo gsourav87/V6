@@ -30,6 +30,14 @@ export const BANGLA_MONTHS = [
   { en: "Choitro",    bn: "চৈত্র",    idx: 11 },
 ];
 
+/** Bengali month name (as produced by monthNameBn) → the /month/:slug route segment. */
+export const BN_MONTH_SLUG: Record<string, string> = {
+  "বৈশাখ": "boishakh", "জ্যৈষ্ঠ": "jaistha", "আষাঢ়": "ashar",
+  "শ্রাবণ": "shraban", "ভাদ্র": "bhadra", "আশ্বিন": "ashwin",
+  "কার্তিক": "kartik", "অগ্রহায়ণ": "agrohayon", "পৌষ": "poush",
+  "মাঘ": "magh", "ফাল্গুন": "falgun", "চৈত্র": "chaitra",
+};
+
 export interface BengaliSeason {
   nameBn: string;
   nameEn: string;

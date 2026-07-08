@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { NavBar } from "@/components/NavBar";
 import { MuhurtaCalc } from "@/components/MuhurtaCalc";
-import { applyPageSEO, removeSchema, SITE_URL } from "@/lib/seo";
+import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 
 const SCHEMA_ID = "muhurta-schema";
@@ -43,7 +43,18 @@ export default function MuhurtaPage() {
         ],
       },
     });
-    return () => removeSchema(SCHEMA_ID);
+    injectSchema("muhurta-breadcrumb-schema", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "শুভ মুহূর্ত", "item": `${SITE_URL}/muhurta` },
+      ],
+    });
+    return () => {
+      removeSchema(SCHEMA_ID);
+      removeSchema("muhurta-breadcrumb-schema");
+    };
   }, [today]);
 
   return (

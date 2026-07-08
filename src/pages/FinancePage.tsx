@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { NavBar } from "@/components/NavBar";
 import { RefreshCw, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { applyPageSEO } from "@/lib/seo";
+import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 
 // ── Fuel prices (Kolkata) ─────────────────────────────────────────
 // NOTE: India has no reliable free live fuel-price API, so these are entered by
@@ -162,6 +162,15 @@ export default function FinancePage() {
       description: "আজকের ডলার, পাউন্ড, ইউরো ও টাকার দাম, পেট্রোল-ডিজেলের দাম, এবং সেনসেক্স-নিফটি সহ শেয়ার বাজারের লাইভ আপডেট।",
       path: "/finance",
     });
+    injectSchema("finance-breadcrumb-schema", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "বাজারের দাম", "item": `${SITE_URL}/finance` },
+      ],
+    });
+    return () => removeSchema("finance-breadcrumb-schema");
   }, []);
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery<FinanceData>({
