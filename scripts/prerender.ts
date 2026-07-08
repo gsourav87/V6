@@ -650,17 +650,90 @@ for (const d of [...dateSet].sort()) {
   emit(route, html, "0.6", "monthly");
 }
 
-// ── write sitemap.xml ───────────────────────────────────────────────────────
+// ── write sitemaps: index + core / articles / dates ─────────────────────────
+// Split index keeps the primary sitemaps small and high-quality and lets
+// Search Console report indexing per bucket. All date pages stay prerendered
+// (they're reachable through internal links), but only the timely window
+// (-7…+90 days) is listed in the sitemap so the crawl queue isn't flooded
+// with hundreds of same-pattern URLs. lastmod is emitted only where it's
+// truthful (per-article publish dates) — identical stamps on every URL teach
+// Google to ignore the field.
 
-const xml = [
+const dateWinStart = shift(-7);
+const dateWinEnd   = shift(90);
+
+const articleLastmod = new Map<string, string>(
+  articles.map(a => [`${SITE}/articles/${a.slug}`, a.date])
+);
+if (articles[0]?.date) articleLastmod.set(`${SITE}/articles`, articles[0].date);
+
+const buckets: Record<string, typeof sitemap> = { core: [], articles: [], dates: [] };
+for (const u of sitemap) {
+  const route = u.loc.slice(SITE.length) || "/";
+  if (route === "/articles" || route.startsWith("/articles/")) buckets.articles.push(u);
+  else if (route.startsWith("/date/")) {
+    const m = route.match(/^\/date\/(\d+)\/(\d+)\/(\d+)$/);
+    const iso = m ? `${m[1]}-${String(m[2]).padStart(2, "0")}-${String(m[3]).padStart(2, "0")}` : "";
+    if (iso >= dateWinStart && iso <= dateWinEnd) buckets.dates.push(u);
+  } else buckets.core.push(u);
+}
+
+function writeUrlset(file: string, entries: typeof sitemap, lastmodFor?: (loc: string) => string | undefined): void {
+  const xml = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    ...entries.map(u => {
+      const lm = lastmodFor?.(u.loc);
+      return `  <url><loc>${u.loc}</loc>${lm ? `<lastmod>${lm}</lastmod>` : ""}<changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`;
+    }),
+    `</urlset>`,
+  ].join("\n");
+  fs.writeFileSync(path.join(DIST, file), xml, "utf-8");
+}
+
+writeUrlset("sitemap-core.xml", buckets.core);
+writeUrlset("sitemap-articles.xml", buckets.articles, loc => articleLastmod.get(loc));
+writeUrlset("sitemap-dates.xml", buckets.dates);
+
+const indexXml = [
   `<?xml version="1.0" encoding="UTF-8"?>`,
-  `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
-  ...sitemap.map(u =>
-    `  <url><loc>${u.loc}</loc><lastmod>${NOW_ISO}</lastmod><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`
+  `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+  ...["sitemap-core.xml", "sitemap-articles.xml", "sitemap-dates.xml"].map(
+    f => `  <sitemap><loc>${SITE}/${f}</loc><lastmod>${NOW_ISO}</lastmod></sitemap>`
   ),
-  `</urlset>`,
+  `</sitemapindex>`,
 ].join("\n");
-fs.writeFileSync(path.join(DIST, "sitemap.xml"), xml, "utf-8");
+fs.writeFileSync(path.join(DIST, "sitemap.xml"), indexXml, "utf-8");
+
+// ── RSS feed (বাংলার ঐতিহ্য ও ইতিহাস articles) ───────────────────────────────
+
+const rfc822 = (iso: string) => new Date(iso + "T06:00:00Z").toUTCString();
+const feedItems = articles.map(a => {
+  const link = `${SITE}/articles/${a.slug}`;
+  return [
+    `    <item>`,
+    `      <title>${esc(a.title)}</title>`,
+    `      <link>${link}</link>`,
+    `      <guid isPermaLink="true">${link}</guid>`,
+    `      <pubDate>${rfc822(a.date)}</pubDate>`,
+    `      <description>${esc(a.excerpt)}</description>`,
+    `    </item>`,
+  ].join("\n");
+});
+const feedXml = [
+  `<?xml version="1.0" encoding="UTF-8"?>`,
+  `<rss version="2.0">`,
+  `  <channel>`,
+  `    <title>বাংলার ঐতিহ্য ও ইতিহাস — সঠিক বাংলা ক্যালেন্ডার</title>`,
+  `    <link>${SITE}/articles</link>`,
+  `    <description>বাংলার উৎসব, বিখ্যাত ব্যক্তিত্ব, ইতিহাস, অজানা তথ্য ও বিশেষ দিনের নিবন্ধ</description>`,
+  `    <language>bn</language>`,
+  `    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>`,
+  ...feedItems,
+  `  </channel>`,
+  `</rss>`,
+].join("\n");
+fs.writeFileSync(path.join(DIST, "feed.xml"), feedXml, "utf-8");
 
 // ── summary ───────────────────────────────────────────────────────────────
 
@@ -668,5 +741,6 @@ const festCount  = Object.keys(FESTIVAL_DETAILS).length;
 const monthCount = 3 * 12; // 3 years × 12 months
 const staticCount = staticPages.length;
 
-console.log(`\n🗺  sitemap.xml — ${sitemap.length} URLs`);
+console.log(`\n🗺  sitemap index — core ${buckets.core.length} + articles ${buckets.articles.length} + dates ${buckets.dates.length} URLs (${sitemap.length - buckets.core.length - buckets.articles.length - buckets.dates.length} date pages prerendered but unlisted)`);
+console.log(`📡 feed.xml — ${articles.length} items`);
 console.log(`✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static + ${articles.length + 1} article pages\n`);

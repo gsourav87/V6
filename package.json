@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "build": "vite build --config vite.config.ts && tsx scripts/prerender.ts",
+    "build": "vite build --config vite.config.ts && tsx scripts/prerender.ts && tsx scripts/indexnow-submit.ts --if-vercel",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "indexnow": "tsx scripts/indexnow-submit.ts",
     "studio": "node ../article-studio.mjs",
