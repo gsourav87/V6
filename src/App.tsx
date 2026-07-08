@@ -35,7 +35,6 @@ import { RahuKalamCard } from "@/components/RahuKalamCard";
 // Below-the-fold widgets — lazy so they stay out of the initial bundle.
 const DateConverter  = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
 const SeoContent     = lazy(() => import("./components/SeoContent"));
-const LatestArticles = lazy(() => import("@/components/LatestArticles"));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
 import { TelegramCTA } from "@/components/TelegramCTA";
@@ -81,13 +80,6 @@ function Home() {
         </div>
 
         <LiveClock />
-
-        {/* বাংলার ঐতিহ্য ও ইতিহাস — latest articles, right under today's date */}
-        <Suspense fallback={null}>
-          <div className="mt-5 animate-fade-up stagger-1">
-            <LatestArticles />
-          </div>
-        </Suspense>
 
         {/* Page navigation cards */}
         <div className="grid grid-cols-5 gap-2 sm:gap-3 mt-4">
