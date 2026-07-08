@@ -100,48 +100,6 @@ export default defineConfig({
       }
     });
 
-    // ── News: Google News Bengali (most reliable) + BBC + ABP + Anandabazar ──
-    const NEWS_SOURCES = [
-      "https://news.google.com/rss/search?q=%E0%A6%AC%E0%A6%BE%E0%A6%82%E0%A6%B2%E0%A6%BE+%E0%A6%96%E0%A6%AC%E0%A6%B0&hl=bn-IN&gl=IN&ceid=IN:bn",
-      "https://feeds.bbci.co.uk/bengali/rss.xml",
-      "https://bengali.abplive.com/rss/news",
-      "https://www.anandabazar.com/rss/rss_national.xml",
-    ];
-    server.middlewares.use("/api/news", async (_req, res) => {
-      const results = await Promise.allSettled(
-        NEWS_SOURCES.map(url =>
-          fetch(url, {
-            headers: { "User-Agent": BROWSER_UA, "Accept": "application/rss+xml, application/xml, text/xml, */*" },
-            signal: AbortSignal.timeout(8000),
-          }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
-        )
-      );
-      const allItems: string[] = [];
-      for (const r of results) {
-        if (r.status === "fulfilled") {
-          allItems.push(...(r.value.match(/<item[\s>][\s\S]*?<\/item>/gi) ?? []));
-        }
-      }
-      const seen = new Set<string>();
-      const unique = allItems.filter(item => {
-        const raw = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1] ?? "";
-        const key = raw.replace(/\s+/g, " ").trim().slice(0, 60).toLowerCase();
-        if (!key || seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-      const body = [
-        `<?xml version="1.0" encoding="UTF-8"?>`,
-        `<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">`,
-        `<channel><title>Bengali News</title>`,
-        unique.join("\n"),
-        `</channel></rss>`,
-      ].join("\n");
-      res.setHeader("Content-Type", "application/xml; charset=utf-8");
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("X-Items-Count", String(unique.length));
-      res.end(body);
-    });
   },
   preview: {
     host: "0.0.0.0",

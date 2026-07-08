@@ -128,6 +128,7 @@ export default function ArticlePage() {
           <img
             src={article.image}
             alt={article.imageAlt}
+            onError={e => { e.currentTarget.style.display = "none"; }}
             className="w-full aspect-[16/9] object-cover rounded-2xl border border-border shadow-premium"
           />
         )}

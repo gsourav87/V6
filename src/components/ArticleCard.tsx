@@ -24,19 +24,19 @@ export function ArticleCard({ article, compact = false }: { article: Article; co
       href={`/articles/${article.slug}`}
       className="group card-lift flex flex-col bg-card border border-border/70 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-premium transition-colors"
     >
-      {/* Featured image — gradient tile fallback keeps cards uniform without one */}
+      {/* Featured image over a gradient tile — the tile also covers missing/broken images */}
       <div className={cn("relative w-full overflow-hidden", compact ? "aspect-[2/1]" : "aspect-[16/9]")}>
-        {article.image ? (
+        <div className={cn("absolute inset-0 bg-gradient-to-br grid place-items-center", cat.tile)}>
+          <span className="text-5xl drop-shadow">{cat.icon}</span>
+        </div>
+        {article.image && (
           <img
             src={article.image}
             alt={article.imageAlt}
             loading="lazy"
+            onError={e => { e.currentTarget.style.display = "none"; }}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        ) : (
-          <div className={cn("absolute inset-0 bg-gradient-to-br grid place-items-center", cat.tile)}>
-            <span className="text-5xl drop-shadow">{cat.icon}</span>
-          </div>
         )}
         <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-black/55 backdrop-blur text-white text-[11px] font-bengali font-semibold px-2.5 py-1 rounded-full">
           {cat.icon} {cat.labelBn}

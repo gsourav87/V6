@@ -4,7 +4,6 @@ const TodayBengaliDate = lazy(() => import("./pages/TodayBengaliDate"));
 const DatePage         = lazy(() => import("./pages/DatePage"));
 const MonthPage        = lazy(() => import("./pages/MonthPage"));
 const RashifalPage     = lazy(() => import("./pages/RashifalPage"));
-const NewsPage         = lazy(() => import("./pages/NewsPage"));
 const PanjikaPage      = lazy(() => import("./pages/PanjikaPage"));
 const MuhurtaPage      = lazy(() => import("./pages/MuhurtaPage"));
 const WeatherPage      = lazy(() => import("./pages/WeatherPage"));
@@ -34,8 +33,9 @@ import { MonthSpecialDays } from "@/components/MonthSpecialDays";
 import { RahuKalamCard } from "@/components/RahuKalamCard";
 
 // Below-the-fold widgets — lazy so they stay out of the initial bundle.
-const DateConverter = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
-const SeoContent    = lazy(() => import("./components/SeoContent"));
+const DateConverter  = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
+const SeoContent     = lazy(() => import("./components/SeoContent"));
+const LatestArticles = lazy(() => import("@/components/LatestArticles"));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
 import { TelegramCTA } from "@/components/TelegramCTA";
@@ -82,12 +82,19 @@ function Home() {
 
         <LiveClock />
 
+        {/* বাংলার ঐতিহ্য ও ইতিহাস — latest articles, right under today's date */}
+        <Suspense fallback={null}>
+          <div className="mt-5 animate-fade-up stagger-1">
+            <LatestArticles />
+          </div>
+        </Suspense>
+
         {/* Page navigation cards */}
         <div className="grid grid-cols-5 gap-2 sm:gap-3 mt-4">
           {([
             { href: "/panjika",  icon: "📅", label: "পঞ্জিকা",  desc: "তিথি · নক্ষত্র · রাহু কাল", tile: "from-orange-500 to-rose-600" },
             { href: "/rashifal", icon: "⭐", label: "রাশিফল",  desc: "আজকের রাশিফল",            tile: "from-violet-500 to-indigo-600" },
-            { href: "/news",     icon: "📰", label: "সংবাদ",   desc: "বাংলা খবর",              tile: "from-sky-500 to-blue-600" },
+            { href: "/articles", icon: "📚", label: "ঐতিহ্য",  desc: "ইতিহাস ও নিবন্ধ",         tile: "from-emerald-500 to-teal-600" },
             { href: "/weather",  icon: "🌤️", label: "আবহাওয়া", desc: "৭ দিনের পূর্বাভাস",       tile: "from-cyan-500 to-teal-600" },
             { href: "/finance",  icon: "💰", label: "বাজার",   desc: "মুদ্রা · জ্বালানি · শেয়ার", tile: "from-amber-500 to-yellow-600" },
           ] as const).map(({ href, icon, label, desc, tile }, i) => (
@@ -286,10 +293,6 @@ function App() {
 
                 <Route path="/rashifal">
                   <RashifalPage />
-                </Route>
-
-                <Route path="/news">
-                  <NewsPage />
                 </Route>
 
                 <Route path="/weather">

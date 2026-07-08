@@ -25,7 +25,7 @@ const FESTIVALS_TS = path.join(ROOT, "src", "lib", "festivals.ts");
 
 const CATEGORIES = ["festival", "person", "history", "observance", "facts"];
 const MONTH_SLUGS = ["boishakh", "jaistha", "ashar", "shraban", "bhadra", "ashwin", "kartik", "agrohayon", "poush", "magh", "falgun", "chaitra"];
-const STATIC_ROUTES = new Set(["/", "/panjika", "/muhurta", "/today-bengali-date", "/rashifal", "/news", "/weather", "/finance", "/articles"]);
+const STATIC_ROUTES = new Set(["/", "/panjika", "/muhurta", "/today-bengali-date", "/rashifal", "/weather", "/finance", "/articles"]);
 const DEFAULT_MODELS = { gemini: "gemini-2.5-flash", openai: "gpt-4o-mini", grok: "grok-3-mini" };
 
 // ── site context ────────────────────────────────────────────────────────────

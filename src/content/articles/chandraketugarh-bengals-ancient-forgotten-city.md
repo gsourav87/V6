@@ -4,7 +4,7 @@ slug: chandraketugarh-bengals-ancient-forgotten-city
 date: 2026-07-08
 category: history
 excerpt: কলকাতার প্রায় ২,০০০ বছর আগে গঙ্গা বদ্বীপ অঞ্চলে গড়ে উঠেছিল সমৃদ্ধ নগরসভ্যতা চন্দ্রকেতুগড়। খ্রিস্টপূর্ব তৃতীয়-চতুর্থ শতক থেকে মৌর্য, শুঙ্গ, কুষাণ ও গুপ্ত যুগে এর বিকাশ ঘটে, যা বাংলার প্রাচীন ইতিহাস ও বাণিজ্যের মূল্যবান দলিল।
-image: /articles/chandraketugarh-bengals-ancient-forgotten-city.jpg
+image: /articles/chandraketugarh-bengals-ancient-forgotten-city.webp
 imageAlt: চন্দ্রকেতুগড়ে প্রাপ্ত প্রাচীন টেরাকোটা ফলক ও প্রত্নবস্তুর চিত্র
 tags: চন্দ্রকেতুগড়, প্রাচীন বাংলা, প্রত্নতত্ত্ব, উত্তর ২৪ পরগনা, বাংলার ইতিহাস, প্রাচীন নগরী
 related: বাংলার সনের ইতিহাস | /articles/bangla-sonar-itihas, কলকাতা বিশ্ববিদ্যালয় | /festival/calcutta-university, পঞ্জিকার অজানা তথ্য | /articles/panjika-ojana-tothyo, স্বামী বিবেকানন্দ | /articles/swami-vivekananda

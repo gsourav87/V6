@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { href: "/muhurta",           label: "শুভ মুহূর্ত", icon: "🕉️" },
   { href: "/rashifal",          label: "রাশিফল",      icon: "🔮" },
   { href: "/articles",          label: "ঐতিহ্য ও ইতিহাস", icon: "📚" },
-  { href: "/news",              label: "সংবাদ",       icon: "📰" },
   { href: "/weather",           label: "আবহাওয়া",    icon: "🌤️" },
   { href: "/today-bengali-date",label: "আজকের তারিখ", icon: "🗓" },
   { href: "/finance",           label: "বাজার",       icon: "💰" },
