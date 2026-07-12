@@ -1,15 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Clock, Link2 } from "lucide-react";
+import { ArrowLeft, Clock, Eye, Link2 } from "lucide-react";
 import { NavBar } from "@/components/NavBar";
 import { ShareButton } from "@/components/ShareButton";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { ArticleBody } from "@/components/ArticleBody";
-import { ArticleCard, bnPublishDate } from "@/components/ArticleCard";
+import { ArticleCard, bnPublishDate, formatViewsBn } from "@/components/ArticleCard";
 import { applyPageSEO, removeSchema, SITE_URL, OG_IMAGE_URL } from "@/lib/seo";
 import { getArticleBySlug, getRelatedArticles } from "@/lib/articles";
 import { ARTICLE_CATEGORIES, extractFaq } from "@/lib/article-parser";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
+import { useArticleViews, registerArticleView } from "@/hooks/useArticleViews";
 import { cn } from "@/lib/utils";
 
 export default function ArticlePage() {
@@ -17,6 +18,14 @@ export default function ArticlePage() {
   const slug = params?.slug ?? "";
   const article = getArticleBySlug(slug);
   const related = article ? getRelatedArticles(article) : [];
+  const relatedViews = useArticleViews(related.map(a => a.slug));
+
+  const [views, setViews] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    if (!slug) return;
+    setViews(undefined);
+    registerArticleView(slug).then(setViews);
+  }, [slug]);
 
   const SCHEMA_ID = `article-${slug}-schema`;
 
@@ -117,6 +126,12 @@ export default function ArticlePage() {
               <Clock className="w-3.5 h-3.5" />
               {toBengaliNumerals(article.readMinutes)} মিনিট পড়া
             </span>
+            {typeof views === "number" && views > 0 && (
+              <span className="inline-flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5" />
+                {formatViewsBn(views)} বার পঠিত
+              </span>
+            )}
             <ShareButton variant="compact" text={`📖 ${article.title}\n${article.excerpt}`} />
           </div>
         </div>
@@ -176,7 +191,7 @@ export default function ArticlePage() {
             <h2 className="font-bold font-bengali text-xl mb-4">আরও পড়ুন</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {related.map(a => (
-                <ArticleCard key={a.slug} article={a} compact />
+                <ArticleCard key={a.slug} article={a} compact views={relatedViews[a.slug]} />
               ))}
             </div>
           </section>

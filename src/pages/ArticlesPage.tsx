@@ -8,6 +8,7 @@ import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { getAllArticles } from "@/lib/articles";
 import { ARTICLE_CATEGORIES, type ArticleCategory } from "@/lib/article-parser";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
+import { useArticleViews } from "@/hooks/useArticleViews";
 import { cn } from "@/lib/utils";
 
 const SCHEMA_ID = "articles-index-schema";
@@ -23,6 +24,7 @@ export default function ArticlesPage() {
   const [filter, setFilter] = useState<ArticleCategory | "all">("all");
   const articles = getAllArticles();
   const visible = filter === "all" ? articles : articles.filter(a => a.category === filter);
+  const views = useArticleViews(visible.map(a => a.slug));
 
   useEffect(() => {
     applyPageSEO({
@@ -118,7 +120,7 @@ export default function ArticlesPage() {
         {visible.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {visible.map(a => (
-              <ArticleCard key={a.slug} article={a} />
+              <ArticleCard key={a.slug} article={a} views={views[a.slug]} />
             ))}
           </div>
         ) : (

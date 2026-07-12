@@ -120,6 +120,63 @@ export async function fsDeleteToken(docId: string): Promise<void> {
   await fetch(`${fsBase()}/pushTokens/${docId}`, { method: "DELETE", headers: { Authorization: `Bearer ${at}` } }).catch(() => {});
 }
 
+// ── Firestore REST (collection: articleViews) ───────────────────────────────
+// Simple read-then-write counter (not a transaction). A view counter doesn't
+// need perfect atomicity — under simultaneous traffic it can occasionally
+// undercount by one, which is invisible to readers and not worth the extra
+// complexity of Firestore's transform-on-create semantics.
+
+function sanitizeSlug(slug: string): string {
+  return /^[a-z0-9-]{1,120}$/.test(slug) ? slug : "";
+}
+
+export async function fsIncrementView(slug: string): Promise<number> {
+  const clean = sanitizeSlug(slug);
+  if (!clean) throw new Error("invalid slug");
+  const at = await getAccessToken();
+  const url = `${fsBase()}/articleViews/${clean}`;
+
+  const getRes = await fetch(url, { headers: { Authorization: `Bearer ${at}` } });
+  let current = 0;
+  if (getRes.ok) {
+    const doc = await getRes.json();
+    current = Number(doc.fields?.count?.integerValue ?? 0);
+  }
+  const next = current + 1;
+
+  await fetch(url, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${at}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fields: {
+        count: { integerValue: String(next) },
+        updatedAt: { integerValue: String(Date.now()) },
+      },
+    }),
+  });
+  return next;
+}
+
+export async function fsGetViewCounts(slugs: string[]): Promise<Record<string, number>> {
+  const clean = [...new Set(slugs.map(sanitizeSlug).filter(Boolean))].slice(0, 60);
+  const out: Record<string, number> = {};
+  if (clean.length === 0) return out;
+
+  const at = await getAccessToken();
+  await Promise.all(
+    clean.map(async slug => {
+      out[slug] = 0;
+      try {
+        const r = await fetch(`${fsBase()}/articleViews/${slug}`, { headers: { Authorization: `Bearer ${at}` } });
+        if (!r.ok) return;
+        const doc = await r.json();
+        out[slug] = Number(doc.fields?.count?.integerValue ?? 0);
+      } catch { /* leave at 0 */ }
+    })
+  );
+  return out;
+}
+
 // ── FCM HTTP v1 send ────────────────────────────────────────────────────────
 export async function fcmSend(
   token: string,

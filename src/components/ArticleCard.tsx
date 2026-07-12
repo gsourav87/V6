@@ -1,8 +1,15 @@
 import { Link } from "wouter";
-import { Clock } from "lucide-react";
+import { Clock, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
 import { ARTICLE_CATEGORIES, type Article } from "@/lib/article-parser";
+
+/** ৫২৩ / ২.৩ হাজার / ১.২ লক্ষ — compact Bengali count for a reader badge. */
+export function formatViewsBn(n: number): string {
+  if (n >= 100000) return `${toBengaliNumerals(Math.floor(n / 100000 * 10) / 10)} লক্ষ`;
+  if (n >= 1000) return `${toBengaliNumerals(Math.floor(n / 1000 * 10) / 10)} হাজার`;
+  return toBengaliNumerals(n);
+}
 
 const GREG_MONTHS_BN = [
   "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
@@ -16,7 +23,7 @@ export function bnPublishDate(iso: string): string {
   return `${toBengaliNumerals(d)} ${GREG_MONTHS_BN[m - 1]} ${toBengaliNumerals(y)}`;
 }
 
-export function ArticleCard({ article, compact = false }: { article: Article; compact?: boolean }) {
+export function ArticleCard({ article, compact = false, views }: { article: Article; compact?: boolean; views?: number }) {
   const cat = ARTICLE_CATEGORIES[article.category];
 
   return (
@@ -58,6 +65,12 @@ export function ArticleCard({ article, compact = false }: { article: Article; co
             <Clock className="w-3 h-3" />
             {toBengaliNumerals(article.readMinutes)} মিনিট পড়া
           </span>
+          {typeof views === "number" && views > 0 && (
+            <span className="inline-flex items-center gap-1">
+              <Eye className="w-3 h-3" />
+              {formatViewsBn(views)} বার পঠিত
+            </span>
+          )}
         </div>
       </div>
     </Link>
