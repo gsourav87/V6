@@ -1,0 +1,71 @@
+name: Facebook Daily Posts
+
+# Six posts a day, each built from the site's own live panchang/festival/
+# weather/article data (scripts/facebook-post.ts) — nothing hand-written,
+# nothing that can drift from what a visitor sees on the site.
+#
+# Schedule (IST → UTC cron):
+#   06:30 morning   — আজকের পঞ্জিকা (তিথি, নক্ষত্র, সূর্যোদয়-সূর্যাস্ত)
+#   09:00 rashifal  — আজকের রাশিফল (link teaser)
+#   12:00 noon      — আজকের বিশেষ দিন (skipped on days with no festival/event)
+#   15:30 afternoon — আজকের আবহাওয়া (skipped if the weather API is down)
+#   18:30 evening   — বাংলার ঐতিহ্য ও ইতিহাস (rotating article highlight)
+#   21:00 night     — আগামীকালের প্রস্তুতি (tomorrow's tithi teaser)
+#
+# Setup (one time): repo Settings → Secrets and variables → Actions → add
+#   FB_PAGE_ID and FB_PAGE_ACCESS_TOKEN (System User token, set to never
+#   expire — see Meta Business Suite → Business Settings → System Users).
+#
+# Test any slot on demand: Actions tab → "Facebook Daily Posts" →
+#   Run workflow → pick a slot.
+
+on:
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Which slot to post (for testing)"
+        required: true
+        type: choice
+        options: [morning, rashifal, noon, afternoon, evening, night]
+  schedule:
+    - cron: "0 1 * * *"   # 06:30 IST — morning
+    - cron: "30 3 * * *"  # 09:00 IST — rashifal
+    - cron: "30 6 * * *"  # 12:00 IST — noon
+    - cron: "0 10 * * *"  # 15:30 IST — afternoon
+    - cron: "0 13 * * *"  # 18:30 IST — evening
+    - cron: "30 15 * * *" # 21:00 IST — night
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Determine slot
+        id: slot
+        run: |
+          if [ -n "${{ github.event.inputs.slot }}" ]; then
+            echo "name=${{ github.event.inputs.slot }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          case "${{ github.event.schedule }}" in
+            "0 1 * * *")   echo "name=morning"   >> "$GITHUB_OUTPUT" ;;
+            "30 3 * * *")  echo "name=rashifal"  >> "$GITHUB_OUTPUT" ;;
+            "30 6 * * *")  echo "name=noon"      >> "$GITHUB_OUTPUT" ;;
+            "0 10 * * *")  echo "name=afternoon" >> "$GITHUB_OUTPUT" ;;
+            "0 13 * * *")  echo "name=evening"   >> "$GITHUB_OUTPUT" ;;
+            "30 15 * * *") echo "name=night"     >> "$GITHUB_OUTPUT" ;;
+            *) echo "✗ unrecognized schedule: ${{ github.event.schedule }}"; exit 1 ;;
+          esac
+
+      - name: Post to Facebook
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+        run: npx tsx scripts/facebook-post.ts "${{ steps.slot.outputs.name }}"

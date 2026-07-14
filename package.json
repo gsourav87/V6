@@ -8,6 +8,7 @@
     "build": "vite build --config vite.config.ts && tsx scripts/prerender.ts && tsx scripts/indexnow-submit.ts --if-vercel",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "indexnow": "tsx scripts/indexnow-submit.ts",
+    "fb-post": "tsx scripts/facebook-post.ts",
     "studio": "node ../article-studio.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
