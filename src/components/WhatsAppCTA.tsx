@@ -1,9 +1,6 @@
 import { cn } from "@/lib/utils";
 
-// TODO: replace with the real channel invite link before this goes live —
-// WhatsApp → Updates tab → + → New channel → (after creating) channel name →
-// "Invite via link". Looks like https://whatsapp.com/channel/0029Xxxxxxxxxxx
-export const WHATSAPP_URL = "https://whatsapp.com/channel/PASTE_YOUR_CHANNEL_LINK_HERE";
+export const WHATSAPP_URL = "https://whatsapp.com/channel/0029Vb8cqx329759a4GL3M3f";
 
 /** WhatsApp glyph (brand mark). */
 function WhatsAppIcon({ className }: { className?: string }) {
