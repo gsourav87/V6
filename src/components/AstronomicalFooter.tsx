@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TelegramCTA } from "@/components/TelegramCTA";
+import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 
 export function AstronomicalFooter() {
   const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
@@ -175,9 +175,9 @@ export function AstronomicalFooter() {
           <div className="h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent flex-1" />
         </div>
 
-        {/* Telegram join */}
+        {/* WhatsApp join */}
         <div className="flex justify-center mb-8">
-          <TelegramCTA variant="pill" />
+          <WhatsAppCTA variant="pill" />
         </div>
 
         {/* Bottom text */}

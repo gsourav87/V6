@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { NavBar } from "@/components/NavBar";
-import { TelegramCTA } from "@/components/TelegramCTA";
+import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 import { ArticleCard } from "@/components/ArticleCard";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { getAllArticles } from "@/lib/articles";
@@ -130,9 +130,9 @@ export default function ArticlesPage() {
           </div>
         )}
 
-        {/* Telegram CTA */}
+        {/* WhatsApp CTA */}
         <div className="mt-10">
-          <TelegramCTA />
+          <WhatsAppCTA />
         </div>
 
         {/* Internal nav backlinks */}

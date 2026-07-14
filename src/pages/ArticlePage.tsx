@@ -3,7 +3,7 @@ import { useRoute, Link } from "wouter";
 import { ArrowLeft, Clock, Eye, Link2 } from "lucide-react";
 import { NavBar } from "@/components/NavBar";
 import { ShareButton } from "@/components/ShareButton";
-import { TelegramCTA } from "@/components/TelegramCTA";
+import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 import { ArticleBody } from "@/components/ArticleBody";
 import { ArticleCard, bnPublishDate, formatViewsBn } from "@/components/ArticleCard";
 import { applyPageSEO, removeSchema, SITE_URL, OG_IMAGE_URL } from "@/lib/seo";
@@ -197,8 +197,8 @@ export default function ArticlePage() {
           </section>
         )}
 
-        {/* Telegram CTA */}
-        <TelegramCTA />
+        {/* WhatsApp CTA */}
+        <WhatsAppCTA />
 
         {/* Internal nav backlinks */}
         <section className="border-t border-border pt-6">
