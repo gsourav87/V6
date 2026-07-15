@@ -156,10 +156,26 @@ const BUILDERS: Record<string, () => Promise<Post>> = {
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
-const slot = args.find(a => a in BUILDERS);
+const slot = args.find(a => a === "all" || a in BUILDERS);
 if (!slot) {
-  console.error(`usage: tsx scripts/facebook-post.ts <${Object.keys(BUILDERS).join("|")}> [--dry-run]`);
+  console.error(`usage: tsx scripts/facebook-post.ts <all|${Object.keys(BUILDERS).join("|")}> [--dry-run]`);
   process.exit(2);
+}
+
+if (slot === "all") {
+  if (!dryRun) {
+    console.error("✗ 'all' is preview-only — run with --dry-run (batch-posting for real isn't supported)");
+    process.exit(2);
+  }
+  for (const name of Object.keys(BUILDERS)) {
+    const p = await BUILDERS[name]();
+    if (!p) {
+      console.log(`↷ [${name}] nothing to post today — skipped.\n`);
+      continue;
+    }
+    console.log(`── [${name}] would post ──\n${p.message}\n\n🔗 ${p.link}\n`);
+  }
+  process.exit(0);
 }
 
 const post = await BUILDERS[slot]();
