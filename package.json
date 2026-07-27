@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "@types/suncalc": "^1.9.2",
+    "@vercel/speed-insights": "^2.0.0",
     "firebase": "^12.12.1",
     "suncalc": "^1.9.0"
   }
