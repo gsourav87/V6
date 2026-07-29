@@ -68,6 +68,12 @@ function Home() {
   const todayM = now.getMonth() + 1;
   const todayD = now.getDate();
 
+  useEffect(() => {
+    (window as any).gtag?.("event", "conversion", {
+      send_to: "AW-18328044398/JzDiCNjEr9ccEO6Gv6NE",
+    });
+  }, []);
+
   return (
     <div className="min-h-screen pb-20">
       <NavBar />
