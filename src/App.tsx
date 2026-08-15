@@ -36,11 +36,13 @@ import { RahuKalamCard } from "@/components/RahuKalamCard";
 // Below-the-fold widgets — lazy so they stay out of the initial bundle.
 const DateConverter  = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
 const SeoContent     = lazy(() => import("./components/SeoContent"));
+// Modal-only content — never needed for first paint, so keep it out of the
+// initial bundle too (only fetched once a user opens the modal).
+const LoginPage       = lazy(() => import("@/components/LoginPage").then(m => ({ default: m.LoginPage })));
+const DayDetailsModal = lazy(() => import("@/components/DayDetailsModal").then(m => ({ default: m.DayDetailsModal })));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
-import { LoginPage } from "@/components/LoginPage";
-import { DayDetailsModal } from "@/components/DayDetailsModal";
 import { AstronomicalFooter } from "@/components/AstronomicalFooter";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { NotifyPrompt } from "@/components/NotifyPrompt";
@@ -210,10 +212,12 @@ function Home() {
             onClick={() => setSelectedDate(null)}
           />
           <div className="relative z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
-            <DayDetailsModal
-              date={selectedDate}
-              onClose={() => setSelectedDate(null)}
-            />
+            <Suspense fallback={null}>
+              <DayDetailsModal
+                date={selectedDate}
+                onClose={() => setSelectedDate(null)}
+              />
+            </Suspense>
           </div>
         </div>
       )}
@@ -236,7 +240,9 @@ function Home() {
                 ×
               </button>
             </div>
-            <LoginPage onSuccess={() => setShowLoginModal(false)} />
+            <Suspense fallback={null}>
+              <LoginPage onSuccess={() => setShowLoginModal(false)} />
+            </Suspense>
           </div>
         </div>
       )}
