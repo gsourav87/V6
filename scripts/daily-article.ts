@@ -62,7 +62,7 @@ interface Draft {
 async function callGemini(prompt: string): Promise<string> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("GEMINI_API_KEY missing");
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.6-flash";
   const r = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
     {
@@ -111,6 +111,7 @@ ${avoid.map(t => `- ${t}`).join("\n")}
 - বডি টেক্সট মার্কডাউনে লেখো: ## এবং ### হেডিং, **বোল্ড**, *ইটালিক*, - বা ১. লিস্ট, > উক্তি — এসবই ব্যবহার করতে পারো। কোনো লিংক ([text](url)) বা ছবি ![alt](src) বসিও না, ওগুলো আলাদাভাবে যোগ হবে।
 - শেষে "## সাধারণ প্রশ্ন" শিরোনামে ৩-৪টি প্রাসঙ্গিক প্রশ্ন-উত্তর (### প্রশ্ন, তারপর উত্তর অনুচ্ছেদ) যোগ করো।
 - এসইও-বান্ধব, আকর্ষণীয়, কিন্তু তথ্যগতভাবে সঠিক শিরোনাম দাও।
+- যেখানে প্রাসঙ্গিক ও স্বাভাবিক, প্রসঙ্গক্রমে সম্পর্কিত উৎসব, পঞ্জিকা, রাশিফল বা শুভ মুহূর্তের মতো বিষয়ের উল্লেখ কোরো (জোর করে নয়, শুধু যেখানে গল্পের সাথে সত্যিই খাপ খায়)।
 
 শুধু নিচের কাঠামোয় একটি JSON অবজেক্ট ফেরত দাও, অন্য কিছু নয়:
 {
@@ -168,26 +169,28 @@ function buildInterlinkDict(): Record<string, string> {
   return dict;
 }
 
-/** Links the first standalone mention of each known term, up to a cap, skipping headings/FAQ. */
-function autoInterlink(body: string, dict: Record<string, string>, cap = 6): string {
+/** Links known-term mentions (up to 2 per line, cap total), skipping headings/quotes. */
+function autoInterlink(body: string, dict: Record<string, string>, cap = 8): string {
   const terms = Object.keys(dict).sort((a, b) => b.length - a.length);
   const lines = body.split(/\r?\n/);
   let linked = 0;
 
   for (let i = 0; i < lines.length && linked < cap; i++) {
-    const line = lines[i];
+    let line = lines[i];
     if (line.startsWith("#") || line.startsWith(">")) continue; // don't rewrite headings/quotes
+    let perLine = 0;
     for (const term of terms) {
-      if (linked >= cap) break;
+      if (linked >= cap || perLine >= 2) break;
       if (term.length < 3) continue;
       const idx = line.indexOf(term);
       if (idx === -1) continue;
       // Skip if already inside a markdown link's brackets.
       const before = line.slice(0, idx);
       if ((before.match(/\[/g)?.length ?? 0) > (before.match(/\]/g)?.length ?? 0)) continue;
-      lines[i] = line.slice(0, idx) + `[${term}](${dict[term]})` + line.slice(idx + term.length);
+      line = line.slice(0, idx) + `[${term}](${dict[term]})` + line.slice(idx + term.length);
+      lines[i] = line;
       linked++;
-      break; // one link per line keeps prose readable
+      perLine++;
     }
   }
   return lines.join("\n");
@@ -223,7 +226,28 @@ async function fetchFeaturedImage(query: string, slug: string): Promise<string |
   }
 }
 
-// ── 5. assemble + save ──────────────────────────────────────────────────────
+// ── 5. validate — reject rather than publish something broken/thin ────────
+
+const STATIC_ROUTES = new Set(["/", "/panjika", "/muhurta", "/today-bengali-date", "/rashifal", "/weather", "/finance", "/articles"]);
+
+function validateBody(body: string, dict: Record<string, string>): void {
+  const words = body.split(/\s+/).filter(Boolean).length;
+  if (words < 1200) throw new Error(`article too short (${words} words)`);
+  if (/^\s*\|.*\|\s*$/m.test(body)) throw new Error("markdown table found — not supported by the site's renderer");
+
+  const knownHrefs = new Set(Object.values(dict));
+  const hrefs = [...body.matchAll(/\((\/[^)\s]*)\)/g)].map(m => m[1]);
+  let internalCount = 0;
+  for (const href of hrefs) {
+    const clean = href.replace(/[#?].*$/, "").replace(/\/$/, "") || "/";
+    internalCount++;
+    if (STATIC_ROUTES.has(clean) || knownHrefs.has(clean)) continue;
+    throw new Error(`broken internal link: ${clean}`);
+  }
+  if (internalCount < 2) throw new Error(`only ${internalCount} internal link(s) inserted — at least 2 required`);
+}
+
+// ── 6. assemble + save ──────────────────────────────────────────────────────
 
 function toFrontmatterLine(key: string, value: string): string {
   return `${key}: ${value.replace(/\r?\n/g, " ").trim()}`;
@@ -233,6 +257,7 @@ async function main() {
   const draft = await generateDraft();
   const dict = buildInterlinkDict();
   const body = autoInterlink(draft.body, dict);
+  validateBody(body, dict);
   const image = await fetchFeaturedImage(draft.imageQuery, draft.slug);
 
   const frontmatter = [
