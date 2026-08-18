@@ -11,6 +11,10 @@ name: Daily Article
 # Pushes using the workflow's own built-in GITHUB_TOKEN — no personal
 # access token needed, unlike the git push in the docs elsewhere.
 #
+# After a successful publish, waits for the new page to actually be live on
+# Vercel, then sends a push notification via the existing api/send-push.ts
+# (same CRON_SECRET the daily panchang pushes use).
+#
 # Test on demand: Actions tab → "Daily Article" → Run workflow.
 
 on:
@@ -34,6 +38,7 @@ jobs:
       - run: npm ci
 
       - name: Generate article
+        id: generate
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
@@ -50,3 +55,22 @@ jobs:
           else
             echo "nothing to commit"
           fi
+
+      - name: Wait for the new article to be live, then notify subscribers
+        if: steps.generate.outputs.slug != ''
+        env:
+          SLUG: ${{ steps.generate.outputs.slug }}
+          TITLE: ${{ steps.generate.outputs.title }}
+        run: |
+          URL="https://www.sothikbanglacalendar.live/articles/$SLUG"
+          echo "waiting for $URL to deploy..."
+          for i in $(seq 1 18); do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            if [ "$CODE" = "200" ]; then echo "live after $((i * 10))s"; break; fi
+            sleep 10
+          done
+          curl -fsS -G "https://www.sothikbanglacalendar.live/api/send-push" \
+            --data-urlencode "slot=article" \
+            --data-urlencode "slug=$SLUG" \
+            --data-urlencode "title=$TITLE" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -X POST -w "\nHTTP %{http_code}\n"

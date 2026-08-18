@@ -285,6 +285,12 @@ async function main() {
   fs.writeFileSync(outPath, fileContent);
   fs.writeFileSync(QUEUE_FILE, picked!.remaining.join("\n"));
   console.log(`✓ published ${draft.slug}.md${image ? ` (+ ${draft.slug}.jpg)` : ""}`);
+
+  // Lets the workflow trigger a push notification for exactly this article.
+  const outputFile = process.env.GITHUB_OUTPUT;
+  if (outputFile) {
+    fs.appendFileSync(outputFile, `slug=${draft.slug}\ntitle=${draft.title}\n`);
+  }
 }
 
 main().catch(err => {
