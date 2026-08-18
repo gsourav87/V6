@@ -125,11 +125,30 @@ ${avoid.map(t => `- ${t}`).join("\n")}
 }`;
 
   const raw = await callGemini(prompt);
-  const draft: Draft = JSON.parse(raw);
+  // Belt and suspenders: strip a ```json ... ``` fence if the model adds one
+  // despite responseMimeType — seen occasionally across providers/models.
+  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
+  let draft: Draft;
+  try {
+    draft = JSON.parse(cleaned);
+  } catch {
+    throw new Error(`Gemini response wasn't valid JSON: ${cleaned.slice(0, 200)}`);
+  }
 
-  // Guard against a slug collision with an existing article.
+  for (const field of ["title", "slug", "excerpt", "imageQuery", "imageAlt", "body"] as const) {
+    if (typeof draft[field] !== "string" || !draft[field].trim()) {
+      throw new Error(`Gemini response missing/invalid "${field}"`);
+    }
+  }
+  if (!Array.isArray(draft.tags) || draft.tags.length === 0) {
+    throw new Error(`Gemini response missing/invalid "tags"`);
+  }
+
+  // Guard against a slug collision with an existing article, and against a
+  // slug that sanitizes down to nothing (e.g. the model returned Bengali text).
   const taken = existingSlugs();
   let slug = draft.slug.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  if (!slug) throw new Error(`slug sanitized to empty from "${draft.slug}"`);
   if (taken.has(slug)) {
     let n = 2;
     while (taken.has(`${slug}-${n}`)) n++;
@@ -287,9 +306,13 @@ async function main() {
   console.log(`✓ published ${draft.slug}.md${image ? ` (+ ${draft.slug}.jpg)` : ""}`);
 
   // Lets the workflow trigger a push notification for exactly this article.
+  // Values must never contain a raw newline — GitHub Actions fails the step
+  // outright on a malformed GITHUB_OUTPUT file, so strip defensively even
+  // though the title is already flattened for the frontmatter above.
   const outputFile = process.env.GITHUB_OUTPUT;
   if (outputFile) {
-    fs.appendFileSync(outputFile, `slug=${draft.slug}\ntitle=${draft.title}\n`);
+    const safeTitle = draft.title.replace(/\r?\n/g, " ").trim();
+    fs.appendFileSync(outputFile, `slug=${draft.slug}\ntitle=${safeTitle}\n`);
   }
 }
 
