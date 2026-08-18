@@ -23,7 +23,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/components/AuthContext";
 
 import { useCalendar } from "@/hooks/useCalendar";
-import { useTodayInfo } from "@/hooks/useTodayInfo";
 
 import { Header } from "@/components/Header";
 import { NavBar } from "@/components/NavBar";
@@ -58,7 +57,11 @@ function Home() {
     setYear,
   } = useCalendar();
 
-  const { now } = useTodayInfo();
+  // Just today's date for calendar highlighting — deliberately NOT the ticking
+  // useTodayInfo() hook, which re-renders every second. LiveClock already runs
+  // its own independent per-second timer for the clock face; duplicating that
+  // here would re-render the whole homepage every tick for no reason.
+  const [now] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 

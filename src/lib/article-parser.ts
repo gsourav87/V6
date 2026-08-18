@@ -64,6 +64,14 @@ export interface Article {
   readMinutes: number;
 }
 
+/**
+ * Everything about an article except its body. Cheap enough that every
+ * article's metadata can be loaded eagerly (for listings/cards) without
+ * pulling in anyone's full text — the body is fetched separately, only for
+ * the one article actually being read. See src/lib/articles.ts.
+ */
+export type ArticleMeta = Omit<Article, "blocks"> & { file: string };
+
 // ── inline markdown ───────────────────────────────────────────────────────
 
 const INLINE_RE = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*/;

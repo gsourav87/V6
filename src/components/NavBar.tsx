@@ -46,10 +46,11 @@ export function NavBar() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center gap-1">
         <Link href="/" aria-label="সঠিক বাংলা ক্যালেন্ডার — হোম" className="shrink-0 mr-2">
           <img
-            src="/logo-128.png"
+            src="/logo.webp"
             alt="সঠিক বাংলা ক্যালেন্ডার"
             width={52}
             height={52}
+            fetchPriority="high"
             className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full object-cover ring-1 ring-border"
           />
         </Link>

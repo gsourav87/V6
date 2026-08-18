@@ -7,3 +7,6 @@ dist
 
 # tooling cache
 .embedder/
+
+# generated at build/dev time — see scripts/gen-articles-meta.ts
+src/content/articles-meta.generated.json
