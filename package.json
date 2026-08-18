@@ -11,6 +11,7 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "indexnow": "tsx scripts/indexnow-submit.ts",
     "fb-post": "tsx scripts/facebook-post.ts",
+    "daily-article": "tsx scripts/daily-article.ts",
     "studio": "node ../article-studio.mjs",
     "pretypecheck": "tsx scripts/gen-articles-meta.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"

@@ -1,0 +1,52 @@
+name: Daily Article
+
+# One new "বাংলার ঐতিহ্য ও ইতিহাস" article a day — topic popped from
+# content-queue/article-topics.txt, written by Gemini, auto-interlinked
+# against real site data, featured image from Pexels (free license).
+#
+# Setup (one time): repo Settings → Secrets and variables → Actions → add
+#   GEMINI_API_KEY (required) and PEXELS_API_KEY (optional — publishes
+#   without a featured image if omitted).
+#
+# Pushes using the workflow's own built-in GITHUB_TOKEN — no personal
+# access token needed, unlike the git push in the docs elsewhere.
+#
+# Test on demand: Actions tab → "Daily Article" → Run workflow.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "30 22 * * *" # 04:00 IST
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Generate article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: npx tsx scripts/daily-article.ts
+
+      - name: Commit and push if a new article was written
+        run: |
+          git config user.name "sothik-bangla-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add content-queue/article-topics.txt src/content/articles public/articles
+            git commit -m "content: new article ($(date -u +%F))"
+            git push
+          else
+            echo "nothing to commit"
+          fi

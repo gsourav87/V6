@@ -1,0 +1,29 @@
+# One topic per line: category|বাংলা টপিক
+# category must be one of: festival, person, history, observance, facts
+# scripts/daily-article.ts pops the top line each day and removes it after
+# publishing. Lines starting with # are ignored. Add more any time.
+person|রাজা রামমোহন রায়
+festival|পয়লা বৈশাখ (বাংলা নববর্ষ)
+history|পলাশীর যুদ্ধ
+facts|রসগোল্লা ও সন্দেশের ইতিহাস
+person|বঙ্কিমচন্দ্র চট্টোপাধ্যায়
+festival|ভাইফোঁটা
+history|নীল বিদ্রোহ
+person|জগদীশচন্দ্র বসু
+festival|রাখীবন্ধন
+facts|ইলিশ মাছ ও বাঙালির সম্পর্ক
+history|বিষ্ণুপুরের টেরাকোটা মন্দির
+person|সত্যেন্দ্রনাথ বসু
+festival|জামাইষষ্ঠী
+history|মুর্শিদাবাদের নবাবী ইতিহাস
+person|বেগম রোকেয়া
+festival|অন্নপূর্ণা পূজা
+facts|বাংলা যাত্রাপালার ইতিহাস
+history|চন্দননগর ও শ্রীরামপুরের ঔপনিবেশিক ইতিহাস
+person|ভগিনী নিবেদিতা
+festival|গাজন উৎসব
+history|তেভাগা আন্দোলন
+person|প্রীতিলতা ওয়াদ্দেদার
+person|মাস্টারদা সূর্য সেন
+person|চিত্তরঞ্জন দাশ (দেশবন্ধু)
+person|রানী রাসমণি
