@@ -93,12 +93,42 @@ export function toBengaliNumerals(n: number | string): string {
 const monthStartCache = new Map<string, Date>();
 
 /**
+ * Verified overrides for month-start dates, sourced from a real published
+ * panjika (not computed). The astronomical calculation below implements
+ * modern (Drik/Lahiri) planetary positions, which can land a sankranti on
+ * either side of a sunrise boundary a day off from traditional Siddhanta-
+ * based panchangs — the two methods aren't a simple fixed offset apart, so
+ * this is a per-month correction, not a blanket shift. Add more entries as
+ * they're verified against a real panjika; unlisted year/month combos fall
+ * back to the astronomical calculation.
+ */
+const MONTH_START_OVERRIDES: Record<string, string> = {
+  "1433-3":  "2026-07-18", // শ্রাবণ
+  "1433-4":  "2026-08-19", // ভাদ্র
+  "1433-5":  "2026-09-19", // আশ্বিন
+  "1433-6":  "2026-10-19", // কার্তিক
+  "1433-7":  "2026-11-18", // অগ্রহায়ণ
+  "1433-8":  "2026-12-17", // পৌষ
+  "1433-9":  "2027-01-16", // মাঘ
+  "1433-10": "2027-02-14", // ফাল্গুন
+  "1433-11": "2027-03-16", // চৈত্র
+};
+
+/**
  * Returns the first day of a Bengali month in Gregorian (local Kolkata date).
  * Bengali month index: 0 = Boishakh, 1 = Joishtho, …, 11 = Choitro
  */
 export function bengaliMonthStart(banglaYear: number, banglaMonth: number): Date {
   const key = `${banglaYear}-${banglaMonth}`;
   if (monthStartCache.has(key)) return monthStartCache.get(key)!;
+
+  const override = MONTH_START_OVERRIDES[key];
+  if (override) {
+    const [oy, om, od] = override.split("-").map(Number);
+    const startDate = new Date(Date.UTC(oy, om - 1, od));
+    monthStartCache.set(key, startDate);
+    return startDate;
+  }
 
   // The sidereal zodiac sign the sun must enter to start this month
   const siderealTarget = banglaMonth * 30; // 0°=Aries, 30°=Taurus, …
