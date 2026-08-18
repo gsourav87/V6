@@ -24,6 +24,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "@/components/AuthContext";
 
 import { useCalendar } from "@/hooks/useCalendar";
@@ -347,6 +348,7 @@ function App() {
             <NotifyPrompt />
             <Toaster />
             <SpeedInsights />
+            <Analytics />
           </TooltipProvider>
         </QueryClientProvider>
       </ThemeProvider>
