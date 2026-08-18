@@ -107,7 +107,7 @@ const STATIC_FESTIVALS: Festival[] = [
   { date: "2026-08-18", nameBn: "মনসা পূজা", nameEn: "Manasa Puja", category: "religious", icon: "🐍" },
   { date: "2026-09-17", nameBn: "বিশ্বকর্মা পূজা", nameEn: "Biswakarma Puja", category: "religious", icon: "⚙️", slug: "biswakarma-puja" },
   { date: "2026-10-02", nameBn: "গান্ধী জয়ন্তী", nameEn: "Gandhi Jayanti", category: "national", icon: "🕊️", slug: "gandhi-jayanti" },
-  { date: "2026-10-12", nameBn: "মহালয়া", nameEn: "Mahalaya", category: "religious", icon: "🙏", slug: "mahalaya" },
+  { date: "2026-10-10", nameBn: "মহালয়া", nameEn: "Mahalaya", category: "religious", icon: "🙏", slug: "mahalaya" },
   { date: "2026-10-17", nameBn: "দুর্গা পূজা (মহাষষ্ঠী)", nameEn: "Durga Puja - Maha Shashthi", category: "religious", icon: "🛕", slug: "durga-puja" },
   { date: "2026-10-18", nameBn: "দুর্গা পূজা (মহাসপ্তমী)", nameEn: "Durga Puja - Maha Saptami", category: "religious", icon: "🛕", slug: "durga-puja" },
   { date: "2026-10-19", nameBn: "দুর্গা পূজা (মহাঅষ্টমী)", nameEn: "Durga Puja - Maha Ashtami", category: "religious", icon: "🛕", slug: "durga-puja" },
