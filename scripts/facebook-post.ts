@@ -5,7 +5,12 @@
  * visitor sees on the site.
  *
  * Run: tsx scripts/facebook-post.ts <slot>
- *   slot: morning | rashifal | noon | afternoon | evening | night
+ *   slot: morning | rashifal | noon | afternoon | newarticle | evening | night
+ *
+ * "newarticle" is distinct from "evening" — it only produces a post when an
+ * article was actually published *today* (date match), for a same-day
+ * "just dropped" announcement. "evening" is a daily rotating highlight
+ * through the whole back-catalog regardless of publish date.
  *
  * Env: FB_PAGE_ID, FB_PAGE_ACCESS_TOKEN
  *
@@ -111,6 +116,22 @@ async function buildAfternoon(): Promise<Post> {
   }
 }
 
+async function buildNewArticle(): Promise<Post> {
+  const { y, m, d } = todayIST();
+  const todayStr = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const articles = loadArticles();
+  const a = articles.find(art => art.date === todayStr);
+  if (!a) return null; // no article published today (queue empty / validation failed) — skip
+  const message = [
+    "🆕 আজকের নতুন নিবন্ধ প্রকাশিত হলো!",
+    "",
+    a.title,
+    "",
+    a.excerpt,
+  ].join("\n");
+  return { message, link: `${SITE}/articles/${a.slug}` };
+}
+
 async function buildEvening(): Promise<Post> {
   const articles = loadArticles();
   if (articles.length === 0) return null;
@@ -148,6 +169,7 @@ const BUILDERS: Record<string, () => Promise<Post>> = {
   rashifal: buildRashifal,
   noon: buildNoon,
   afternoon: buildAfternoon,
+  newarticle: buildNewArticle,
   evening: buildEvening,
   night: buildNight,
 };
