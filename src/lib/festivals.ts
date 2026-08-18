@@ -104,6 +104,7 @@ const STATIC_FESTIVALS: Festival[] = [
   { date: "2026-05-27", nameBn: "ইদ-উল-আজহা", nameEn: "Eid ul-Adha", category: "religious", icon: "🌙", slug: "eid-ul-adha" },
   { date: "2026-07-16", nameBn: "রথযাত্রা", nameEn: "Rath Yatra", category: "religious", icon: "🛕", slug: "rath-yatra" },
   { date: "2026-08-15", nameBn: "স্বাধীনতা দিবস", nameEn: "Independence Day", category: "national", icon: "🇮🇳", slug: "independence-day" },
+  { date: "2026-08-18", nameBn: "মনসা পূজা", nameEn: "Manasa Puja", category: "religious", icon: "🐍" },
   { date: "2026-09-17", nameBn: "বিশ্বকর্মা পূজা", nameEn: "Biswakarma Puja", category: "religious", icon: "⚙️", slug: "biswakarma-puja" },
   { date: "2026-10-02", nameBn: "গান্ধী জয়ন্তী", nameEn: "Gandhi Jayanti", category: "national", icon: "🕊️", slug: "gandhi-jayanti" },
   { date: "2026-10-12", nameBn: "মহালয়া", nameEn: "Mahalaya", category: "religious", icon: "🙏", slug: "mahalaya" },
