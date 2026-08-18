@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
+
+const FOOTER_LINKS = [
+  { href: "/about", label: "আমাদের সম্পর্কে" },
+  { href: "/contact", label: "যোগাযোগ" },
+  { href: "/privacy-policy", label: "প্রাইভেসি পলিসি" },
+  { href: "/disclaimer", label: "ডিসক্লেমার" },
+];
 
 export function AstronomicalFooter() {
   const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
@@ -182,6 +190,13 @@ export function AstronomicalFooter() {
 
         {/* Bottom text */}
         <div className="text-center">
+          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-4 font-bengali text-sm">
+            {FOOTER_LINKS.map(l => (
+              <Link key={l.href} href={l.href} className="text-blue-200/70 hover:text-blue-100 transition-colors">
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <p className="text-xs sm:text-sm text-blue-200/60 font-bengali">
             সঠিক বাংলা ক্যালেন্ডার — আপনার সময়ের সঙ্গী
           </p>

@@ -11,6 +11,10 @@ const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
 const ArticlesPage     = lazy(() => import("./pages/ArticlesPage"));
 const ArticlePage      = lazy(() => import("./pages/ArticlePage"));
+const AboutPage        = lazy(() => import("./pages/AboutPage"));
+const ContactPage      = lazy(() => import("./pages/ContactPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const DisclaimerPage   = lazy(() => import("./pages/DisclaimerPage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import { useState, useEffect } from "react";
@@ -315,6 +319,22 @@ function App() {
 
                 <Route path="/articles/:slug">
                   <ArticlePage />
+                </Route>
+
+                <Route path="/about">
+                  <AboutPage />
+                </Route>
+
+                <Route path="/contact">
+                  <ContactPage />
+                </Route>
+
+                <Route path="/privacy-policy">
+                  <PrivacyPolicyPage />
+                </Route>
+
+                <Route path="/disclaimer">
+                  <DisclaimerPage />
                 </Route>
 
                 <Route>
