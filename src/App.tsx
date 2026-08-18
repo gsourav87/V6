@@ -76,9 +76,11 @@ function Home() {
   const todayD = now.getDate();
 
   useEffect(() => {
-    (window as any).gtag?.("event", "conversion", {
-      send_to: "AW-18328044398/JzDiCNjEr9ccEO6Gv6NE",
-    });
+    // Fired via GTM (Custom Event trigger "homepage_landing") rather than a
+    // direct gtag() call — GTM's gtm.js doesn't expose window.gtag the way
+    // the old gtag.js loader did, only dataLayer. This also keeps the actual
+    // Ads conversion ID out of the app code entirely; GTM owns that mapping.
+    (window as any).dataLayer?.push({ event: "homepage_landing" });
   }, []);
 
   return (
