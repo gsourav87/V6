@@ -21,6 +21,22 @@ const IMAGES_DIR = path.join(ROOT, "public", "articles");
 const dryRun = process.argv.includes("--dry-run");
 const todayISO = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
 
+// A second cron trigger ~40 minutes after the main one retries automatically
+// if the first run failed (API hiccup, rate limit, etc.) — this guard makes
+// that safe: skip immediately, before any Gemini call, if today's run
+// already succeeded, so the retry can't double-publish or burn API quota.
+function alreadyPublishedToday(): boolean {
+  if (!fs.existsSync(ARTICLES_DIR)) return false;
+  return fs.readdirSync(ARTICLES_DIR)
+    .filter(f => f.endsWith(".md"))
+    .some(f => /^date:\s*(.+)$/m.exec(fs.readFileSync(path.join(ARTICLES_DIR, f), "utf-8"))?.[1]?.trim() === todayISO);
+}
+
+if (!dryRun && alreadyPublishedToday()) {
+  console.log(`↷ an article already published today (${todayISO}) — skipping this run.`);
+  process.exit(0);
+}
+
 // ── 1. pop the next topic off the queue ────────────────────────────────────
 
 function nextTopic(): { category: ArticleCategory; topic: string; remaining: string[] } | null {

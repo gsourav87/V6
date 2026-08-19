@@ -15,12 +15,18 @@ name: Daily Article
 # Vercel, then sends a push notification via the existing api/send-push.ts
 # (same CRON_SECRET the daily panchang pushes use).
 #
+# Runs twice: 08:00 IST, then a retry at 08:40 IST in case the first run hit
+# a transient failure (Gemini rate limit, network blip, etc.). The retry is
+# a no-op if the 08:00 run already succeeded — daily-article.ts checks for
+# today's article before doing any work.
+#
 # Test on demand: Actions tab → "Daily Article" → Run workflow.
 
 on:
   workflow_dispatch: {}
   schedule:
     - cron: "30 2 * * *" # 08:00 IST
+    - cron: "10 3 * * *" # 08:40 IST — retry if the 08:00 run failed
 
 permissions:
   contents: write
