@@ -8,12 +8,12 @@ import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 // NOTE: India has no reliable free live fuel-price API, so these are entered by
 // hand. To keep them accurate, update the prices AND the FUEL_UPDATED date below
 // whenever rates change (typically rare — petrol/diesel revise occasionally).
-const FUEL_UPDATED = "১১ জুন ২০২৬"; // ← update this date when you edit prices
+const FUEL_UPDATED = "১৯ আগস্ট ২০২৬"; // ← update this date when you edit prices
 const FUEL: { icon: string; label: string; price: number; unit: string }[] = [
-  { icon: "⛽", label: "পেট্রোল",             price: 105.41, unit: "প্রতি লিটার" },
-  { icon: "🛢️", label: "ডিজেল",              price: 92.02,  unit: "প্রতি লিটার" },
-  { icon: "🔵", label: "এলপিজি (১৪.২ কেজি)", price: 879.00, unit: "প্রতি সিলিন্ডার" },
-  { icon: "💨", label: "সিএনজি",             price: 89.43,  unit: "প্রতি কেজি" },
+  { icon: "⛽", label: "পেট্রোল",             price: 109.07, unit: "প্রতি লিটার" },
+  { icon: "🛢️", label: "ডিজেল",              price: 99.82,  unit: "প্রতি লিটার" },
+  { icon: "🔵", label: "এলপিজি (১৪.২ কেজি)", price: 968.00, unit: "প্রতি সিলিন্ডার" },
+  { icon: "💨", label: "সিএনজি",             price: 99.50,  unit: "প্রতি কেজি" },
 ];
 
 const STOCK_META: Record<string, { nameBn: string; icon: string }> = {
