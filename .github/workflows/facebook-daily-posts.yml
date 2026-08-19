@@ -1,16 +1,19 @@
 name: Facebook Daily Posts
 
-# Six posts a day, each built from the site's own live panchang/festival/
+# Seven posts a day, each built from the site's own live panchang/festival/
 # weather/article data (scripts/facebook-post.ts) — nothing hand-written,
 # nothing that can drift from what a visitor sees on the site.
 #
 # Schedule (IST → UTC cron):
-#   06:30 morning   — আজকের পঞ্জিকা (তিথি, নক্ষত্র, সূর্যোদয়-সূর্যাস্ত)
-#   09:00 rashifal  — আজকের রাশিফল (link teaser)
-#   12:00 noon      — আজকের বিশেষ দিন (skipped on days with no festival/event)
-#   15:30 afternoon — আজকের আবহাওয়া (skipped if the weather API is down)
-#   18:30 evening   — বাংলার ঐতিহ্য ও ইতিহাস (rotating article highlight)
-#   21:00 night     — আগামীকালের প্রস্তুতি (tomorrow's tithi teaser)
+#   06:30 morning     — আজকের পঞ্জিকা (তিথি, নক্ষত্র, সূর্যোদয়-সূর্যাস্ত)
+#   09:00 rashifal    — আজকের রাশিফল (link teaser)
+#   09:15 newarticle  — same-day "just published" announcement (skipped if
+#                        no article published today; runs after the daily
+#                        article workflow's 08:00/08:40 IST run + retry)
+#   12:00 noon        — আজকের বিশেষ দিন (skipped on days with no festival/event)
+#   15:30 afternoon   — আজকের আবহাওয়া (skipped if the weather API is down)
+#   18:30 evening     — বাংলার ঐতিহ্য ও ইতিহাস (rotating article highlight)
+#   21:00 night       — আগামীকালের প্রস্তুতি (tomorrow's tithi teaser)
 #
 # Setup (one time): repo Settings → Secrets and variables → Actions → add
 #   FB_PAGE_ID and FB_PAGE_ACCESS_TOKEN (System User token, set to never
@@ -26,10 +29,11 @@ on:
         description: "Which slot to post (for testing)"
         required: true
         type: choice
-        options: [morning, rashifal, noon, afternoon, evening, night]
+        options: [morning, rashifal, newarticle, noon, afternoon, evening, night]
   schedule:
     - cron: "0 1 * * *"   # 06:30 IST — morning
     - cron: "30 3 * * *"  # 09:00 IST — rashifal
+    - cron: "45 3 * * *"  # 09:15 IST — newarticle
     - cron: "30 6 * * *"  # 12:00 IST — noon
     - cron: "0 10 * * *"  # 15:30 IST — afternoon
     - cron: "0 13 * * *"  # 18:30 IST — evening
@@ -55,12 +59,13 @@ jobs:
             exit 0
           fi
           case "${{ github.event.schedule }}" in
-            "0 1 * * *")   echo "name=morning"   >> "$GITHUB_OUTPUT" ;;
-            "30 3 * * *")  echo "name=rashifal"  >> "$GITHUB_OUTPUT" ;;
-            "30 6 * * *")  echo "name=noon"      >> "$GITHUB_OUTPUT" ;;
-            "0 10 * * *")  echo "name=afternoon" >> "$GITHUB_OUTPUT" ;;
-            "0 13 * * *")  echo "name=evening"   >> "$GITHUB_OUTPUT" ;;
-            "30 15 * * *") echo "name=night"     >> "$GITHUB_OUTPUT" ;;
+            "0 1 * * *")   echo "name=morning"     >> "$GITHUB_OUTPUT" ;;
+            "30 3 * * *")  echo "name=rashifal"    >> "$GITHUB_OUTPUT" ;;
+            "45 3 * * *")  echo "name=newarticle"  >> "$GITHUB_OUTPUT" ;;
+            "30 6 * * *")  echo "name=noon"        >> "$GITHUB_OUTPUT" ;;
+            "0 10 * * *")  echo "name=afternoon"   >> "$GITHUB_OUTPUT" ;;
+            "0 13 * * *")  echo "name=evening"     >> "$GITHUB_OUTPUT" ;;
+            "30 15 * * *") echo "name=night"       >> "$GITHUB_OUTPUT" ;;
             *) echo "✗ unrecognized schedule: ${{ github.event.schedule }}"; exit 1 ;;
           esac
 
