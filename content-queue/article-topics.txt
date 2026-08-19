@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-festival|পয়লা বৈশাখ (বাংলা নববর্ষ)
 history|পলাশীর যুদ্ধ
 facts|রসগোল্লা ও সন্দেশের ইতিহাস
 person|বঙ্কিমচন্দ্র চট্টোপাধ্যায়
