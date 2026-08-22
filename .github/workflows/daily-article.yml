@@ -31,6 +31,12 @@ on:
 permissions:
   contents: write
 
+# If the 08:00 run is somehow still going when the 08:40 retry fires, queue
+# rather than race on the git push — don't cancel a run that might succeed.
+concurrency:
+  group: daily-article
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -57,7 +63,16 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git add content-queue/article-topics.txt src/content/articles public/articles
             git commit -m "content: new article ($(date -u +%F))"
-            git push
+            # Retry once with a rebase in case something else pushed to main
+            # in between (e.g. an overlapping run, or a manual commit). Must
+            # exit non-zero if both attempts fail — don't silently swallow it.
+            pushed=false
+            for i in 1 2; do
+              if git push; then pushed=true; break; fi
+              echo "push rejected, rebasing onto origin/main and retrying..."
+              git pull --rebase origin main
+            done
+            [ "$pushed" = true ] || { echo "✗ push failed after retry"; exit 1; }
           else
             echo "nothing to commit"
           fi
@@ -76,6 +91,7 @@ jobs:
             sleep 10
           done
           curl -fsS -G "https://www.sothikbanglacalendar.live/api/send-push" \
+            --retry 3 --retry-delay 20 --retry-connrefused \
             --data-urlencode "slot=article" \
             --data-urlencode "slug=$SLUG" \
             --data-urlencode "title=$TITLE" \

@@ -26,6 +26,6 @@ jobs:
           fi
       - name: Trigger push send
         run: |
-          curl -fsS -X POST \
+          curl -fsS -X POST --retry 3 --retry-delay 20 --retry-connrefused \
             "https://www.sothikbanglacalendar.live/api/send-push?slot=${{ steps.slot.outputs.slot }}" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -w "\nHTTP %{http_code}\n"
