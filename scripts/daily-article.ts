@@ -86,14 +86,18 @@ async function callGemini(prompt: string): Promise<string> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json", temperature: 0.85, maxOutputTokens: 8192 },
+        generationConfig: { responseMimeType: "application/json", temperature: 0.85, maxOutputTokens: 32768 },
       }),
     }
   );
   const data: any = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data?.error?.message || `Gemini HTTP ${r.status}`);
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const candidate = data?.candidates?.[0];
+  const text = candidate?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned an empty response");
+  if (candidate?.finishReason === "MAX_TOKENS") {
+    throw new Error(`Gemini hit the maxOutputTokens cap mid-response (truncated at ${text.length} chars) — raise maxOutputTokens further`);
+  }
   return text;
 }
 
