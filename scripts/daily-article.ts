@@ -317,6 +317,9 @@ async function generateAndValidate(maxAttempts = 3): Promise<{ draft: Draft; bod
       lastError = (err as Error).message;
       console.log(`↻ attempt ${attempt}/${maxAttempts} failed: ${lastError}`);
       if (attempt === maxAttempts) throw err;
+      // Brief backoff before retrying — an instant retry could hit the same
+      // transient rate-limit that caused the failure in the first place.
+      await new Promise(res => setTimeout(res, attempt * 5000)); // 5s, then 10s
     }
   }
   throw new Error("unreachable");
