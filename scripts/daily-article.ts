@@ -116,11 +116,15 @@ function existingTitles(): string[] {
     .map(f => parseArticle(fs.readFileSync(path.join(ARTICLES_DIR, f), "utf-8"), f).title);
 }
 
-async function generateDraft(): Promise<Draft> {
+async function generateDraft(correction?: string): Promise<Draft> {
   const catLabel = ARTICLE_CATEGORIES[category].labelBn;
   const avoid = existingTitles();
 
-  const prompt = `তুমি "সঠিক বাংলা ক্যালেন্ডার" (sothikbanglacalendar.live) ওয়েবসাইটের "বাংলার ঐতিহ্য ও ইতিহাস" বিভাগের একজন বাংলা কনটেন্ট লেখক। পাঠক মূলত পশ্চিমবঙ্গ ও বাংলাদেশের বাংলাভাষী।
+  const correctionNote = correction
+    ? `\n\n⚠️ গুরুত্বপূর্ণ: আগের চেষ্টায় এই সমস্যা হয়েছিল — "${correction}"। এবার সেটি অবশ্যই এড়িয়ে ঠিকভাবে লেখো।\n`
+    : "";
+
+  const prompt = `তুমি "সঠিক বাংলা ক্যালেন্ডার" (sothikbanglacalendar.live) ওয়েবসাইটের "বাংলার ঐতিহ্য ও ইতিহাস" বিভাগের একজন বাংলা কনটেন্ট লেখক। পাঠক মূলত পশ্চিমবঙ্গ ও বাংলাদেশের বাংলাভাষী।${correctionNote}
 
 বিষয় (${catLabel}): ${topic}
 
@@ -292,11 +296,34 @@ function toFrontmatterLine(key: string, value: string): string {
   return `${key}: ${value.replace(/\r?\n/g, " ").trim()}`;
 }
 
+/**
+ * Generates + validates, retrying in-process (with the actual validation
+ * error fed back into the next prompt as corrective feedback) instead of
+ * failing the whole run over one fixable mistake. Most validation failures
+ * (a stray markdown table, too few interlinks, a too-short draft) are things
+ * Gemini can fix immediately when told exactly what went wrong — far faster
+ * than waiting for the next scheduled run.
+ */
+async function generateAndValidate(maxAttempts = 3): Promise<{ draft: Draft; body: string }> {
+  let lastError: string | undefined;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const draft = await generateDraft(lastError);
+      const dict = buildInterlinkDict();
+      const body = autoInterlink(draft.body, dict);
+      validateBody(body, dict);
+      return { draft, body };
+    } catch (err) {
+      lastError = (err as Error).message;
+      console.log(`↻ attempt ${attempt}/${maxAttempts} failed: ${lastError}`);
+      if (attempt === maxAttempts) throw err;
+    }
+  }
+  throw new Error("unreachable");
+}
+
 async function main() {
-  const draft = await generateDraft();
-  const dict = buildInterlinkDict();
-  const body = autoInterlink(draft.body, dict);
-  validateBody(body, dict);
+  const { draft, body } = await generateAndValidate();
   const image = await fetchFeaturedImage(draft.imageQuery, draft.slug);
 
   const frontmatter = [
