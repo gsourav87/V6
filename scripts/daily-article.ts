@@ -251,7 +251,14 @@ async function fetchFeaturedImage(query: string, slug: string): Promise<string |
     });
     if (!r.ok) throw new Error(`Pexels search HTTP ${r.status}`);
     const data: any = await r.json();
-    const photoUrl = data?.photos?.[0]?.src?.large;
+    // "landscape" is a fixed 1200×627 crop — meets Google Discover's 1200px
+    // minimum-width requirement exactly AND matches the ~1.91:1 aspect ratio
+    // Facebook/Twitter/LinkedIn expect for OG images. "large" (~940px) was
+    // too narrow for Discover eligibility; large2x is bigger but inconsistent
+    // aspect ratio per photo, so it's the fallback, not the first choice.
+    const photoUrl = data?.photos?.[0]?.src?.landscape
+      ?? data?.photos?.[0]?.src?.large2x
+      ?? data?.photos?.[0]?.src?.large;
     if (!photoUrl) { console.log(`↷ no Pexels results for "${query}"`); return null; }
 
     const imgRes = await fetch(photoUrl);
