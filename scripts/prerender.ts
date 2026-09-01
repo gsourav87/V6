@@ -56,6 +56,12 @@ interface HeadMeta {
   ogDesc?: string;
   ogImage?: string;
   schema?: object;
+  /** "en" for the targeted diaspora landing pages; omit for Bengali (default). */
+  htmlLang?: string;
+  /** Extra hreflang links beyond the template's default self-referential bn
+   *  ones — used to pair an English page with its Bengali counterpart (and
+   *  vice versa) so both sides of the relationship are declared. */
+  hreflangAlt?: { lang: string; href: string }[];
 }
 
 /** Replace head meta tags and inject JSON-LD into an HTML string. */
@@ -80,12 +86,34 @@ function swapHead(html: string, m: HeadMeta): string {
     html = html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/, `$1${img}$2`);
   }
 
-  // hreflang — point the template's self-referential tags at this page's URL.
-  for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
-    html = html.replace(
-      new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`),
-      `$1${url}$2`
-    );
+  if (m.htmlLang) {
+    html = html.replace(/<html lang="[^"]*">/, `<html lang="${esc(m.htmlLang)}">`);
+  }
+
+  // hreflang — the template ships with self-referential bn/bn-IN/bn-BD/
+  // x-default tags. That's correct for the (default) Bengali pages, but
+  // wrong for a paired English page, which would otherwise end up claiming
+  // hreflang="bn" for itself as well as getting the real one from
+  // hreflangAlt below — two contradictory "bn" tags. So: only point the
+  // template's defaults at this page when it's actually Bengali; a non-bn
+  // page strips them entirely and relies solely on hreflangAlt.
+  if (!m.htmlLang || m.htmlLang === "bn") {
+    for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
+      html = html.replace(
+        new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`),
+        `$1${url}$2`
+      );
+    }
+  } else {
+    for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
+      html = html.replace(new RegExp(`\\s*<link rel="alternate" hreflang="${lang}" href="[^"]*"\\s*/>\\n?`), "");
+    }
+  }
+  if (m.hreflangAlt) {
+    const tags = m.hreflangAlt
+      .map(({ lang, href }) => `<link rel="alternate" hreflang="${esc(lang)}" href="${esc(href)}" />`)
+      .join("\n");
+    html = html.replace("</head>", `${tags}\n</head>`);
   }
 
   if (m.schema) {
@@ -217,6 +245,13 @@ function firstUpcoming(slug: string): string | undefined {
 
 console.log("\n📄 Festival pages");
 
+// Reciprocal hreflang target for festival slugs that have an English
+// diaspora landing page (see "English diaspora pages" section below) — kept
+// as a small lookup here since the festival loop runs before that section.
+const ENGLISH_COUNTERPART: Record<string, string> = {
+  "durga-puja": "/en/durga-puja-2026-usa-uk-canada-dates-times",
+};
+
 for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
   const route    = `/festival/${slug}`;
   const canonical = `${SITE}${route}`;
@@ -305,7 +340,13 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
     `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
   ].join("\n");
 
-  let html = swapHead(template, { title, description: desc, canonical, ogImage, schema });
+  const englishCounterpart = ENGLISH_COUNTERPART[slug];
+  let html = swapHead(template, {
+    title, description: desc, canonical, ogImage, schema,
+    ...(englishCounterpart ? { hreflangAlt: [
+      { lang: "en", href: `${SITE}${englishCounterpart}` },
+    ] } : {}),
+  });
   html = swapBody(html, body);
   emit(route, html);
 }
@@ -513,6 +554,161 @@ for (const p of staticPages) {
   };
   let html = swapHead(template, { title: p.title, description: p.desc, canonical, schema });
   html = swapBody(html, p.body);
+  emit(p.route, html);
+}
+
+// ── English diaspora landing pages ──────────────────────────────────────────
+// Targeted pages for high-value, low-competition diaspora search queries
+// ("Durga Puja 2026 dates USA") — English RPM runs 10-25x India RPM, per the
+// site's own monetisation plan. Paired via hreflang with a Bengali page so
+// both sides of the relationship are declared, per Google's guidance.
+
+console.log("\n🌍 English diaspora pages");
+
+interface EnglishPage {
+  route: string;
+  crumb: string;
+  title: string;
+  desc: string;
+  bnCounterpart: string; // path of the paired Bengali page, e.g. "/festival/durga-puja"
+  faq: Array<{ q: string; a: string }>;
+  body: string;
+}
+
+const englishPages: EnglishPage[] = [
+  {
+    route: "/en/durga-puja-2026-usa-uk-canada-dates-times",
+    crumb: "Durga Puja 2026 — International Times",
+    title: "Durga Puja 2026 Dates & Times in USA, UK, Canada & Australia (EST/PST/GMT/AEDT)",
+    desc: "Durga Puja 2026 falls October 16-20. Exact Sandhi Puja and daily ritual times converted to US Eastern, Pacific, UK, and Australian time zones — accurate for the Bengali diaspora.",
+    bnCounterpart: "/festival/durga-puja",
+    faq: [
+      { q: "What are the Durga Puja 2026 dates?", a: "Durga Puja 2026 runs from Maha Shashthi on Friday, October 16 through Vijaya Dashami on Tuesday, October 20, all dates as observed in Kolkata (India Standard Time)." },
+      { q: "What time is Sandhi Puja 2026 in the USA (EST/PST)?", a: "Sandhi Puja's peak moment (Balidan) at 7:50 AM IST on October 19 falls at 10:20 PM EDT and 7:20 PM PDT on Sunday, October 18 (US East Coast is a full calendar day behind due to the time difference)." },
+      { q: "What time is Sandhi Puja 2026 in the UK?", a: "Sandhi Puja's peak moment (7:50 AM IST, October 19) falls at 3:20 AM BST on Monday, October 19 in the UK." },
+      { q: "Why do Puja dates and times differ between Bengali panjikas?", a: "Different panjika publishers occasionally use slightly different traditional calculation methods, which can shift exact tithi transition times by a few hours — enough to occasionally affect which calendar day a ritual falls on. This page uses times verified against a published Bengali panjika." },
+    ],
+    body: `
+<h1>Durga Puja 2026 — Dates &amp; Times for the Bengali Diaspora</h1>
+<p><strong>Durga Puja 2026 runs from Friday, October 16 (Maha Shashthi) through Tuesday, October 20 (Vijaya Dashami)</strong>, as observed in Kolkata, India. If you're celebrating from the USA, UK, Canada, or Australia, here are the exact ritual times converted to your local time zone — including the precise 48-minute Sandhi Puja window, the most time-sensitive moment of the entire festival.</p>
+
+<h2>Full Schedule — IST vs. Your Time Zone</h2>
+
+<h3>Maha Shashthi — Bodhon (Friday, October 16)</h3>
+<ul>
+<li><strong>Evening rituals (Bodhon, Amantran, Adhibas) begin:</strong> ~6:00 PM IST</li>
+<li><strong>US Eastern (EDT):</strong> Friday, 8:30 AM</li>
+<li><strong>US Pacific (PDT):</strong> Friday, 5:30 AM</li>
+<li><strong>UK (BST):</strong> Friday, 1:30 PM</li>
+<li><strong>Sydney (AEDT):</strong> Friday, 11:30 PM</li>
+</ul>
+
+<h3>Maha Saptami — Navapatrika (Saturday, October 17)</h3>
+<ul>
+<li><strong>Navapatrika entry begins:</strong> 7:04 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Friday, 9:34 PM</li>
+<li><strong>US Pacific (PDT):</strong> Friday, 6:34 PM</li>
+<li><strong>UK (BST):</strong> Saturday, 2:34 AM</li>
+<li><strong>Sydney (AEDT):</strong> Saturday, 12:34 PM</li>
+</ul>
+
+<h3>Maha Ashtami (Sunday, October 18)</h3>
+<ul>
+<li><strong>Puja begins:</strong> 7:05 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Saturday, 9:35 PM</li>
+<li><strong>US Pacific (PDT):</strong> Saturday, 6:35 PM</li>
+<li><strong>UK (BST):</strong> Sunday, 2:35 AM</li>
+<li><strong>Sydney (AEDT):</strong> Sunday, 12:35 PM</li>
+</ul>
+
+<h3>Sandhi Puja — the exact 48-minute window (Monday, October 19)</h3>
+<p>Sandhi Puja marks the precise junction of Ashtami and Navami tithis — traditionally the most powerful moment of Durga Puja, when the Goddess is believed to have taken the form of Chamunda. Exact timing matters more here than for any other ritual.</p>
+<ul>
+<li><strong>Begins:</strong> 7:26 AM IST — <strong>Balidan (peak moment):</strong> 7:50 AM IST — <strong>Ends:</strong> 8:14 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Sunday, October 18, 9:56 PM – 10:44 PM (peak at 10:20 PM)</li>
+<li><strong>US Pacific (PDT):</strong> Sunday, October 18, 6:56 PM – 7:44 PM (peak at 7:20 PM)</li>
+<li><strong>UK (BST):</strong> Monday, October 19, 2:56 AM – 3:44 AM (peak at 3:20 AM)</li>
+<li><strong>Sydney (AEDT):</strong> Monday, October 19, 12:56 PM – 1:44 PM (peak at 1:20 PM)</li>
+</ul>
+
+<h3>Maha Navami (Monday, October 19)</h3>
+<ul>
+<li><strong>Navami tithi begins:</strong> 7:50 AM IST (same moment as Sandhi Puja's peak)</li>
+<li><strong>US Eastern (EDT):</strong> Sunday, October 18, 10:20 PM</li>
+<li><strong>US Pacific (PDT):</strong> Sunday, October 18, 7:20 PM</li>
+<li><strong>UK (BST):</strong> Monday, October 19, 3:20 AM</li>
+<li><strong>Sydney (AEDT):</strong> Monday, October 19, 1:20 PM</li>
+</ul>
+
+<h3>Vijaya Dashami — Visarjan (Tuesday, October 20)</h3>
+<ul>
+<li><strong>Puja completion &amp; visarjan by:</strong> 8:31 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Monday, October 19, 11:01 PM</li>
+<li><strong>US Pacific (PDT):</strong> Monday, October 19, 8:01 PM</li>
+<li><strong>UK (BST):</strong> Tuesday, October 20, 4:01 AM</li>
+<li><strong>Sydney (AEDT):</strong> Tuesday, October 20, 2:01 PM</li>
+</ul>
+
+<h2>About Durga Puja</h2>
+<p>Durga Puja is Bengal's largest religious and cultural festival, commemorating the goddess Durga's victory over the buffalo demon Mahishasura. Celebrated over five main days from Shashthi to Vijaya Dashami, it was recognized by UNESCO in 2021 as an "Intangible Cultural Heritage of Humanity." For the Bengali diaspora, Durga Puja is often the year's biggest gathering — community pujas run by Bengali associations in most major US, UK, Canadian, and Australian cities recreate the full five-day ritual calendar, frequently on the nearest weekend for practical reasons, though the traditional dates and tithi-based timings remain as listed above.</p>
+
+<h2>Frequently Asked Questions</h2>
+${"{{FAQ}}"}
+
+<p><a href="/festival/durga-puja">বাংলায় সম্পূর্ণ দুর্গাপূজার নির্ঘণ্ট দেখুন (View the full Bengali-language schedule)</a> · <a href="/">সঠিক বাংলা ক্যালেন্ডার home</a></p>
+`,
+  },
+];
+
+for (const p of englishPages) {
+  const canonical = `${SITE}${p.route}`;
+  const bnCanonical = `${SITE}${p.bnCounterpart}`;
+
+  const faqSchema = {
+    "@type": "FAQPage",
+    "mainEntity": p.faq.map(({ q, a }) => ({
+      "@type": "Question",
+      "name": q,
+      "acceptedAnswer": { "@type": "Answer", "text": a },
+    })),
+  };
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": p.title,
+        "description": p.desc,
+        "url": canonical,
+        "inLanguage": "en",
+        "isPartOf": { "@type": "WebSite", "url": SITE, "name": "Sothik Bangla Calendar" },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Sothik Bangla Calendar", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": p.crumb, "item": canonical },
+        ],
+      },
+      faqSchema,
+    ],
+  };
+
+  const faqHtml = p.faq.map(({ q, a }) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n");
+  const body = p.body.replace("{{FAQ}}", faqHtml);
+
+  let html = swapHead(template, {
+    title: p.title,
+    description: p.desc,
+    canonical,
+    schema,
+    htmlLang: "en",
+    hreflangAlt: [
+      { lang: "en", href: canonical },
+      { lang: "bn", href: bnCanonical },
+    ],
+  });
+  html = swapBody(html, body);
   emit(p.route, html);
 }
 

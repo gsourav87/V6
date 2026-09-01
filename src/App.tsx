@@ -15,6 +15,7 @@ const AboutPage        = lazy(() => import("./pages/AboutPage"));
 const ContactPage      = lazy(() => import("./pages/ContactPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const DisclaimerPage   = lazy(() => import("./pages/DisclaimerPage"));
+const DurgaPuja2026USA = lazy(() => import("./pages/en/DurgaPuja2026USA"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import { useState, useEffect } from "react";
@@ -340,6 +341,10 @@ function App() {
 
                 <Route path="/disclaimer">
                   <DisclaimerPage />
+                </Route>
+
+                <Route path="/en/durga-puja-2026-usa-uk-canada-dates-times">
+                  <DurgaPuja2026USA />
                 </Route>
 
                 <Route>
