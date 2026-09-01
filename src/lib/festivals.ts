@@ -108,11 +108,15 @@ const STATIC_FESTIVALS: Festival[] = [
   { date: "2026-09-17", nameBn: "বিশ্বকর্মা পূজা", nameEn: "Biswakarma Puja", category: "religious", icon: "⚙️", slug: "biswakarma-puja" },
   { date: "2026-10-02", nameBn: "গান্ধী জয়ন্তী", nameEn: "Gandhi Jayanti", category: "national", icon: "🕊️", slug: "gandhi-jayanti" },
   { date: "2026-10-10", nameBn: "মহালয়া", nameEn: "Mahalaya", category: "religious", icon: "🙏", slug: "mahalaya" },
-  { date: "2026-10-17", nameBn: "দুর্গা পূজা (মহাষষ্ঠী)", nameEn: "Durga Puja - Maha Shashthi", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-18", nameBn: "দুর্গা পূজা (মহাসপ্তমী)", nameEn: "Durga Puja - Maha Saptami", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-19", nameBn: "দুর্গা পূজা (মহাঅষ্টমী)", nameEn: "Durga Puja - Maha Ashtami", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-20", nameBn: "দুর্গা পূজা (মহানবমী)", nameEn: "Durga Puja - Maha Navami", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-21", nameBn: "দুর্গা পূজা (বিজয়াদশমী)", nameEn: "Durga Puja - Vijaya Dashami", category: "religious", icon: "🛕", slug: "durga-puja" },
+  // Verified against a real published panjika (see project notes) — differs
+  // from the site's own tithi engine by 2-3+ hours, which is enough to shift
+  // day-of-week assignment. Trust this over the engine for 2026 Durga Puja.
+  { date: "2026-10-16", nameBn: "মহাষষ্ঠী", nameEn: "Durga Puja - Maha Shashthi", category: "religious", icon: "🌺", slug: "maha-shashthi" },
+  { date: "2026-10-17", nameBn: "মহাসপ্তমী", nameEn: "Durga Puja - Maha Saptami", category: "religious", icon: "🌿", slug: "maha-saptami" },
+  { date: "2026-10-18", nameBn: "মহাঅষ্টমী", nameEn: "Durga Puja - Maha Ashtami", category: "religious", icon: "🙏", slug: "maha-ashtami" },
+  { date: "2026-10-19", nameBn: "সন্ধিপুজো", nameEn: "Durga Puja - Sandhi Puja", category: "religious", icon: "⚔️", slug: "sandhi-puja" },
+  { date: "2026-10-19", nameBn: "মহানবমী", nameEn: "Durga Puja - Maha Navami", category: "religious", icon: "🔱", slug: "maha-navami" },
+  { date: "2026-10-20", nameBn: "বিজয়া দশমী", nameEn: "Durga Puja - Vijaya Dashami", category: "religious", icon: "🌺", slug: "vijaya-dashami" },
   { date: "2026-10-24", nameBn: "লক্ষ্মী পূজা", nameEn: "Lakshmi Puja", category: "religious", icon: "🙏", slug: "lakshmi-puja" },
   { date: "2026-11-09", nameBn: "কালী পূজা / দীপাবলি", nameEn: "Kali Puja / Diwali", category: "religious", icon: "🪔", slug: "kali-puja" },
   { date: "2026-12-25", nameBn: "বড়দিন", nameEn: "Christmas", category: "religious", icon: "🎄", slug: "christmas" },

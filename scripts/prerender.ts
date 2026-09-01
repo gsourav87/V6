@@ -296,6 +296,9 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
     // direct-answer line first: AI engines and featured snippets lift this
     ...(answerLine ? [`<p><strong>${answerLine}</strong></p>`] : []),
     `<p><strong>${detail.tagline}</strong></p>`,
+    ...(detail.keyTimes?.length
+      ? [`<h2>নির্ঘণ্ট ও সময়সূচি</h2>`, `<ul>${detail.keyTimes.map(kt => `<li><strong>${kt.label}:</strong> ${kt.time}</li>`).join("")}</ul>`]
+      : []),
     ...detail.descBn.map(p => `<p>${p}</p>`),
     `<h2>সাধারণ প্রশ্ন</h2>`,
     ...faq.map(({ q, a }) => `<h3>${q}</h3>\n<p>${a}</p>`),
