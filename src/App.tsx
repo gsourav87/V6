@@ -41,6 +41,7 @@ const DateConverter  = lazy(() => import("@/components/DateConverter").then(m =>
 const SeoContent     = lazy(() => import("./components/SeoContent"));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
+import { DurgaPujaBanner } from "@/components/DurgaPujaBanner";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 import { LoginPage } from "@/components/LoginPage";
 import { DayDetailsModal } from "@/components/DayDetailsModal";
@@ -94,6 +95,8 @@ function Home() {
           <div className="flex-1" />
           <Header onLoginClick={() => setShowLoginModal(true)} />
         </div>
+
+        <DurgaPujaBanner />
 
         <LiveClock />
 
