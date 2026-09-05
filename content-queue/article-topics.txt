@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-history|নীল বিদ্রোহ
 person|জগদীশচন্দ্র বসু
 festival|রাখীবন্ধন
 facts|ইলিশ মাছ ও বাঙালির সম্পর্ক
