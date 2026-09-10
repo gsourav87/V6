@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-person|সত্যেন্দ্রনাথ বসু
 festival|জামাইষষ্ঠী
 history|মুর্শিদাবাদের নবাবী ইতিহাস
 person|বেগম রোকেয়া
