@@ -21,7 +21,7 @@ import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
 import { convertToBengali, BANGLA_DAYS, BN_MONTH_SLUG, bengaliMonthDays, getBengaliSeason } from "../src/lib/bengali-calendar";
-import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
+import { getTithiAtSunrise, getNakshatraAtSunrise, getYogaAtSunrise, getKaranaAtSunrise, getSunTimes, formatKolkataTime } from "../src/lib/panjika";
 import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
 import { parseArticle, renderBlocksToHtml, extractFaq, ARTICLE_CATEGORIES, type Article } from "../src/lib/article-parser";
 
@@ -455,19 +455,50 @@ for (const gregYear of [2025, 2026, 2027]) {
 
 console.log("\n🗂  Static pages");
 
+// Real, computed "today" content — baked at build time (a fresh build runs
+// daily via the article-automation push) so the crawlable static HTML shows
+// actual tithi/nakshatra/events instead of generic 2026 boilerplate.
+const todayDate     = new Date();
+const todayUtc      = new Date(Date.UTC(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate()));
+const todayBn       = convertToBengali(todayDate.getFullYear(), todayDate.getMonth() + 1, todayDate.getDate());
+const todayTithi    = getTithiAtSunrise(todayDate);
+const todayNakshatra = getNakshatraAtSunrise(todayDate);
+const todayYoga     = getYogaAtSunrise(todayDate);
+const todayKarana   = getKaranaAtSunrise(todayDate);
+const todaySun      = getSunTimes(todayDate);
+const todayBnStr    = `${bn(todayBn.day)} ${todayBn.monthNameBn} ${bn(todayBn.year)} বঙ্গাব্দ`;
+const todayFests    = [...getFestivalsForDate(todayUtc), ...getObservancesForDate(todayUtc)];
+const todayAnnivs   = getAllAnniversariesForDate(todayUtc);
+const todayBirths   = todayAnnivs.filter(a => a.anniversaryType === "birth");
+const todayDeaths   = todayAnnivs.filter(a => a.anniversaryType === "death");
+
+const todayBengaliDateBody = [
+  `<h1>আজকের বাংলা তারিখ — ${todayBnStr}</h1>`,
+  `<p>আজকের তিথি <strong>${todayTithi.nameBn}</strong> (${todayTithi.pakshaBn}), নক্ষত্র <strong>${todayNakshatra.nameBn}</strong>, যোগ <strong>${todayYoga.nameBn}</strong>, করণ <strong>${todayKarana.nameBn}</strong>। কলকাতায় সূর্যোদয়: ${formatKolkataTime(todaySun.sunrise)}, সূর্যাস্ত: ${formatKolkataTime(todaySun.sunset)}।</p>`,
+  ...(todayFests.length > 0 ? [
+    `<h2>আজকের উৎসব ও বিশেষ দিন</h2>`,
+    `<p>${todayFests.map(f => f.slug ? `<a href="/festival/${f.slug}">${f.icon} ${f.nameBn}</a>` : `${f.icon} ${f.nameBn}`).join(" &nbsp;·&nbsp; ")}</p>`,
+  ] : []),
+  ...(todayBirths.length > 0 ? [
+    `<h2>আজ জন্মদিন</h2>`,
+    `<p>${todayBirths.map(a => `${a.person.emoji} <strong>${a.person.nameBn}</strong> (${bn(a.yearsSince)} তম জন্মজয়ন্তী) — ${a.person.descBn}`).join("<br>")}</p>`,
+  ] : []),
+  ...(todayDeaths.length > 0 ? [
+    `<h2>আজ মৃত্যুবার্ষিকী</h2>`,
+    `<p>${todayDeaths.map(a => `${a.person.emoji} <strong>${a.person.nameBn}</strong> (${bn(a.yearsSince)} তম মৃত্যুবার্ষিকী) — ${a.person.descBn}`).join("<br>")}</p>`,
+  ] : []),
+  `<ul><li><a href='/panjika'>আজকের পঞ্জিকা — তিথি, নক্ষত্র, রাহু কাল</a></li>`,
+  `<li><a href='/rashifal'>আজকের রাশিফল</a></li></ul>`,
+  `<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>`,
+].join("\n");
+
 const staticPages = [
   {
     route: "/today-bengali-date",
     crumb: "আজকের বাংলা তারিখ",
-    title: "আজকের বাংলা তারিখ ২০২৬ — তিথি ও নক্ষত্র | সঠিক বাংলা ক্যালেন্ডার",
-    desc:  "আজকের সঠিক বাংলা তারিখ, তিথি ও নক্ষত্র দেখুন। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা করা সঠিক বাংলা ক্যালেন্ডার।",
-    body: [
-      "<h1>আজকের বাংলা তারিখ ২০২৬</h1>",
-      "<p>আজকের সঠিক বাংলা তারিখ, তিথি, নক্ষত্র, যোগ ও করণ একনজরে দেখুন। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে কলকাতার সূর্যোদয় অনুসারে গণনা।</p>",
-      "<ul><li><a href='/panjika'>আজকের পঞ্জিকা — তিথি, নক্ষত্র, রাহু কাল</a></li>",
-      "<li><a href='/rashifal'>আজকের রাশিফল</a></li></ul>",
-      "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
-    ].join("\n"),
+    title: `আজকের বাংলা তারিখ: ${todayBnStr} — তিথি ${todayTithi.nameBn} | সঠিক বাংলা ক্যালেন্ডার`,
+    desc:  `আজকের বাংলা তারিখ ${todayBnStr}। তিথি: ${todayTithi.nameBn} (${todayTithi.pakshaBn}), নক্ষত্র: ${todayNakshatra.nameBn}। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা করা সঠিক বাংলা ক্যালেন্ডার।`,
+    body: todayBengaliDateBody,
   },
   {
     route: "/panjika",

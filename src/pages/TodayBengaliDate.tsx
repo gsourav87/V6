@@ -6,6 +6,9 @@ import {
   getSunTimes, formatKolkataTime,
 } from "@/lib/panjika";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
+import { getFestivalsForDate } from "@/lib/festivals";
+import { getObservancesForDate } from "@/lib/observances";
+import { getAllAnniversariesForDate } from "@/lib/calendar-events";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { format } from "date-fns";
 
@@ -18,6 +21,12 @@ export default function TodayBengaliDate() {
   const yoga      = useMemo(() => getYogaAtSunrise(today), [today]);
   const karana    = useMemo(() => getKaranaAtSunrise(today), [today]);
   const sunTimes  = useMemo(() => getSunTimes(today), [today]);
+
+  const utcToday    = useMemo(() => new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())), [today]);
+  const todayEvents = useMemo(() => [...getFestivalsForDate(utcToday), ...getObservancesForDate(utcToday)], [utcToday]);
+  const anniversaries = useMemo(() => getAllAnniversariesForDate(utcToday), [utcToday]);
+  const births = useMemo(() => anniversaries.filter(a => a.anniversaryType === "birth"), [anniversaries]);
+  const deaths = useMemo(() => anniversaries.filter(a => a.anniversaryType === "death"), [anniversaries]);
 
   const bnDateStr = `${toBengaliNumerals(bnDate.day)} ${bnDate.monthNameBn} ${toBengaliNumerals(bnDate.year)} বঙ্গাব্দ`;
 
@@ -77,11 +86,40 @@ export default function TodayBengaliDate() {
     injectSchema("today-faq-schema", faqSchema);
     injectSchema("today-breadcrumb-schema", breadcrumb);
 
+    const personEntities = anniversaries.map(a => ({
+      "@type": "Person",
+      "name": a.person.nameBn,
+      "alternateName": a.person.nameEn,
+      "birthDate": `${String(a.person.birthYear).padStart(4, "0")}-${a.person.birthMD}`,
+      ...(a.person.deathYear
+        ? { "deathDate": a.person.deathMD ? `${String(a.person.deathYear).padStart(4, "0")}-${a.person.deathMD}` : String(a.person.deathYear) }
+        : {}),
+      "jobTitle": a.person.role,
+      "description": a.person.descBn,
+      "sameAs": a.person.wikiUrl,
+      "nationality": "Indian",
+    }));
+    const eventEntities = todayEvents.map(f => ({
+      "@type": "Event",
+      "name": f.nameEn,
+      "alternateName": f.nameBn,
+      "startDate": f.date,
+      ...(f.descBn ? { "description": f.descBn } : {}),
+      "inLanguage": "bn",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "url": f.slug ? `${SITE_URL}/festival/${f.slug}` : `${SITE_URL}/today-bengali-date`,
+    }));
+    const graph = [...personEntities, ...eventEntities];
+    if (graph.length > 0) {
+      injectSchema("today-entities-schema", { "@context": "https://schema.org", "@graph": graph });
+    }
+
     return () => {
       removeSchema("today-faq-schema");
       removeSchema("today-breadcrumb-schema");
+      removeSchema("today-entities-schema");
     };
-  }, [title, description, bnDateStr, bnDate, tithi, nakshatra, yoga, sunTimes]);
+  }, [title, description, bnDateStr, bnDate, tithi, nakshatra, yoga, sunTimes, todayEvents, anniversaries]);
 
   return (
     <div className="min-h-screen pb-20">
@@ -143,6 +181,82 @@ export default function TodayBengaliDate() {
             ))}
           </div>
         </section>
+
+        {/* Why today matters */}
+        {(todayEvents.length > 0 || births.length > 0 || deaths.length > 0) && (
+          <section aria-labelledby="today-special-heading" className="mt-8">
+            <h2 id="today-special-heading" className="text-lg font-bold font-bengali mb-4 text-foreground">
+              আজকের দিনটি কেন বিশেষ?
+            </h2>
+
+            {todayEvents.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-bold font-bengali text-muted-foreground mb-2">আজকের উৎসব ও বিশেষ দিন</h3>
+                <div className="flex flex-wrap gap-2">
+                  {todayEvents.map(f =>
+                    f.slug ? (
+                      <Link
+                        key={f.slug}
+                        href={`/festival/${f.slug}`}
+                        className="inline-flex items-center gap-1.5 bg-card hover:bg-accent border border-card-border text-foreground text-xs font-bengali font-medium px-3 py-1.5 rounded-full transition-colors"
+                      >
+                        <span>{f.icon}</span><span>{f.nameBn}</span>
+                      </Link>
+                    ) : (
+                      <span key={f.nameBn} className="inline-flex items-center gap-1.5 bg-card border border-card-border text-foreground text-xs font-bengali font-medium px-3 py-1.5 rounded-full">
+                        <span>{f.icon}</span><span>{f.nameBn}</span>
+                      </span>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
+            {births.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-bold font-bengali text-muted-foreground mb-2">আজ জন্মদিন</h3>
+                <div className="space-y-2">
+                  {births.map(a => (
+                    <a
+                      key={a.person.nameEn}
+                      href={a.person.wikiUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-card border border-card-border rounded-xl p-3 hover:bg-accent transition-colors"
+                    >
+                      <div className="font-bold font-bengali text-foreground text-sm">
+                        {a.person.emoji} {a.person.nameBn} <span className="text-muted-foreground font-normal">({a.yearsSince} তম জন্মজয়ন্তী)</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground font-bengali mt-1">{a.person.role} — {a.person.descBn}</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {deaths.length > 0 && (
+              <div>
+                <h3 className="text-sm font-bold font-bengali text-muted-foreground mb-2">আজ মৃত্যুবার্ষিকী</h3>
+                <div className="space-y-2">
+                  {deaths.map(a => (
+                    <a
+                      key={a.person.nameEn}
+                      href={a.person.wikiUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-card border border-card-border rounded-xl p-3 hover:bg-accent transition-colors"
+                    >
+                      <div className="font-bold font-bengali text-foreground text-sm">
+                        {a.person.emoji} {a.person.nameBn} <span className="text-muted-foreground font-normal">({a.yearsSince} তম মৃত্যুবার্ষিকী)</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground font-bengali mt-1">{a.person.role} — {a.person.descBn}</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* SEO FAQ section */}
         <section className="mt-8 space-y-4 font-bengali text-sm text-foreground/80 leading-relaxed">
