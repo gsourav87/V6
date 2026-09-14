@@ -16,7 +16,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // These files are plain data — no browser APIs, relative imports only.
-import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
+import { FESTIVAL_DETAILS, getCategoryLabel } from "../src/lib/festival-details";
 import { PERSONALITY_DETAILS } from "../src/lib/personality-details";
 import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
@@ -616,6 +616,91 @@ const todayBengaliDateBody = [
   const homeHtml = swapHead(template, { title: homeTitle, description: homeDesc, canonical: SITE });
   fs.writeFileSync(path.join(DIST, "index.html"), homeHtml, "utf-8");
   console.log(`  ✓  / — "${homeTitle}"`);
+}
+
+// ── festivals list page — the flagship "link-worthy resource" ──────────────
+// A complete, scannable festival calendar is exactly the kind of reference
+// page other sites/blogs link to (per the growth roadmap's Phase 12 "build
+// link-worthy resources" principle) — and no such single page existed
+// before this. Real computed dates baked into the static HTML, not a
+// generic list, same pattern as the other fixes this session.
+{
+  console.log("\n🎉 Festivals list page");
+  const cutoffDate = new Date();
+  cutoffDate.setMonth(cutoffDate.getMonth() + 14);
+  const cutoffIso = cutoffDate.toISOString().slice(0, 10);
+  const seenKeys = new Set<string>();
+  const upcomingFests = FESTIVALS
+    .filter(f => f.date >= today && f.date <= cutoffIso)
+    .filter(f => {
+      const key = `${f.date}|${f.slug ?? f.nameBn}`;
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    })
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const byMonth = new Map<string, typeof upcomingFests>();
+  for (const f of upcomingFests) {
+    const key = f.date.slice(0, 7);
+    if (!byMonth.has(key)) byMonth.set(key, []);
+    byMonth.get(key)!.push(f);
+  }
+
+  const festYear = new Date().getFullYear();
+  const festTitle = `বাংলা উৎসব ক্যালেন্ডার ${festYear} — সব পূজা ও উৎসবের তারিখ | সঠিক বাংলা ক্যালেন্ডার`;
+  const festDesc  = `${festYear}-${festYear + 1} সালের সমস্ত বাংলা উৎসব, পূজা ও জাতীয় দিবসের সম্পূর্ণ তালিকা ও তারিখ — দুর্গাপূজা, কালীপূজা, সরস্বতী পূজা, পয়লা বৈশাখ থেকে শুরু করে সব প্রধান উৎসব একসাথে।`;
+  const festCanonical = `${SITE}/festivals`;
+
+  const festBody = [
+    `<h1>বাংলা উৎসব ক্যালেন্ডার ${bn(festYear)}</h1>`,
+    `<p>দুর্গাপূজা, কালীপূজা, সরস্বতী পূজা, পয়লা বৈশাখ থেকে শুরু করে বাংলার সমস্ত প্রধান পূজা, উৎসব ও জাতীয় দিবসের সম্পূর্ণ তালিকা — আগামী ১৪ মাসের জন্য, তারিখ অনুযায়ী সাজানো।</p>`,
+    ...[...byMonth.entries()].flatMap(([key, fests]) => {
+      const [y, m] = key.split("-").map(Number);
+      return [
+        `<h2>${GREG_MONTHS_BN[m - 1]} ${bn(y)}</h2>`,
+        `<ul>${fests.map(f => {
+          const label = `${bnDateShort(f.date)} — ${f.icon} ${f.nameBn} (${getCategoryLabel(f.category)})`;
+          return `<li>${f.slug ? `<a href="/festival/${f.slug}">${label}</a>` : label}</li>`;
+        }).join("")}</ul>`,
+      ];
+    }),
+    `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
+  ].join("\n");
+
+  const festSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": festTitle,
+        "description": festDesc,
+        "url": festCanonical,
+        "inLanguage": "bn",
+        "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+      },
+      {
+        "@type": "ItemList",
+        "itemListElement": upcomingFests.slice(0, 30).map((f, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": f.nameBn,
+          ...(f.slug ? { "item": `${SITE}/festival/${f.slug}` } : {}),
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": "উৎসব ক্যালেন্ডার", "item": festCanonical },
+        ],
+      },
+    ],
+  };
+
+  let festHtml = swapHead(template, { title: festTitle, description: festDesc, canonical: festCanonical, schema: festSchema });
+  festHtml = swapBody(festHtml, festBody);
+  emit("/festivals", festHtml, "0.8", "daily");
 }
 
 const staticPages = [

@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 
 const FOOTER_LINKS = [
+  { href: "/festivals", label: "উৎসব ক্যালেন্ডার" },
   { href: "/about", label: "আমাদের সম্পর্কে" },
   { href: "/contact", label: "যোগাযোগ" },
   { href: "/privacy-policy", label: "প্রাইভেসি পলিসি" },
