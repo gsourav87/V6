@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-festival|অন্নপূর্ণা পূজা
 facts|বাংলা যাত্রাপালার ইতিহাস
 history|চন্দননগর ও শ্রীরামপুরের ঔপনিবেশিক ইতিহাস
 person|ভগিনী নিবেদিতা
