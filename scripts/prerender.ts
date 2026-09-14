@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 
 // These files are plain data — no browser APIs, relative imports only.
 import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
+import { PERSONALITY_DETAILS } from "../src/lib/personality-details";
 import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
@@ -347,6 +348,67 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
       { lang: "en", href: `${SITE}${englishCounterpart}` },
     ] } : {}),
   });
+  html = swapBody(html, body);
+  emit(route, html);
+}
+
+// ── personality pages ────────────────────────────────────────────────────
+
+console.log("\n👤 Personality pages");
+
+for (const [slug, detail] of Object.entries(PERSONALITY_DETAILS)) {
+  const person = FAMOUS_PEOPLE.find(p => p.id === slug);
+  if (!person) continue;
+
+  const route     = `/personality/${slug}`;
+  const canonical = `${SITE}${route}`;
+  const title      = `${detail.nameBn} — জীবনী, জন্মতারিখ ও অবদান | সঠিক বাংলা ক্যালেন্ডার`;
+  const desc       = `${detail.tagline}। ${detail.descBn[0].slice(0, 130)}…`;
+
+  const festival = detail.festivalSlug ? FESTIVAL_DETAILS[detail.festivalSlug] : undefined;
+
+  const personSchema = {
+    "@type": "Person",
+    "name": detail.nameBn,
+    "alternateName": detail.nameEn,
+    "description": detail.descBn[0],
+    "url": canonical,
+    "birthDate": `${String(person.birthYear).padStart(4, "0")}-${person.birthMD}`,
+    ...(person.deathYear
+      ? { "deathDate": person.deathMD ? `${String(person.deathYear).padStart(4, "0")}-${person.deathMD}` : String(person.deathYear) }
+      : {}),
+    "jobTitle": person.role,
+    "sameAs": detail.wikiUrl,
+    "nationality": "Indian",
+  };
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+      { "@type": "ListItem", "position": 2, "name": detail.nameBn, "item": canonical },
+    ],
+  };
+  const schema = { "@context": "https://schema.org", "@graph": [personSchema, breadcrumbSchema] };
+
+  const body = [
+    `<h1>${detail.emoji} ${detail.nameBn}</h1>`,
+    `<p><strong>${detail.tagline}</strong></p>`,
+    `<p>জন্ম: ${person.birthYear}${person.deathYear ? ` &nbsp;·&nbsp; মৃত্যু: ${person.deathYear}` : ""}</p>`,
+    `<h2>জীবনী</h2>`,
+    ...detail.descBn.map(p => `<p>${p}</p>`),
+    ...(detail.works?.length ? [`<h2>উল্লেখযোগ্য কীর্তি</h2>`, `<p>${detail.works.join(" &nbsp;·&nbsp; ")}</p>`] : []),
+    ...(festival ? [`<h2>পালিত দিবস</h2>`, `<p><a href="/festival/${festival.slug}">${festival.icon} ${festival.nameBn}</a></p>`] : []),
+    ...(detail.relatedSlugs.length ? [
+      `<h2>সম্পর্কিত ব্যক্তিত্ব</h2>`,
+      `<p>${detail.relatedSlugs.map(rs => {
+        const r = PERSONALITY_DETAILS[rs];
+        return r ? `<a href="/personality/${rs}">${r.emoji} ${r.nameBn}</a>` : "";
+      }).filter(Boolean).join(" &nbsp;·&nbsp; ")}</p>`,
+    ] : []),
+    `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/today-bengali-date">আজকের বাংলা তারিখ</a></p>`,
+  ].join("\n");
+
+  let html = swapHead(template, { title, description: desc, canonical, schema });
   html = swapBody(html, body);
   emit(route, html);
 }
@@ -1104,9 +1166,10 @@ fs.writeFileSync(path.join(DIST, "feed.xml"), feedXml, "utf-8");
 // ── summary ───────────────────────────────────────────────────────────────
 
 const festCount  = Object.keys(FESTIVAL_DETAILS).length;
+const personalityCount = Object.keys(PERSONALITY_DETAILS).length;
 const monthCount = 3 * 12; // 3 years × 12 months
 const staticCount = staticPages.length;
 
 console.log(`\n🗺  sitemap index — core ${buckets.core.length} + articles ${buckets.articles.length} + dates ${buckets.dates.length} URLs (${sitemap.length - buckets.core.length - buckets.articles.length - buckets.dates.length} date pages prerendered but unlisted)`);
 console.log(`📡 feed.xml — ${articles.length} items`);
-console.log(`✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static + ${articles.length + 1} article pages\n`);
+console.log(`✅  Prerender complete — ${festCount} festival + ${personalityCount} personality + ${monthCount} month + ${staticCount} static + ${articles.length + 1} article pages\n`);

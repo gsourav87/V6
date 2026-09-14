@@ -9,6 +9,7 @@ import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { getFestivalsForDate } from "@/lib/festivals";
 import { getObservancesForDate } from "@/lib/observances";
 import { getAllAnniversariesForDate } from "@/lib/calendar-events";
+import { getPersonalityDetail } from "@/lib/personality-details";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import { format } from "date-fns";
 
@@ -216,20 +217,26 @@ export default function TodayBengaliDate() {
               <div className="mb-4">
                 <h3 className="text-sm font-bold font-bengali text-muted-foreground mb-2">আজ জন্মদিন</h3>
                 <div className="space-y-2">
-                  {births.map(a => (
-                    <a
-                      key={a.person.nameEn}
-                      href={a.person.wikiUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block bg-card border border-card-border rounded-xl p-3 hover:bg-accent transition-colors"
-                    >
-                      <div className="font-bold font-bengali text-foreground text-sm">
-                        {a.person.emoji} {a.person.nameBn} <span className="text-muted-foreground font-normal">({a.yearsSince} তম জন্মজয়ন্তী)</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground font-bengali mt-1">{a.person.role} — {a.person.descBn}</div>
-                    </a>
-                  ))}
+                  {births.map(a => {
+                    const cardClass = "block bg-card border border-card-border rounded-xl p-3 hover:bg-accent transition-colors";
+                    const cardContent = (
+                      <>
+                        <div className="font-bold font-bengali text-foreground text-sm">
+                          {a.person.emoji} {a.person.nameBn} <span className="text-muted-foreground font-normal">({a.yearsSince} তম জন্মজয়ন্তী)</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground font-bengali mt-1">{a.person.role} — {a.person.descBn}</div>
+                      </>
+                    );
+                    return getPersonalityDetail(a.person.id) ? (
+                      <Link key={a.person.nameEn} href={`/personality/${a.person.id}`} className={cardClass}>
+                        {cardContent}
+                      </Link>
+                    ) : (
+                      <a key={a.person.nameEn} href={a.person.wikiUrl} target="_blank" rel="noopener noreferrer" className={cardClass}>
+                        {cardContent}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -238,20 +245,26 @@ export default function TodayBengaliDate() {
               <div>
                 <h3 className="text-sm font-bold font-bengali text-muted-foreground mb-2">আজ মৃত্যুবার্ষিকী</h3>
                 <div className="space-y-2">
-                  {deaths.map(a => (
-                    <a
-                      key={a.person.nameEn}
-                      href={a.person.wikiUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block bg-card border border-card-border rounded-xl p-3 hover:bg-accent transition-colors"
-                    >
-                      <div className="font-bold font-bengali text-foreground text-sm">
-                        {a.person.emoji} {a.person.nameBn} <span className="text-muted-foreground font-normal">({a.yearsSince} তম মৃত্যুবার্ষিকী)</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground font-bengali mt-1">{a.person.role} — {a.person.descBn}</div>
-                    </a>
-                  ))}
+                  {deaths.map(a => {
+                    const cardClass = "block bg-card border border-card-border rounded-xl p-3 hover:bg-accent transition-colors";
+                    const cardContent = (
+                      <>
+                        <div className="font-bold font-bengali text-foreground text-sm">
+                          {a.person.emoji} {a.person.nameBn} <span className="text-muted-foreground font-normal">({a.yearsSince} তম মৃত্যুবার্ষিকী)</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground font-bengali mt-1">{a.person.role} — {a.person.descBn}</div>
+                      </>
+                    );
+                    return getPersonalityDetail(a.person.id) ? (
+                      <Link key={a.person.nameEn} href={`/personality/${a.person.id}`} className={cardClass}>
+                        {cardContent}
+                      </Link>
+                    ) : (
+                      <a key={a.person.nameEn} href={a.person.wikiUrl} target="_blank" rel="noopener noreferrer" className={cardClass}>
+                        {cardContent}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}

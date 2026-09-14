@@ -9,6 +9,7 @@ import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { getFestivalsForDate } from "@/lib/festivals";
 import { getObservancesForDate } from "@/lib/observances";
 import { getAllAnniversariesForDate } from "@/lib/calendar-events";
+import { getPersonalityDetail } from "@/lib/personality-details";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -159,7 +160,11 @@ export function DayDetailsModal({ date, onClose }: Props) {
                     <span className="text-xl shrink-0 mt-0.5">{a.person.emoji}</span>
                     <div className="min-w-0">
                       <div className="font-bold font-bengali text-sm text-foreground leading-tight">
-                        {a.person.nameBn}
+                        {getPersonalityDetail(a.person.id) ? (
+                          <Link href={`/personality/${a.person.id}`} className="hover:underline">
+                            {a.person.nameBn}
+                          </Link>
+                        ) : a.person.nameBn}
                       </div>
                       <div className="text-xs text-muted-foreground font-bengali mt-0.5">
                         {a.person.role}
@@ -179,16 +184,26 @@ export function DayDetailsModal({ date, onClose }: Props) {
                       </div>
                     </div>
                   </div>
-                  <a
-                    href={a.wikiUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                    title={`Wikipedia: ${a.person.nameEn}`}
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Wiki
-                  </a>
+                  <div className="shrink-0 flex flex-col items-end gap-1.5">
+                    {getPersonalityDetail(a.person.id) && (
+                      <Link
+                        href={`/personality/${a.person.id}`}
+                        className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded-lg hover:bg-primary/20 transition-colors font-bengali"
+                      >
+                        বিস্তারিত
+                      </Link>
+                    )}
+                    <a
+                      href={a.wikiUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                      title={`Wikipedia: ${a.person.nameEn}`}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Wiki
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>

@@ -655,7 +655,7 @@ export const FESTIVAL_DETAILS: Record<string, FestivalDetail> = {
       "১৯২১ সালের ২৩ ডিসেম্বর রবীন্দ্রনাথ ঠাকুর শান্তিনিকেতনে আনুষ্ঠানিকভাবে বিশ্বভারতী বিশ্ববিদ্যালয় প্রতিষ্ঠা করেন। 'যত্র বিশ্বং ভবত্যেকনীড়ম্' — যেখানে সমগ্র বিশ্ব এক নীড়ে মিলিত হয় — এই আদর্শে গড়ে ওঠে প্রতিষ্ঠানটি।",
       "প্রকৃতির কোলে মুক্ত পরিবেশে শিক্ষা, প্রাচ্য ও পাশ্চাত্যের সমন্বয় এবং সংস্কৃতিচর্চা ছিল বিশ্বভারতীর মূল দর্শন। ২০২৩ সালে শান্তিনিকেতন ইউনেস্কোর বিশ্ব ঐতিহ্যের স্বীকৃতি পায়।",
     ],
-    relatedSlugs: ["tagore-nobel-prize", "rabindra-jayanti"],
+    relatedSlugs: ["independence-day", "rabindra-jayanti"],
     wikiUrl: "https://bn.wikipedia.org/wiki/বিশ্বভারতী",
     headerGradient: "from-orange-500 to-amber-700",
   },

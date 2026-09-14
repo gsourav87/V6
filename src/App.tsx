@@ -8,6 +8,7 @@ const PanjikaPage      = lazy(() => import("./pages/PanjikaPage"));
 const MuhurtaPage      = lazy(() => import("./pages/MuhurtaPage"));
 const WeatherPage      = lazy(() => import("./pages/WeatherPage"));
 const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
+const PersonalityPage  = lazy(() => import("./pages/PersonalityPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
 const ArticlesPage     = lazy(() => import("./pages/ArticlesPage"));
 const ArticlePage      = lazy(() => import("./pages/ArticlePage"));
@@ -313,6 +314,10 @@ function App() {
 
                 <Route path="/festival/:slug">
                   <FestivalPage />
+                </Route>
+
+                <Route path="/personality/:slug">
+                  <PersonalityPage />
                 </Route>
 
                 <Route path="/finance">
