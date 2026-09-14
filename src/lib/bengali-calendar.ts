@@ -112,6 +112,7 @@ const MONTH_START_OVERRIDES: Record<string, string> = {
   "1433-9":  "2027-01-16", // মাঘ
   "1433-10": "2027-02-14", // ফাল্গুন
   "1433-11": "2027-03-16", // চৈত্র
+  "1434-0":  "2027-04-15", // বৈশাখ (verified against next-year panjika view)
 };
 
 /**
