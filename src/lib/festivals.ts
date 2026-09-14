@@ -33,7 +33,24 @@ export function getFestivalBySlug(slug: string): Festival | undefined {
 
 export function getUpcomingDatesForSlug(slug: string, fromDate: Date, count = 4): Festival[] {
   const from = fromDate.toISOString().slice(0, 10);
-  return FESTIVALS.filter(f => f.slug === slug && f.date >= from).slice(0, count);
+  let matches = FESTIVALS.filter(f => f.slug === slug && f.date >= from);
+
+  // "durga-puja" (the general overview page) doesn't get its own dated entry
+  // for every year — the per-day cluster (maha-shashthi..vijaya-dashami) is
+  // the source of truth for those years (e.g. 2026). Without this, a year
+  // covered only by the cluster gets silently skipped in favor of whichever
+  // later year does have a direct "durga-puja" entry (e.g. 2027) — wrong
+  // year shown as "upcoming". Fill the gap with a synthetic entry sourced
+  // from Maha Shashthi for any year not already covered directly.
+  if (slug === "durga-puja") {
+    const coveredYears = new Set(matches.map(f => f.date.slice(0, 4)));
+    const synthetic = FESTIVALS
+      .filter(f => f.slug === "maha-shashthi" && f.date >= from && !coveredYears.has(f.date.slice(0, 4)))
+      .map(f => ({ ...f, nameBn: `দুর্গা পূজা (${f.nameBn})` }));
+    matches = [...matches, ...synthetic].sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  return matches.slice(0, count);
 }
 
 const STATIC_FESTIVALS: Festival[] = [

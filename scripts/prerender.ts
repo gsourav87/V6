@@ -207,6 +207,12 @@ function bnDateLong(iso: string): string {
   return `${bn(d)} ${GREG_MONTHS_BN[m - 1]} ${bn(y)}, ${weekday}`;
 }
 
+/** "2026-10-16" → "১৬ অক্টোবর" — compact, for titles where a full date+weekday is too long. */
+function bnDateShort(iso: string): string {
+  const [, m, d] = iso.split("-").map(Number);
+  return `${bn(d)} ${GREG_MONTHS_BN[m - 1]}`;
+}
+
 /** Parenthetical day name from a FESTIVALS entry, e.g. "দুর্গা পূজা (মহাষষ্ঠী)" → "মহাষষ্ঠী". */
 function subName(nameBn: string): string | undefined {
   return nameBn.match(/\(([^)]+)\)/)?.[1];
@@ -229,9 +235,26 @@ function dateAnswer(nameBn: string, entries: Array<{ date: string; nameBn: strin
 }
 
 function firstUpcoming(slug: string): string | undefined {
-  const fromFestivals = FESTIVALS
+  let fromFestivals = FESTIVALS
     .filter(f => f.slug === slug && f.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
+
+  // "durga-puja" (the general overview page) doesn't get its own dated
+  // entry for every year — the per-day cluster is the source of truth for
+  // those years (e.g. 2026 has no "durga-puja" entry at all, only
+  // maha-shashthi..vijaya-dashami), which meant this earliest-match query
+  // silently skipped straight to a LATER year's real "durga-puja" entry
+  // (2027) instead of the nearer year's cluster date. Compare against Maha
+  // Shashthi's date too and take whichever is actually sooner.
+  if (slug === "durga-puja") {
+    const fromShashthi = FESTIVALS
+      .filter(f => f.slug === "maha-shashthi" && f.date >= today)
+      .sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
+    if (fromShashthi && (!fromFestivals || fromShashthi < fromFestivals)) {
+      fromFestivals = fromShashthi;
+    }
+  }
+
   if (fromFestivals) return fromFestivals;
 
   // Recurring observances/events: next annual occurrence of its MM-DD.
@@ -257,7 +280,6 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
   const route    = `/festival/${slug}`;
   const canonical = `${SITE}${route}`;
   const year     = new Date().getFullYear();
-  const title    = `${detail.nameBn} ${year} — তারিখ, ইতিহাস ও তাৎপর্য | সঠিক বাংলা ক্যালেন্ডার`;
   const desc     = `${detail.tagline}। ${detail.descBn[0].slice(0, 130)}…`;
 
   // Per-festival 1200×630 OG image (generated into public/og/) — Google
@@ -268,11 +290,35 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
 
   const upcoming = firstUpcoming(slug);
 
+  // Title leads with the actual date when known, not generic "তারিখ,
+  // ইতিহাস ও তাৎপর্য" boilerplate — Search Console showed festival pages
+  // ranking at borderline positions (~8-9) with near-zero CTR despite
+  // decent impressions; a direct-answer title is the strongest lever
+  // available short of improving ranking position itself.
+  const title = upcoming
+    ? `${detail.nameBn} ${year} — ${bnDateShort(upcoming)} | সঠিক বাংলা ক্যালেন্ডার`
+    : `${detail.nameBn} ${year} — তারিখ, ইতিহাস ও তাৎপর্য | সঠিক বাংলা ক্যালেন্ডার`;
+
   // GEO: question–answer pairs surfaced both as visible FAQ content and as
   // FAQPage JSON-LD, so AI engines get clean extractable sentences.
   const upcomingEntries = FESTIVALS
     .filter(f => f.slug === slug && f.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Same cluster-fallback as firstUpcoming() above, applied to the FAQ/
+  // date-range data so the FAQ answer doesn't disagree with the title for
+  // a year where "durga-puja" itself has no direct entry (e.g. 2026).
+  if (slug === "durga-puja") {
+    const shashthi = FESTIVALS.find(f => f.slug === "maha-shashthi" && f.date >= today);
+    const dashami  = FESTIVALS.find(f => f.slug === "vijaya-dashami" && f.date >= today);
+    if (shashthi && dashami && (upcomingEntries.length === 0 || shashthi.date < upcomingEntries[0].date)) {
+      upcomingEntries.unshift(
+        { ...shashthi, nameBn: `${detail.nameBn} (মহাষষ্ঠী)` },
+        { ...dashami,  nameBn: `${detail.nameBn} (বিজয়াদশমী)` },
+      );
+    }
+  }
+
   const faqYears = [...new Set(upcomingEntries.map(e => e.date.slice(0, 4)))].slice(0, 2);
   const faq: Array<{ q: string; a: string }> = faqYears.map(y => ({
     q: `${detail.nameBn} ${bn(Number(y))} কবে?`,
@@ -553,6 +599,24 @@ const todayBengaliDateBody = [
   `<li><a href='/rashifal'>আজকের রাশিফল</a></li></ul>`,
   `<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>`,
 ].join("\n");
+
+// ── homepage title/description — the actual date, not evergreen boilerplate ──
+// Search Console showed massive impressions for "বাংলা তারিখ" (11.4K),
+// "বাংলা ক্যালেন্ডার আজকের তারিখ" (7.2K) and "আজকের বাংলা তারিখ" (2.5K) at
+// decent positions (4-10) but near-zero CTR (0.03%-0.25%) — one query variant
+// even ranks #1 with 0% CTR across 1.2K impressions. The homepage's title was
+// a static Vite-build artifact that never showed the actual date, which is
+// exactly what these searchers want as a direct answer. Since a fresh build
+// runs daily via the article automation, this can show today's real
+// computed date, refreshed every day, same as the Today's Date page.
+{
+  console.log("\n🏠 Homepage title/description");
+  const homeTitle = `${todayBnStr} — আজকের বাংলা তারিখ | সঠিক বাংলা ক্যালেন্ডার`;
+  const homeDesc  = `আজ ${todayBnStr}। তিথি ${todayTithi.nameBn} (${todayTithi.pakshaBn}), নক্ষত্র ${todayNakshatra.nameBn}। বিশুদ্ধ সিদ্ধান্ত মতে প্রতিদিন আপডেট হওয়া সঠিক বাংলা তারিখ, পঞ্জিকা ও ক্যালেন্ডার দেখুন।`;
+  const homeHtml = swapHead(template, { title: homeTitle, description: homeDesc, canonical: SITE });
+  fs.writeFileSync(path.join(DIST, "index.html"), homeHtml, "utf-8");
+  console.log(`  ✓  / — "${homeTitle}"`);
+}
 
 const staticPages = [
   {
