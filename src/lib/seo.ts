@@ -47,13 +47,17 @@ export interface PageSEO {
   ogImage?: string;
   schemaId?: string;
   schema?: object;
+  /** Defaults to indexable; pass "noindex, follow" for thin/auto-generated pages. */
+  robots?: string;
 }
 
-export function applyPageSEO({ title, description, path, ogImage, schemaId, schema }: PageSEO) {
+export function applyPageSEO({ title, description, path, ogImage, schemaId, schema, robots }: PageSEO) {
   const canonical = `${SITE_URL}${path}`;
   const image = ogImage ?? OG_IMAGE_URL;
 
   document.title = title;
+
+  upsertMeta('meta[name="robots"]', "name", "robots", robots ?? "index, follow, max-image-preview:large");
 
   upsertMeta('meta[name="description"]', "name", "description", description);
 

@@ -24,6 +24,20 @@ export default function DatePage() {
   const tithi     = useMemo(() => getTithiAtSunrise(date), [date]);
   const nakshatra = useMemo(() => getNakshatraAtSunrise(date), [date]);
 
+  // Only dates tied to a real festival, observance, or anniversary carry
+  // genuinely unique content — every other date is the same fixed template
+  // with just the tithi/nakshatra swapped in. Googlebot (and AdSense's
+  // reviewer) flagged that pattern as thin/auto-generated content, so those
+  // generic dates are kept noindex while the curated ones stay indexable.
+  const hasRealContent = useMemo(() => {
+    const utc = new Date(Date.UTC(year, month - 1, day));
+    return (
+      getFestivalsForDate(utc).length > 0 ||
+      getObservancesForDate(utc).length > 0 ||
+      getAllAnniversariesForDate(utc).length > 0
+    );
+  }, [year, month, day]);
+
   const title = useMemo(
     () => `${toBengaliNumerals(bnDate.day)} ${bnDate.monthNameBn} ${toBengaliNumerals(bnDate.year)} — তিথি ${tithi.nameBn}, নক্ষত্র ${nakshatra.nameBn} | বাংলা পঞ্জিকা`,
     [bnDate, tithi, nakshatra]
@@ -85,6 +99,7 @@ export default function DatePage() {
       path: `/date/${year}/${month}/${day}`,
       schemaId: "date-faq-schema",
       schema: faqSchema,
+      robots: hasRealContent ? undefined : "noindex, follow",
     });
     injectSchema("date-breadcrumb-schema", breadcrumbSchema);
 
@@ -124,7 +139,7 @@ export default function DatePage() {
       removeSchema("date-breadcrumb-schema");
       removeSchema("date-entities-schema");
     };
-  }, [title, description, year, month, day, bnDate, tithi, nakshatra]);
+  }, [title, description, year, month, day, bnDate, tithi, nakshatra, hasRealContent]);
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-10">
