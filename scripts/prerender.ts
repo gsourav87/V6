@@ -20,7 +20,7 @@ import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
 import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
-import { convertToBengali, BANGLA_DAYS, BN_MONTH_SLUG } from "../src/lib/bengali-calendar";
+import { convertToBengali, BANGLA_DAYS, BN_MONTH_SLUG, bengaliMonthDays, getBengaliSeason } from "../src/lib/bengali-calendar";
 import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
 import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
 import { parseArticle, renderBlocksToHtml, extractFaq, ARTICLE_CATEGORIES, type Article } from "../src/lib/article-parser";
@@ -372,6 +372,17 @@ function bengaliYear(gregYear: number, monthIdx: number): number {
   return monthIdx <= 8 ? gregYear - 593 : gregYear - 594;
 }
 
+// Bengali month index (0=Boishakh) → sidereal rashi the sun enters that month —
+// matches bengaliMonthStart()'s own siderealTarget = banglaMonth * 30 mapping.
+const MONTH_RASHI_BN = [
+  "মেষ", "বৃষ", "মিথুন", "কর্কট", "সিংহ", "কন্যা",
+  "তুলা", "বৃশ্চিক", "ধনু", "মকর", "কুম্ভ", "মীন",
+];
+
+function gregDateBnShort(d: Date): string {
+  return `${bn(d.getUTCDate())} ${GREG_MONTHS_BN[d.getUTCMonth()]} ${bn(d.getUTCFullYear())}`;
+}
+
 console.log("\n📅 Month pages");
 
 // Generate for years 2025, 2026, 2027 — all 12 months each
@@ -381,7 +392,24 @@ for (const gregYear of [2025, 2026, 2027]) {
     const route      = `/month/${m.slug}/${gregYear}`;
     const canonical  = `${SITE}${route}`;
     const title      = `${m.nameBn} ${bn(banglaYear)} বাংলা ক্যালেন্ডার — তিথি, নক্ষত্র ও পঞ্জিকা`;
-    const desc       = `${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ (${m.nameEn} ${gregYear}) বাংলা ক্যালেন্ডার। এই মাসের সমস্ত তিথি, নক্ষত্র, উৎসব ও পঞ্জিকা তথ্য দেখুন।`;
+    const season     = getBengaliSeason(m.idx);
+    const rashiBn    = MONTH_RASHI_BN[m.idx];
+    const monthDays  = bengaliMonthDays(banglaYear, m.idx);
+    const startBn    = monthDays.length > 0 ? gregDateBnShort(monthDays[0].gregDate) : "";
+    const endBn      = monthDays.length > 0 ? gregDateBnShort(monthDays[monthDays.length - 1].gregDate) : "";
+    const monthFests = [...new Map(
+      FESTIVALS
+        .filter(f => {
+          const bd = convertToBengali(
+            Number(f.date.slice(0, 4)),
+            Number(f.date.slice(5, 7)),
+            Number(f.date.slice(8, 10))
+          );
+          return bd.month === m.idx && bd.year === banglaYear;
+        })
+        .map(f => [f.slug ?? f.nameBn, f] as const)
+    ).values()];
+    const desc       = `${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ (${m.nameEn} ${gregYear}) বাংলা ক্যালেন্ডার — ${season.nameBn} ঋতুর মাস। এই মাসের সমস্ত তিথি, নক্ষত্র, উৎসব ও পঞ্জিকা তথ্য দেখুন।`;
 
     const schema = {
       "@context": "https://schema.org",
@@ -406,8 +434,14 @@ for (const gregYear of [2025, 2026, 2027]) {
 
     const body = [
       `<h1>${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ বাংলা ক্যালেন্ডার</h1>`,
-      `<p>${m.nameBn} বাংলা বর্ষপঞ্জির ${bn(m.idx + 1)} নম্বর মাস। গ্রেগরিয়ান ক্যালেন্ডারে এটি ${m.nameEn} ${gregYear} এ পড়ে।</p>`,
-      `<p>এই মাসের সমস্ত তিথি, নক্ষত্র, যোগ ও করণের বিস্তারিত তথ্য ক্যালেন্ডারে দেখুন। যেকোনো তারিখে ক্লিক করলে সেই দিনের সম্পূর্ণ পঞ্জিকা পাওয়া যাবে।</p>`,
+      `<p>${m.nameBn} বাংলা বর্ষপঞ্জির ${bn(m.idx + 1)} নম্বর মাস এবং <strong>${season.nameBn} ঋতুর</strong> অন্তর্গত। জ্যোতিষ গণনায় এই মাসে সূর্য <strong>${rashiBn} রাশিতে</strong> অবস্থান করে। ${bn(banglaYear)} বঙ্গাব্দের ${m.nameBn} মাস শুরু হয়েছে <strong>${startBn}</strong> এবং শেষ হয়েছে <strong>${endBn}</strong> তারিখে — মোট ${bn(monthDays.length)} দিনের মাস।</p>`,
+      `<p>বিশুদ্ধ সিদ্ধান্ত পদ্ধতি অনুযায়ী কলকাতার সূর্যোদয়ের সময় অনুসারে এই ক্যালেন্ডার তৈরি করা হয়েছে। উপরের ক্যালেন্ডারে যেকোনো তারিখে ক্লিক করলে সেই দিনের তিথি, নক্ষত্র, যোগ ও করণের বিস্তারিত তথ্য দেখতে পাবেন।</p>`,
+      `<h2>${m.nameBn} মাসের উৎসব</h2>`,
+      monthFests.length > 0
+        ? `<p>${monthFests.map(f => f.slug ? `<a href="/festival/${f.slug}">${f.icon} ${f.nameBn}</a>` : `${f.icon} ${f.nameBn}`).join(" &nbsp;·&nbsp; ")}</p>`
+        : `<p>এই মাসে ক্যালেন্ডারে তালিকাভুক্ত কোনো প্রধান উৎসব নেই।</p>`,
+      `<h2>প্রশ্ন ও উত্তর</h2>`,
+      `<p><strong>${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ কোন তারিখ থেকে কোন তারিখ পর্যন্ত?</strong><br>${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ শুরু হয়েছে ${startBn} এবং শেষ হয়েছে ${endBn} তারিখে (${bn(monthDays.length)} দিন) — এটি ${season.nameBn} ঋতুর মাস, যখন সূর্য ${rashiBn} রাশিতে অবস্থান করে।</p>`,
       `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
     ].join("\n");
 
