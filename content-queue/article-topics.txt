@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-festival|গাজন উৎসব
 history|তেভাগা আন্দোলন
 person|প্রীতিলতা ওয়াদ্দেদার
 person|মাস্টারদা সূর্য সেন
