@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-person|রানী রাসমণি
 person|মাইকেল মধুসূদন দত্ত
 person|শরৎচন্দ্র চট্টোপাধ্যায়
 person|জীবনানন্দ দাশ
