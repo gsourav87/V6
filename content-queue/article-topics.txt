@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-person|আচার্য প্রফুল্লচন্দ্র রায়
 person|মেঘনাদ সাহা
 person|রাসবিহারী বসু
 person|বাঘা যতীন
