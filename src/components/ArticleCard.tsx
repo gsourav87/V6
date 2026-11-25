@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Clock, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
-import { ARTICLE_CATEGORIES, type Article } from "@/lib/article-parser";
+import { ARTICLE_CATEGORIES, type ArticleMeta } from "@/lib/article-parser";
 
 /** ৫২৩ / ২.৩ হাজার / ১.২ লক্ষ — compact Bengali count for a reader badge. */
 export function formatViewsBn(n: number): string {
@@ -23,7 +23,7 @@ export function bnPublishDate(iso: string): string {
   return `${toBengaliNumerals(d)} ${GREG_MONTHS_BN[m - 1]} ${toBengaliNumerals(y)}`;
 }
 
-export function ArticleCard({ article, compact = false, views }: { article: Article; compact?: boolean; views?: number }) {
+export function ArticleCard({ article, compact = false, views }: { article: ArticleMeta; compact?: boolean; views?: number }) {
   const cat = ARTICLE_CATEGORIES[article.category];
 
   return (

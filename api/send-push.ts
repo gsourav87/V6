@@ -17,7 +17,14 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const json = (o: any, status = 200) =>
   new Response(JSON.stringify(o), { status, headers: { "Content-Type": "application/json" } });
 
-function buildMessage(slot: string): { title: string; body: string; link: string } | null {
+function buildMessage(slot: string, params: URLSearchParams): { title: string; body: string; link: string } | null {
+  if (slot === "article") {
+    const title = params.get("title");
+    const slug = params.get("slug");
+    if (!title || !slug) return null;
+    return { title: "📚 নতুন নিবন্ধ প্রকাশিত", body: title, link: `${SITE}/articles/${slug}` };
+  }
+
   const ist = new Date(Date.now() + 5.5 * 3600 * 1000);
   const y = ist.getUTCFullYear(), m = ist.getUTCMonth() + 1, d = ist.getUTCDate();
   const utc = new Date(Date.UTC(y, m - 1, d));
@@ -58,8 +65,9 @@ export default async function handler(req: Request): Promise<Response> {
   const auth = req.headers.get("authorization") || "";
   if (!secret || auth !== `Bearer ${secret}`) return json({ error: "unauthorized" }, 401);
 
-  const slot = new URL(req.url).searchParams.get("slot") || "morning";
-  const msg = buildMessage(slot);
+  const params = new URL(req.url).searchParams;
+  const slot = params.get("slot") || "morning";
+  const msg = buildMessage(slot, params);
   if (!msg) return json({ ok: true, slot, skipped: "nothing to send" });
 
   try {

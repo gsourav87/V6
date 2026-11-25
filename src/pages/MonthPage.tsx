@@ -5,9 +5,25 @@ import { Download } from "lucide-react";
 import { CalendarGrid } from "@/components/CalendarGrid";
 import { MonthSpecialDays } from "@/components/MonthSpecialDays";
 import { ShareButton } from "@/components/ShareButton";
-import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
+import { toBengaliDate, toBengaliNumerals, bengaliMonthDays, getBengaliSeason } from "@/lib/bengali-calendar";
 import { FESTIVALS } from "@/lib/festivals";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
+
+// Bengali month index (0=Boishakh) → sidereal rashi the sun enters that month —
+// matches bengaliMonthStart()'s own siderealTarget = banglaMonth * 30 mapping.
+const MONTH_RASHI_BN = [
+  "মেষ", "বৃষ", "মিথুন", "কর্কট", "সিংহ", "কন্যা",
+  "তুলা", "বৃশ্চিক", "ধনু", "মকর", "কুম্ভ", "মীন",
+];
+
+const GREG_MONTHS_BN = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
+];
+
+function gregDateBn(d: Date): string {
+  return `${toBengaliNumerals(d.getDate())} ${GREG_MONTHS_BN[d.getMonth()]} ${toBengaliNumerals(d.getFullYear())}`;
+}
 
 // Slug → Bengali month index (0-based)
 const MONTH_INDEX: Record<string, number> = {
@@ -49,8 +65,9 @@ export default function MonthPage() {
   const nameEn     = MONTH_EN[slug]    ?? "Boishakh";
   const banglaYear = toBengaliYear(gregYear, monthIndex);
 
+  const seasonForMeta = getBengaliSeason(monthIndex);
   const title = `${nameBn} ${toBengaliNumerals(banglaYear)} বাংলা ক্যালেন্ডার — তিথি, নক্ষত্র ও পঞ্জিকা`;
-  const description = `${nameBn} ${toBengaliNumerals(banglaYear)} বঙ্গাব্দ (${nameEn} ${gregYear}) বাংলা ক্যালেন্ডার। এই মাসের সমস্ত তিথি, নক্ষত্র, উৎসব ও পঞ্জিকা তথ্য দেখুন।`;
+  const description = `${nameBn} ${toBengaliNumerals(banglaYear)} বঙ্গাব্দ (${nameEn} ${gregYear}) বাংলা ক্যালেন্ডার — ${seasonForMeta.nameBn} ঋতুর মাস। এই মাসের সমস্ত তিথি, নক্ষত্র, উৎসব ও পঞ্জিকা তথ্য দেখুন।`;
 
   useEffect(() => {
     const breadcrumb = {
@@ -69,6 +86,13 @@ export default function MonthPage() {
   }, [title, description, slug, gregYear, nameBn, banglaYear]);
 
   const today = useMemo(() => new Date(), []);
+
+  const days    = useMemo(() => bengaliMonthDays(banglaYear, monthIndex), [banglaYear, monthIndex]);
+  const season  = getBengaliSeason(monthIndex);
+  const rashiBn = MONTH_RASHI_BN[monthIndex];
+  const startBn = days.length > 0 ? gregDateBn(days[0].gregDate) : "";
+  const endBn   = days.length > 0 ? gregDateBn(days[days.length - 1].gregDate) : "";
+  const dayCount = days.length;
 
   // Festivals that fall in this Bengali month — deduplicated by slug
   const monthFestivals = useMemo(() => {
@@ -150,18 +174,20 @@ export default function MonthPage() {
             {nameBn} {toBengaliNumerals(banglaYear)} বঙ্গাব্দ পঞ্জিকা
           </h2>
           <p>
-            {nameBn} মাস বাংলা বর্ষপঞ্জির {monthIndex + 1} নম্বর মাস। এই মাসে সমস্ত তিথি, নক্ষত্র,
-            যোগ ও করণের বিস্তারিত তথ্য উপরের ক্যালেন্ডারে দেখানো হয়েছে।
-            যেকোনো তারিখে ক্লিক করলে সেই দিনের সম্পূর্ণ পঞ্জিকা দেখতে পাবেন।
+            {nameBn} বাংলা বর্ষপঞ্জির {monthIndex + 1} নম্বর মাস এবং <strong className="text-foreground">{season.nameBn} ঋতুর</strong> অন্তর্গত।
+            জ্যোতিষ গণনায় এই মাসে সূর্য <strong className="text-foreground">{rashiBn} রাশিতে</strong> অবস্থান করে।
+            {toBengaliNumerals(banglaYear)} বঙ্গাব্দের {nameBn} মাস শুরু হয়েছে <strong className="text-foreground">{startBn}</strong> এবং
+            শেষ হয়েছে <strong className="text-foreground">{endBn}</strong> তারিখে — মোট {toBengaliNumerals(dayCount)} দিনের মাস।
           </p>
           <p>
             বিশুদ্ধ সিদ্ধান্ত পদ্ধতি অনুযায়ী কলকাতার সূর্যোদয়ের সময় অনুসারে এই ক্যালেন্ডার তৈরি করা হয়েছে।
+            উপরের ক্যালেন্ডারে যেকোনো তারিখে ক্লিক করলে সেই দিনের তিথি, নক্ষত্র, যোগ ও করণের বিস্তারিত তথ্য দেখতে পাবেন।
           </p>
 
           {/* Festivals this month */}
-          {monthFestivals.length > 0 && (
-            <div>
-              <h3 className="text-base font-bold text-foreground mb-2">{nameBn} মাসের উৎসব</h3>
+          <div>
+            <h3 className="text-base font-bold text-foreground mb-2">{nameBn} মাসের উৎসব</h3>
+            {monthFestivals.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {monthFestivals.map(f =>
                   f.slug ? (
@@ -181,8 +207,10 @@ export default function MonthPage() {
                   )
                 )}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-sm">এই মাসে ক্যালেন্ডারে তালিকাভুক্ত কোনো প্রধান উৎসব নেই।</p>
+            )}
+          </div>
 
           {/* Navigation to adjacent months */}
           <div className="flex flex-wrap gap-4 pt-2">
@@ -210,6 +238,14 @@ export default function MonthPage() {
             <p className="font-semibold text-foreground">এই মাসের তিথি ও নক্ষত্র কীভাবে দেখব?</p>
             <p className="mt-1 text-muted-foreground">
               উপরের ক্যালেন্ডারে যেকোনো তারিখে ক্লিক করুন — সেই দিনের তিথি, নক্ষত্র, যোগ, করণ ও রাহু কাল দেখতে পাবেন।
+            </p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-foreground">{nameBn} {toBengaliNumerals(banglaYear)} বঙ্গাব্দ কোন তারিখ থেকে কোন তারিখ পর্যন্ত?</p>
+            <p className="mt-1 text-muted-foreground">
+              {nameBn} {toBengaliNumerals(banglaYear)} বঙ্গাব্দ শুরু হয়েছে {startBn} এবং শেষ হয়েছে {endBn} তারিখে
+              ({toBengaliNumerals(dayCount)} দিন) — এটি {season.nameBn} ঋতুর মাস, যখন সূর্য {rashiBn} রাশিতে অবস্থান করে।
             </p>
           </div>
         </div>

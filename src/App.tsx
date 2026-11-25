@@ -8,9 +8,16 @@ const PanjikaPage      = lazy(() => import("./pages/PanjikaPage"));
 const MuhurtaPage      = lazy(() => import("./pages/MuhurtaPage"));
 const WeatherPage      = lazy(() => import("./pages/WeatherPage"));
 const FestivalPage     = lazy(() => import("./pages/FestivalPage"));
+const PersonalityPage  = lazy(() => import("./pages/PersonalityPage"));
+const FestivalsPage    = lazy(() => import("./pages/FestivalsPage"));
 const FinancePage      = lazy(() => import("./pages/FinancePage"));
 const ArticlesPage     = lazy(() => import("./pages/ArticlesPage"));
 const ArticlePage      = lazy(() => import("./pages/ArticlePage"));
+const AboutPage        = lazy(() => import("./pages/AboutPage"));
+const ContactPage      = lazy(() => import("./pages/ContactPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const DisclaimerPage   = lazy(() => import("./pages/DisclaimerPage"));
+const DurgaPuja2026USA = lazy(() => import("./pages/en/DurgaPuja2026USA"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import { useState, useEffect } from "react";
@@ -23,7 +30,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/components/AuthContext";
 
 import { useCalendar } from "@/hooks/useCalendar";
-import { useTodayInfo } from "@/hooks/useTodayInfo";
 
 import { Header } from "@/components/Header";
 import { NavBar } from "@/components/NavBar";
@@ -42,6 +48,7 @@ const LoginPage       = lazy(() => import("@/components/LoginPage").then(m => ({
 const DayDetailsModal = lazy(() => import("@/components/DayDetailsModal").then(m => ({ default: m.DayDetailsModal })));
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
+import { DurgaPujaBanner } from "@/components/DurgaPujaBanner";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 import { AstronomicalFooter } from "@/components/AstronomicalFooter";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -60,7 +67,11 @@ function Home() {
     setYear,
   } = useCalendar();
 
-  const { now } = useTodayInfo();
+  // Just today's date for calendar highlighting — deliberately NOT the ticking
+  // useTodayInfo() hook, which re-renders every second. LiveClock already runs
+  // its own independent per-second timer for the clock face; duplicating that
+  // here would re-render the whole homepage every tick for no reason.
+  const [now] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -71,9 +82,11 @@ function Home() {
   const todayD = now.getDate();
 
   useEffect(() => {
-    (window as any).gtag?.("event", "conversion", {
-      send_to: "AW-18328044398/JzDiCNjEr9ccEO6Gv6NE",
-    });
+    // Fired via GTM (Custom Event trigger "homepage_landing") rather than a
+    // direct gtag() call — GTM's gtm.js doesn't expose window.gtag the way
+    // the old gtag.js loader did, only dataLayer. This also keeps the actual
+    // Ads conversion ID out of the app code entirely; GTM owns that mapping.
+    (window as any).dataLayer?.push({ event: "homepage_landing" });
   }, []);
 
   return (
@@ -87,6 +100,8 @@ function Home() {
           <div className="flex-1" />
           <Header onLoginClick={() => setShowLoginModal(true)} />
         </div>
+
+        <DurgaPujaBanner />
 
         <LiveClock />
 
@@ -308,6 +323,14 @@ function App() {
                   <FestivalPage />
                 </Route>
 
+                <Route path="/personality/:slug">
+                  <PersonalityPage />
+                </Route>
+
+                <Route path="/festivals">
+                  <FestivalsPage />
+                </Route>
+
                 <Route path="/finance">
                   <FinancePage />
                 </Route>
@@ -318,6 +341,26 @@ function App() {
 
                 <Route path="/articles/:slug">
                   <ArticlePage />
+                </Route>
+
+                <Route path="/about">
+                  <AboutPage />
+                </Route>
+
+                <Route path="/contact">
+                  <ContactPage />
+                </Route>
+
+                <Route path="/privacy-policy">
+                  <PrivacyPolicyPage />
+                </Route>
+
+                <Route path="/disclaimer">
+                  <DisclaimerPage />
+                </Route>
+
+                <Route path="/en/durga-puja-2026-usa-uk-canada-dates-times">
+                  <DurgaPuja2026USA />
                 </Route>
 
                 <Route>

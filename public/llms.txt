@@ -1,0 +1,17 @@
+# সঠিক বাংলা ক্যালেন্ডার (Sothik Bangla Calendar)
+
+> A free Bengali (Bangla) calendar and panchang web app covering today's Bengali date, tithi, nakshatra, rashifal, muhurta, weather, and cultural/historical articles — for readers in West Bengal, India and Bangladesh.
+
+## Core pages
+- [Home](https://www.sothikbanglacalendar.live/): Full-year Bengali calendar with today's date, tithi, nakshatra, and daily panchang.
+- [আজকের পঞ্জিকা](https://www.sothikbanglacalendar.live/panjika): Today's detailed panchang — tithi, nakshatra, yoga, karana, rahu kalam, sunrise/sunset.
+- [আজকের বাংলা তারিখ](https://www.sothikbanglacalendar.live/today-bengali-date): Today's Bengali date converted from the Gregorian calendar.
+- [শুভ মুহূর্ত](https://www.sothikbanglacalendar.live/muhurta): Auspicious time (muhurta) calculator.
+- [আজকের রাশিফল](https://www.sothikbanglacalendar.live/rashifal): Daily horoscope for all zodiac signs.
+- [আবহাওয়া](https://www.sothikbanglacalendar.live/weather): 15-day weather forecast.
+- [বাংলার ঐতিহ্য ও ইতিহাস](https://www.sothikbanglacalendar.live/articles): Long-form Bengali-language articles on festivals, historical figures, and cultural history.
+
+## Notes
+- All content is in Bengali (bn), primarily for audiences in India (West Bengal) and Bangladesh.
+- Calendar dates follow the Bishuddha Siddhanta (বিশুদ্ধ সিদ্ধান্ত) panchang calculation method.
+- Structured data (schema.org) is included on festival, article, and date pages.

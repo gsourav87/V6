@@ -16,12 +16,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // These files are plain data — no browser APIs, relative imports only.
-import { FESTIVAL_DETAILS } from "../src/lib/festival-details";
+import { FESTIVAL_DETAILS, getCategoryLabel } from "../src/lib/festival-details";
+import { PERSONALITY_DETAILS } from "../src/lib/personality-details";
 import { FESTIVALS, getFestivalsForDate } from "../src/lib/festivals";
 import { OBSERVANCES, getObservancesForDate } from "../src/lib/observances";
 import { FAMOUS_PEOPLE } from "../src/lib/famous-people";
-import { convertToBengali, BANGLA_DAYS, BN_MONTH_SLUG } from "../src/lib/bengali-calendar";
-import { getTithiAtSunrise, getNakshatraAtSunrise } from "../src/lib/panjika";
+import { convertToBengali, BANGLA_DAYS, BN_MONTH_SLUG, bengaliMonthDays, getBengaliSeason } from "../src/lib/bengali-calendar";
+import { getTithiAtSunrise, getNakshatraAtSunrise, getYogaAtSunrise, getKaranaAtSunrise, getSunTimes, formatKolkataTime } from "../src/lib/panjika";
 import { getAllEventsForDate, getAllAnniversariesForDate } from "../src/lib/calendar-events";
 import { parseArticle, renderBlocksToHtml, extractFaq, ARTICLE_CATEGORIES, type Article } from "../src/lib/article-parser";
 
@@ -56,6 +57,12 @@ interface HeadMeta {
   ogDesc?: string;
   ogImage?: string;
   schema?: object;
+  /** "en" for the targeted diaspora landing pages; omit for Bengali (default). */
+  htmlLang?: string;
+  /** Extra hreflang links beyond the template's default self-referential bn
+   *  ones — used to pair an English page with its Bengali counterpart (and
+   *  vice versa) so both sides of the relationship are declared. */
+  hreflangAlt?: { lang: string; href: string }[];
 }
 
 /** Replace head meta tags and inject JSON-LD into an HTML string. */
@@ -80,12 +87,34 @@ function swapHead(html: string, m: HeadMeta): string {
     html = html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/, `$1${img}$2`);
   }
 
-  // hreflang — point the template's self-referential tags at this page's URL.
-  for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
-    html = html.replace(
-      new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`),
-      `$1${url}$2`
-    );
+  if (m.htmlLang) {
+    html = html.replace(/<html lang="[^"]*">/, `<html lang="${esc(m.htmlLang)}">`);
+  }
+
+  // hreflang — the template ships with self-referential bn/bn-IN/bn-BD/
+  // x-default tags. That's correct for the (default) Bengali pages, but
+  // wrong for a paired English page, which would otherwise end up claiming
+  // hreflang="bn" for itself as well as getting the real one from
+  // hreflangAlt below — two contradictory "bn" tags. So: only point the
+  // template's defaults at this page when it's actually Bengali; a non-bn
+  // page strips them entirely and relies solely on hreflangAlt.
+  if (!m.htmlLang || m.htmlLang === "bn") {
+    for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
+      html = html.replace(
+        new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`),
+        `$1${url}$2`
+      );
+    }
+  } else {
+    for (const lang of ["bn", "bn-IN", "bn-BD", "x-default"]) {
+      html = html.replace(new RegExp(`\\s*<link rel="alternate" hreflang="${lang}" href="[^"]*"\\s*/>\\n?`), "");
+    }
+  }
+  if (m.hreflangAlt) {
+    const tags = m.hreflangAlt
+      .map(({ lang, href }) => `<link rel="alternate" hreflang="${esc(lang)}" href="${esc(href)}" />`)
+      .join("\n");
+    html = html.replace("</head>", `${tags}\n</head>`);
   }
 
   if (m.schema) {
@@ -178,6 +207,12 @@ function bnDateLong(iso: string): string {
   return `${bn(d)} ${GREG_MONTHS_BN[m - 1]} ${bn(y)}, ${weekday}`;
 }
 
+/** "2026-10-16" → "১৬ অক্টোবর" — compact, for titles where a full date+weekday is too long. */
+function bnDateShort(iso: string): string {
+  const [, m, d] = iso.split("-").map(Number);
+  return `${bn(d)} ${GREG_MONTHS_BN[m - 1]}`;
+}
+
 /** Parenthetical day name from a FESTIVALS entry, e.g. "দুর্গা পূজা (মহাষষ্ঠী)" → "মহাষষ্ঠী". */
 function subName(nameBn: string): string | undefined {
   return nameBn.match(/\(([^)]+)\)/)?.[1];
@@ -200,9 +235,26 @@ function dateAnswer(nameBn: string, entries: Array<{ date: string; nameBn: strin
 }
 
 function firstUpcoming(slug: string): string | undefined {
-  const fromFestivals = FESTIVALS
+  let fromFestivals = FESTIVALS
     .filter(f => f.slug === slug && f.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
+
+  // "durga-puja" (the general overview page) doesn't get its own dated
+  // entry for every year — the per-day cluster is the source of truth for
+  // those years (e.g. 2026 has no "durga-puja" entry at all, only
+  // maha-shashthi..vijaya-dashami), which meant this earliest-match query
+  // silently skipped straight to a LATER year's real "durga-puja" entry
+  // (2027) instead of the nearer year's cluster date. Compare against Maha
+  // Shashthi's date too and take whichever is actually sooner.
+  if (slug === "durga-puja") {
+    const fromShashthi = FESTIVALS
+      .filter(f => f.slug === "maha-shashthi" && f.date >= today)
+      .sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
+    if (fromShashthi && (!fromFestivals || fromShashthi < fromFestivals)) {
+      fromFestivals = fromShashthi;
+    }
+  }
+
   if (fromFestivals) return fromFestivals;
 
   // Recurring observances/events: next annual occurrence of its MM-DD.
@@ -217,11 +269,17 @@ function firstUpcoming(slug: string): string | undefined {
 
 console.log("\n📄 Festival pages");
 
+// Reciprocal hreflang target for festival slugs that have an English
+// diaspora landing page (see "English diaspora pages" section below) — kept
+// as a small lookup here since the festival loop runs before that section.
+const ENGLISH_COUNTERPART: Record<string, string> = {
+  "durga-puja": "/en/durga-puja-2026-usa-uk-canada-dates-times",
+};
+
 for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
   const route    = `/festival/${slug}`;
   const canonical = `${SITE}${route}`;
   const year     = new Date().getFullYear();
-  const title    = `${detail.nameBn} ${year} — তারিখ, ইতিহাস ও তাৎপর্য | সঠিক বাংলা ক্যালেন্ডার`;
   const desc     = `${detail.tagline}। ${detail.descBn[0].slice(0, 130)}…`;
 
   // Per-festival 1200×630 OG image (generated into public/og/) — Google
@@ -232,11 +290,35 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
 
   const upcoming = firstUpcoming(slug);
 
+  // Title leads with the actual date when known, not generic "তারিখ,
+  // ইতিহাস ও তাৎপর্য" boilerplate — Search Console showed festival pages
+  // ranking at borderline positions (~8-9) with near-zero CTR despite
+  // decent impressions; a direct-answer title is the strongest lever
+  // available short of improving ranking position itself.
+  const title = upcoming
+    ? `${detail.nameBn} ${year} — ${bnDateShort(upcoming)} | সঠিক বাংলা ক্যালেন্ডার`
+    : `${detail.nameBn} ${year} — তারিখ, ইতিহাস ও তাৎপর্য | সঠিক বাংলা ক্যালেন্ডার`;
+
   // GEO: question–answer pairs surfaced both as visible FAQ content and as
   // FAQPage JSON-LD, so AI engines get clean extractable sentences.
   const upcomingEntries = FESTIVALS
     .filter(f => f.slug === slug && f.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Same cluster-fallback as firstUpcoming() above, applied to the FAQ/
+  // date-range data so the FAQ answer doesn't disagree with the title for
+  // a year where "durga-puja" itself has no direct entry (e.g. 2026).
+  if (slug === "durga-puja") {
+    const shashthi = FESTIVALS.find(f => f.slug === "maha-shashthi" && f.date >= today);
+    const dashami  = FESTIVALS.find(f => f.slug === "vijaya-dashami" && f.date >= today);
+    if (shashthi && dashami && (upcomingEntries.length === 0 || shashthi.date < upcomingEntries[0].date)) {
+      upcomingEntries.unshift(
+        { ...shashthi, nameBn: `${detail.nameBn} (মহাষষ্ঠী)` },
+        { ...dashami,  nameBn: `${detail.nameBn} (বিজয়াদশমী)` },
+      );
+    }
+  }
+
   const faqYears = [...new Set(upcomingEntries.map(e => e.date.slice(0, 4)))].slice(0, 2);
   const faq: Array<{ q: string; a: string }> = faqYears.map(y => ({
     q: `${detail.nameBn} ${bn(Number(y))} কবে?`,
@@ -296,13 +378,83 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
     // direct-answer line first: AI engines and featured snippets lift this
     ...(answerLine ? [`<p><strong>${answerLine}</strong></p>`] : []),
     `<p><strong>${detail.tagline}</strong></p>`,
+    ...(detail.keyTimes?.length
+      ? [`<h2>নির্ঘণ্ট ও সময়সূচি</h2>`, `<ul>${detail.keyTimes.map(kt => `<li><strong>${kt.label}:</strong> ${kt.time}</li>`).join("")}</ul>`]
+      : []),
     ...detail.descBn.map(p => `<p>${p}</p>`),
     `<h2>সাধারণ প্রশ্ন</h2>`,
     ...faq.map(({ q, a }) => `<h3>${q}</h3>\n<p>${a}</p>`),
     `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
   ].join("\n");
 
-  let html = swapHead(template, { title, description: desc, canonical, ogImage, schema });
+  const englishCounterpart = ENGLISH_COUNTERPART[slug];
+  let html = swapHead(template, {
+    title, description: desc, canonical, ogImage, schema,
+    ...(englishCounterpart ? { hreflangAlt: [
+      { lang: "en", href: `${SITE}${englishCounterpart}` },
+    ] } : {}),
+  });
+  html = swapBody(html, body);
+  emit(route, html);
+}
+
+// ── personality pages ────────────────────────────────────────────────────
+
+console.log("\n👤 Personality pages");
+
+for (const [slug, detail] of Object.entries(PERSONALITY_DETAILS)) {
+  const person = FAMOUS_PEOPLE.find(p => p.id === slug);
+  if (!person) continue;
+
+  const route     = `/personality/${slug}`;
+  const canonical = `${SITE}${route}`;
+  const title      = `${detail.nameBn} — জীবনী, জন্মতারিখ ও অবদান | সঠিক বাংলা ক্যালেন্ডার`;
+  const desc       = `${detail.tagline}। ${detail.descBn[0].slice(0, 130)}…`;
+
+  const festival = detail.festivalSlug ? FESTIVAL_DETAILS[detail.festivalSlug] : undefined;
+
+  const personSchema = {
+    "@type": "Person",
+    "name": detail.nameBn,
+    "alternateName": detail.nameEn,
+    "description": detail.descBn[0],
+    "url": canonical,
+    "birthDate": `${String(person.birthYear).padStart(4, "0")}-${person.birthMD}`,
+    ...(person.deathYear
+      ? { "deathDate": person.deathMD ? `${String(person.deathYear).padStart(4, "0")}-${person.deathMD}` : String(person.deathYear) }
+      : {}),
+    "jobTitle": person.role,
+    "sameAs": detail.wikiUrl,
+    "nationality": "Indian",
+  };
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+      { "@type": "ListItem", "position": 2, "name": detail.nameBn, "item": canonical },
+    ],
+  };
+  const schema = { "@context": "https://schema.org", "@graph": [personSchema, breadcrumbSchema] };
+
+  const body = [
+    `<h1>${detail.emoji} ${detail.nameBn}</h1>`,
+    `<p><strong>${detail.tagline}</strong></p>`,
+    `<p>জন্ম: ${person.birthYear}${person.deathYear ? ` &nbsp;·&nbsp; মৃত্যু: ${person.deathYear}` : ""}</p>`,
+    `<h2>জীবনী</h2>`,
+    ...detail.descBn.map(p => `<p>${p}</p>`),
+    ...(detail.works?.length ? [`<h2>উল্লেখযোগ্য কীর্তি</h2>`, `<p>${detail.works.join(" &nbsp;·&nbsp; ")}</p>`] : []),
+    ...(festival ? [`<h2>পালিত দিবস</h2>`, `<p><a href="/festival/${festival.slug}">${festival.icon} ${festival.nameBn}</a></p>`] : []),
+    ...(detail.relatedSlugs.length ? [
+      `<h2>সম্পর্কিত ব্যক্তিত্ব</h2>`,
+      `<p>${detail.relatedSlugs.map(rs => {
+        const r = PERSONALITY_DETAILS[rs];
+        return r ? `<a href="/personality/${rs}">${r.emoji} ${r.nameBn}</a>` : "";
+      }).filter(Boolean).join(" &nbsp;·&nbsp; ")}</p>`,
+    ] : []),
+    `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/today-bengali-date">আজকের বাংলা তারিখ</a></p>`,
+  ].join("\n");
+
+  let html = swapHead(template, { title, description: desc, canonical, schema });
   html = swapBody(html, body);
   emit(route, html);
 }
@@ -328,6 +480,17 @@ function bengaliYear(gregYear: number, monthIdx: number): number {
   return monthIdx <= 8 ? gregYear - 593 : gregYear - 594;
 }
 
+// Bengali month index (0=Boishakh) → sidereal rashi the sun enters that month —
+// matches bengaliMonthStart()'s own siderealTarget = banglaMonth * 30 mapping.
+const MONTH_RASHI_BN = [
+  "মেষ", "বৃষ", "মিথুন", "কর্কট", "সিংহ", "কন্যা",
+  "তুলা", "বৃশ্চিক", "ধনু", "মকর", "কুম্ভ", "মীন",
+];
+
+function gregDateBnShort(d: Date): string {
+  return `${bn(d.getUTCDate())} ${GREG_MONTHS_BN[d.getUTCMonth()]} ${bn(d.getUTCFullYear())}`;
+}
+
 console.log("\n📅 Month pages");
 
 // Generate for years 2025, 2026, 2027 — all 12 months each
@@ -337,7 +500,24 @@ for (const gregYear of [2025, 2026, 2027]) {
     const route      = `/month/${m.slug}/${gregYear}`;
     const canonical  = `${SITE}${route}`;
     const title      = `${m.nameBn} ${bn(banglaYear)} বাংলা ক্যালেন্ডার — তিথি, নক্ষত্র ও পঞ্জিকা`;
-    const desc       = `${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ (${m.nameEn} ${gregYear}) বাংলা ক্যালেন্ডার। এই মাসের সমস্ত তিথি, নক্ষত্র, উৎসব ও পঞ্জিকা তথ্য দেখুন।`;
+    const season     = getBengaliSeason(m.idx);
+    const rashiBn    = MONTH_RASHI_BN[m.idx];
+    const monthDays  = bengaliMonthDays(banglaYear, m.idx);
+    const startBn    = monthDays.length > 0 ? gregDateBnShort(monthDays[0].gregDate) : "";
+    const endBn      = monthDays.length > 0 ? gregDateBnShort(monthDays[monthDays.length - 1].gregDate) : "";
+    const monthFests = [...new Map(
+      FESTIVALS
+        .filter(f => {
+          const bd = convertToBengali(
+            Number(f.date.slice(0, 4)),
+            Number(f.date.slice(5, 7)),
+            Number(f.date.slice(8, 10))
+          );
+          return bd.month === m.idx && bd.year === banglaYear;
+        })
+        .map(f => [f.slug ?? f.nameBn, f] as const)
+    ).values()];
+    const desc       = `${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ (${m.nameEn} ${gregYear}) বাংলা ক্যালেন্ডার — ${season.nameBn} ঋতুর মাস। এই মাসের সমস্ত তিথি, নক্ষত্র, উৎসব ও পঞ্জিকা তথ্য দেখুন।`;
 
     const schema = {
       "@context": "https://schema.org",
@@ -362,8 +542,14 @@ for (const gregYear of [2025, 2026, 2027]) {
 
     const body = [
       `<h1>${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ বাংলা ক্যালেন্ডার</h1>`,
-      `<p>${m.nameBn} বাংলা বর্ষপঞ্জির ${bn(m.idx + 1)} নম্বর মাস। গ্রেগরিয়ান ক্যালেন্ডারে এটি ${m.nameEn} ${gregYear} এ পড়ে।</p>`,
-      `<p>এই মাসের সমস্ত তিথি, নক্ষত্র, যোগ ও করণের বিস্তারিত তথ্য ক্যালেন্ডারে দেখুন। যেকোনো তারিখে ক্লিক করলে সেই দিনের সম্পূর্ণ পঞ্জিকা পাওয়া যাবে।</p>`,
+      `<p>${m.nameBn} বাংলা বর্ষপঞ্জির ${bn(m.idx + 1)} নম্বর মাস এবং <strong>${season.nameBn} ঋতুর</strong> অন্তর্গত। জ্যোতিষ গণনায় এই মাসে সূর্য <strong>${rashiBn} রাশিতে</strong> অবস্থান করে। ${bn(banglaYear)} বঙ্গাব্দের ${m.nameBn} মাস শুরু হয়েছে <strong>${startBn}</strong> এবং শেষ হয়েছে <strong>${endBn}</strong> তারিখে — মোট ${bn(monthDays.length)} দিনের মাস।</p>`,
+      `<p>বিশুদ্ধ সিদ্ধান্ত পদ্ধতি অনুযায়ী কলকাতার সূর্যোদয়ের সময় অনুসারে এই ক্যালেন্ডার তৈরি করা হয়েছে। উপরের ক্যালেন্ডারে যেকোনো তারিখে ক্লিক করলে সেই দিনের তিথি, নক্ষত্র, যোগ ও করণের বিস্তারিত তথ্য দেখতে পাবেন।</p>`,
+      `<h2>${m.nameBn} মাসের উৎসব</h2>`,
+      monthFests.length > 0
+        ? `<p>${monthFests.map(f => f.slug ? `<a href="/festival/${f.slug}">${f.icon} ${f.nameBn}</a>` : `${f.icon} ${f.nameBn}`).join(" &nbsp;·&nbsp; ")}</p>`
+        : `<p>এই মাসে ক্যালেন্ডারে তালিকাভুক্ত কোনো প্রধান উৎসব নেই।</p>`,
+      `<h2>প্রশ্ন ও উত্তর</h2>`,
+      `<p><strong>${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ কোন তারিখ থেকে কোন তারিখ পর্যন্ত?</strong><br>${m.nameBn} ${bn(banglaYear)} বঙ্গাব্দ শুরু হয়েছে ${startBn} এবং শেষ হয়েছে ${endBn} তারিখে (${bn(monthDays.length)} দিন) — এটি ${season.nameBn} ঋতুর মাস, যখন সূর্য ${rashiBn} রাশিতে অবস্থান করে।</p>`,
       `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
     ].join("\n");
 
@@ -377,19 +563,153 @@ for (const gregYear of [2025, 2026, 2027]) {
 
 console.log("\n🗂  Static pages");
 
+// Real, computed "today" content — baked at build time (a fresh build runs
+// daily via the article-automation push) so the crawlable static HTML shows
+// actual tithi/nakshatra/events instead of generic 2026 boilerplate.
+const todayDate     = new Date();
+const todayUtc      = new Date(Date.UTC(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate()));
+const todayBn       = convertToBengali(todayDate.getFullYear(), todayDate.getMonth() + 1, todayDate.getDate());
+const todayTithi    = getTithiAtSunrise(todayDate);
+const todayNakshatra = getNakshatraAtSunrise(todayDate);
+const todayYoga     = getYogaAtSunrise(todayDate);
+const todayKarana   = getKaranaAtSunrise(todayDate);
+const todaySun      = getSunTimes(todayDate);
+const todayBnStr    = `${bn(todayBn.day)} ${todayBn.monthNameBn} ${bn(todayBn.year)} বঙ্গাব্দ`;
+const todayFests    = [...getFestivalsForDate(todayUtc), ...getObservancesForDate(todayUtc)];
+const todayAnnivs   = getAllAnniversariesForDate(todayUtc);
+const todayBirths   = todayAnnivs.filter(a => a.anniversaryType === "birth");
+const todayDeaths   = todayAnnivs.filter(a => a.anniversaryType === "death");
+
+const todayBengaliDateBody = [
+  `<h1>আজকের বাংলা তারিখ — ${todayBnStr}</h1>`,
+  `<p>আজকের তিথি <strong>${todayTithi.nameBn}</strong> (${todayTithi.pakshaBn}), নক্ষত্র <strong>${todayNakshatra.nameBn}</strong>, যোগ <strong>${todayYoga.nameBn}</strong>, করণ <strong>${todayKarana.nameBn}</strong>। কলকাতায় সূর্যোদয়: ${formatKolkataTime(todaySun.sunrise)}, সূর্যাস্ত: ${formatKolkataTime(todaySun.sunset)}।</p>`,
+  ...(todayFests.length > 0 ? [
+    `<h2>আজকের উৎসব ও বিশেষ দিন</h2>`,
+    `<p>${todayFests.map(f => f.slug ? `<a href="/festival/${f.slug}">${f.icon} ${f.nameBn}</a>` : `${f.icon} ${f.nameBn}`).join(" &nbsp;·&nbsp; ")}</p>`,
+  ] : []),
+  ...(todayBirths.length > 0 ? [
+    `<h2>আজ জন্মদিন</h2>`,
+    `<p>${todayBirths.map(a => `${a.person.emoji} <strong>${a.person.nameBn}</strong> (${bn(a.yearsSince)} তম জন্মজয়ন্তী) — ${a.person.descBn}`).join("<br>")}</p>`,
+  ] : []),
+  ...(todayDeaths.length > 0 ? [
+    `<h2>আজ মৃত্যুবার্ষিকী</h2>`,
+    `<p>${todayDeaths.map(a => `${a.person.emoji} <strong>${a.person.nameBn}</strong> (${bn(a.yearsSince)} তম মৃত্যুবার্ষিকী) — ${a.person.descBn}`).join("<br>")}</p>`,
+  ] : []),
+  `<ul><li><a href='/panjika'>আজকের পঞ্জিকা — তিথি, নক্ষত্র, রাহু কাল</a></li>`,
+  `<li><a href='/rashifal'>আজকের রাশিফল</a></li></ul>`,
+  `<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>`,
+].join("\n");
+
+// ── homepage title/description — the actual date, not evergreen boilerplate ──
+// Search Console showed massive impressions for "বাংলা তারিখ" (11.4K),
+// "বাংলা ক্যালেন্ডার আজকের তারিখ" (7.2K) and "আজকের বাংলা তারিখ" (2.5K) at
+// decent positions (4-10) but near-zero CTR (0.03%-0.25%) — one query variant
+// even ranks #1 with 0% CTR across 1.2K impressions. The homepage's title was
+// a static Vite-build artifact that never showed the actual date, which is
+// exactly what these searchers want as a direct answer. Since a fresh build
+// runs daily via the article automation, this can show today's real
+// computed date, refreshed every day, same as the Today's Date page.
+{
+  console.log("\n🏠 Homepage title/description");
+  const homeTitle = `${todayBnStr} — আজকের বাংলা তারিখ | সঠিক বাংলা ক্যালেন্ডার`;
+  const homeDesc  = `আজ ${todayBnStr}। তিথি ${todayTithi.nameBn} (${todayTithi.pakshaBn}), নক্ষত্র ${todayNakshatra.nameBn}। বিশুদ্ধ সিদ্ধান্ত মতে প্রতিদিন আপডেট হওয়া সঠিক বাংলা তারিখ, পঞ্জিকা ও ক্যালেন্ডার দেখুন।`;
+  const homeHtml = swapHead(template, { title: homeTitle, description: homeDesc, canonical: SITE });
+  fs.writeFileSync(path.join(DIST, "index.html"), homeHtml, "utf-8");
+  console.log(`  ✓  / — "${homeTitle}"`);
+}
+
+// ── festivals list page — the flagship "link-worthy resource" ──────────────
+// A complete, scannable festival calendar is exactly the kind of reference
+// page other sites/blogs link to (per the growth roadmap's Phase 12 "build
+// link-worthy resources" principle) — and no such single page existed
+// before this. Real computed dates baked into the static HTML, not a
+// generic list, same pattern as the other fixes this session.
+{
+  console.log("\n🎉 Festivals list page");
+  const cutoffDate = new Date();
+  cutoffDate.setMonth(cutoffDate.getMonth() + 14);
+  const cutoffIso = cutoffDate.toISOString().slice(0, 10);
+  const seenKeys = new Set<string>();
+  const upcomingFests = FESTIVALS
+    .filter(f => f.date >= today && f.date <= cutoffIso)
+    .filter(f => {
+      const key = `${f.date}|${f.slug ?? f.nameBn}`;
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    })
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const byMonth = new Map<string, typeof upcomingFests>();
+  for (const f of upcomingFests) {
+    const key = f.date.slice(0, 7);
+    if (!byMonth.has(key)) byMonth.set(key, []);
+    byMonth.get(key)!.push(f);
+  }
+
+  const festYear = new Date().getFullYear();
+  const festTitle = `বাংলা উৎসব ক্যালেন্ডার ${festYear} — সব পূজা ও উৎসবের তারিখ | সঠিক বাংলা ক্যালেন্ডার`;
+  const festDesc  = `${festYear}-${festYear + 1} সালের সমস্ত বাংলা উৎসব, পূজা ও জাতীয় দিবসের সম্পূর্ণ তালিকা ও তারিখ — দুর্গাপূজা, কালীপূজা, সরস্বতী পূজা, পয়লা বৈশাখ থেকে শুরু করে সব প্রধান উৎসব একসাথে।`;
+  const festCanonical = `${SITE}/festivals`;
+
+  const festBody = [
+    `<h1>বাংলা উৎসব ক্যালেন্ডার ${bn(festYear)}</h1>`,
+    `<p>দুর্গাপূজা, কালীপূজা, সরস্বতী পূজা, পয়লা বৈশাখ থেকে শুরু করে বাংলার সমস্ত প্রধান পূজা, উৎসব ও জাতীয় দিবসের সম্পূর্ণ তালিকা — আগামী ১৪ মাসের জন্য, তারিখ অনুযায়ী সাজানো।</p>`,
+    ...[...byMonth.entries()].flatMap(([key, fests]) => {
+      const [y, m] = key.split("-").map(Number);
+      return [
+        `<h2>${GREG_MONTHS_BN[m - 1]} ${bn(y)}</h2>`,
+        `<ul>${fests.map(f => {
+          const label = `${bnDateShort(f.date)} — ${f.icon} ${f.nameBn} (${getCategoryLabel(f.category)})`;
+          return `<li>${f.slug ? `<a href="/festival/${f.slug}">${label}</a>` : label}</li>`;
+        }).join("")}</ul>`,
+      ];
+    }),
+    `<p><a href="/">← সঠিক বাংলা ক্যালেন্ডারে ফিরুন</a> &nbsp;|&nbsp; <a href="/panjika">পঞ্জিকা</a></p>`,
+  ].join("\n");
+
+  const festSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": festTitle,
+        "description": festDesc,
+        "url": festCanonical,
+        "inLanguage": "bn",
+        "isPartOf": { "@type": "WebSite", "url": SITE, "name": "সঠিক বাংলা ক্যালেন্ডার" },
+      },
+      {
+        "@type": "ItemList",
+        "itemListElement": upcomingFests.slice(0, 30).map((f, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": f.nameBn,
+          ...(f.slug ? { "item": `${SITE}/festival/${f.slug}` } : {}),
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "সঠিক বাংলা ক্যালেন্ডার", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": "উৎসব ক্যালেন্ডার", "item": festCanonical },
+        ],
+      },
+    ],
+  };
+
+  let festHtml = swapHead(template, { title: festTitle, description: festDesc, canonical: festCanonical, schema: festSchema });
+  festHtml = swapBody(festHtml, festBody);
+  emit("/festivals", festHtml, "0.8", "daily");
+}
+
 const staticPages = [
   {
     route: "/today-bengali-date",
     crumb: "আজকের বাংলা তারিখ",
-    title: "আজকের বাংলা তারিখ ২০২৬ — তিথি ও নক্ষত্র | সঠিক বাংলা ক্যালেন্ডার",
-    desc:  "আজকের সঠিক বাংলা তারিখ, তিথি ও নক্ষত্র দেখুন। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা করা সঠিক বাংলা ক্যালেন্ডার।",
-    body: [
-      "<h1>আজকের বাংলা তারিখ ২০২৬</h1>",
-      "<p>আজকের সঠিক বাংলা তারিখ, তিথি, নক্ষত্র, যোগ ও করণ একনজরে দেখুন। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে কলকাতার সূর্যোদয় অনুসারে গণনা।</p>",
-      "<ul><li><a href='/panjika'>আজকের পঞ্জিকা — তিথি, নক্ষত্র, রাহু কাল</a></li>",
-      "<li><a href='/rashifal'>আজকের রাশিফল</a></li></ul>",
-      "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
-    ].join("\n"),
+    title: `আজকের বাংলা তারিখ: ${todayBnStr} — তিথি ${todayTithi.nameBn} | সঠিক বাংলা ক্যালেন্ডার`,
+    desc:  `আজকের বাংলা তারিখ ${todayBnStr}। তিথি: ${todayTithi.nameBn} (${todayTithi.pakshaBn}), নক্ষত্র: ${todayNakshatra.nameBn}। বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা করা সঠিক বাংলা ক্যালেন্ডার।`,
+    body: todayBengaliDateBody,
   },
   {
     route: "/panjika",
@@ -438,6 +758,52 @@ const staticPages = [
       "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
     ].join("\n"),
   },
+  {
+    route: "/about",
+    crumb: "আমাদের সম্পর্কে",
+    title: "আমাদের সম্পর্কে | সঠিক বাংলা ক্যালেন্ডার",
+    desc:  "সঠিক বাংলা ক্যালেন্ডার — বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে গণনা করা বাংলা তারিখ, পঞ্জিকা, শুভ মুহূর্ত ও রাশিফল। এই ওয়েবসাইট সম্পর্কে জানুন।",
+    body: [
+      "<h1>আমাদের সম্পর্কে</h1>",
+      "<p>সঠিক বাংলা ক্যালেন্ডার একটি স্বাধীন, ব্যক্তিগত উদ্যোগে তৈরি ওয়েবসাইট — পশ্চিমবঙ্গ ও বাংলাদেশের বাংলাভাষী মানুষদের জন্য নির্ভরযোগ্য বাংলা পঞ্জিকা তথ্য বিনামূল্যে পৌঁছে দেওয়াই লক্ষ্য।</p>",
+      "<p>তারিখ ও পঞ্জিকা গণনা করা হয় বিশুদ্ধ সিদ্ধান্ত পদ্ধতিতে, প্রকৃত জ্যোতির্বৈজ্ঞানিক সূর্য-অবস্থান ও কলকাতার স্থানীয় সূর্যোদয়ের সময় ভিত্তি করে।</p>",
+      "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
+    ].join("\n"),
+  },
+  {
+    route: "/contact",
+    crumb: "যোগাযোগ",
+    title: "যোগাযোগ | সঠিক বাংলা ক্যালেন্ডার",
+    desc:  "সঠিক বাংলা ক্যালেন্ডার সম্পর্কে মতামত, ভুল-ত্রুটি সংশোধন বা যেকোনো প্রশ্নের জন্য আমাদের হোয়াটসঅ্যাপ চ্যানেলের মাধ্যমে যোগাযোগ করুন।",
+    body: [
+      "<h1>যোগাযোগ</h1>",
+      "<p>তারিখ বা পঞ্জিকায় কোনো ভুল চোখে পড়লে, বা কোনো পরামর্শ থাকলে আমাদের হোয়াটসঅ্যাপ চ্যানেলের মাধ্যমে জানান।</p>",
+      "<p><a href='https://whatsapp.com/channel/0029Vb8cqx329759a4GL3M3f' target='_blank' rel='noopener'>হোয়াটসঅ্যাপ চ্যানেলে যোগ দিন</a></p>",
+      "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
+    ].join("\n"),
+  },
+  {
+    route: "/privacy-policy",
+    crumb: "প্রাইভেসি পলিসি",
+    title: "প্রাইভেসি পলিসি | সঠিক বাংলা ক্যালেন্ডার",
+    desc:  "সঠিক বাংলা ক্যালেন্ডার কোন তথ্য সংগ্রহ করে, কেন করে, এবং আপনার কী কী নিয়ন্ত্রণ আছে — সম্পূর্ণ বিবরণ।",
+    body: [
+      "<h1>প্রাইভেসি পলিসি</h1>",
+      "<p>Google Analytics, Google Ads, Microsoft Clarity ও Firebase-এর মাধ্যমে সাধারণ ব্যবহারের পরিসংখ্যান সংগ্রহ করা হয়। Google সাইন-ইন ও পুশ নোটিফিকেশন সম্পূর্ণ ঐচ্ছিক। কোনো তথ্য তৃতীয় পক্ষের কাছে বিক্রি করা হয় না।</p>",
+      "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
+    ].join("\n"),
+  },
+  {
+    route: "/disclaimer",
+    crumb: "ডিসক্লেমার",
+    title: "ডিসক্লেমার | সঠিক বাংলা ক্যালেন্ডার",
+    desc:  "সঠিক বাংলা ক্যালেন্ডারের তথ্যের সীমাবদ্ধতা, গণনা পদ্ধতির তারতম্য ও দায়বদ্ধতা সম্পর্কে জানুন।",
+    body: [
+      "<h1>ডিসক্লেমার</h1>",
+      "<p>এই ওয়েবসাইটের তারিখ, পঞ্জিকা, রাশিফল ও শুভ মুহূর্ত সংক্রান্ত তথ্য সাধারণ ও ঐতিহ্যগত তথ্যের উদ্দেশ্যে দেওয়া — এগুলো পেশাদার জ্যোতিষী বা পুরোহিতের পরামর্শের বিকল্প নয়। ভিন্ন ভিন্ন পঞ্জিকা প্রকাশকের গণনা পদ্ধতির তারতম্যের কারণে মাঝেমধ্যে ১ দিনের পার্থক্য দেখা যেতে পারে।</p>",
+      "<p><a href='/'>← মূল ক্যালেন্ডারে ফিরুন</a></p>",
+    ].join("\n"),
+  },
 ];
 
 for (const p of staticPages) {
@@ -464,6 +830,161 @@ for (const p of staticPages) {
   };
   let html = swapHead(template, { title: p.title, description: p.desc, canonical, schema });
   html = swapBody(html, p.body);
+  emit(p.route, html);
+}
+
+// ── English diaspora landing pages ──────────────────────────────────────────
+// Targeted pages for high-value, low-competition diaspora search queries
+// ("Durga Puja 2026 dates USA") — English RPM runs 10-25x India RPM, per the
+// site's own monetisation plan. Paired via hreflang with a Bengali page so
+// both sides of the relationship are declared, per Google's guidance.
+
+console.log("\n🌍 English diaspora pages");
+
+interface EnglishPage {
+  route: string;
+  crumb: string;
+  title: string;
+  desc: string;
+  bnCounterpart: string; // path of the paired Bengali page, e.g. "/festival/durga-puja"
+  faq: Array<{ q: string; a: string }>;
+  body: string;
+}
+
+const englishPages: EnglishPage[] = [
+  {
+    route: "/en/durga-puja-2026-usa-uk-canada-dates-times",
+    crumb: "Durga Puja 2026 — International Times",
+    title: "Durga Puja 2026 Dates & Times in USA, UK, Canada & Australia (EST/PST/GMT/AEDT)",
+    desc: "Durga Puja 2026 falls October 16-20. Exact Sandhi Puja and daily ritual times converted to US Eastern, Pacific, UK, and Australian time zones — accurate for the Bengali diaspora.",
+    bnCounterpart: "/festival/durga-puja",
+    faq: [
+      { q: "What are the Durga Puja 2026 dates?", a: "Durga Puja 2026 runs from Maha Shashthi on Friday, October 16 through Vijaya Dashami on Tuesday, October 20, all dates as observed in Kolkata (India Standard Time)." },
+      { q: "What time is Sandhi Puja 2026 in the USA (EST/PST)?", a: "Sandhi Puja's peak moment (Balidan) at 7:50 AM IST on October 19 falls at 10:20 PM EDT and 7:20 PM PDT on Sunday, October 18 (US East Coast is a full calendar day behind due to the time difference)." },
+      { q: "What time is Sandhi Puja 2026 in the UK?", a: "Sandhi Puja's peak moment (7:50 AM IST, October 19) falls at 3:20 AM BST on Monday, October 19 in the UK." },
+      { q: "Why do Puja dates and times differ between Bengali panjikas?", a: "Different panjika publishers occasionally use slightly different traditional calculation methods, which can shift exact tithi transition times by a few hours — enough to occasionally affect which calendar day a ritual falls on. This page uses times verified against a published Bengali panjika." },
+    ],
+    body: `
+<h1>Durga Puja 2026 — Dates &amp; Times for the Bengali Diaspora</h1>
+<p><strong>Durga Puja 2026 runs from Friday, October 16 (Maha Shashthi) through Tuesday, October 20 (Vijaya Dashami)</strong>, as observed in Kolkata, India. If you're celebrating from the USA, UK, Canada, or Australia, here are the exact ritual times converted to your local time zone — including the precise 48-minute Sandhi Puja window, the most time-sensitive moment of the entire festival.</p>
+
+<h2>Full Schedule — IST vs. Your Time Zone</h2>
+
+<h3>Maha Shashthi — Bodhon (Friday, October 16)</h3>
+<ul>
+<li><strong>Evening rituals (Bodhon, Amantran, Adhibas) begin:</strong> ~6:00 PM IST</li>
+<li><strong>US Eastern (EDT):</strong> Friday, 8:30 AM</li>
+<li><strong>US Pacific (PDT):</strong> Friday, 5:30 AM</li>
+<li><strong>UK (BST):</strong> Friday, 1:30 PM</li>
+<li><strong>Sydney (AEDT):</strong> Friday, 11:30 PM</li>
+</ul>
+
+<h3>Maha Saptami — Navapatrika (Saturday, October 17)</h3>
+<ul>
+<li><strong>Navapatrika entry begins:</strong> 7:04 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Friday, 9:34 PM</li>
+<li><strong>US Pacific (PDT):</strong> Friday, 6:34 PM</li>
+<li><strong>UK (BST):</strong> Saturday, 2:34 AM</li>
+<li><strong>Sydney (AEDT):</strong> Saturday, 12:34 PM</li>
+</ul>
+
+<h3>Maha Ashtami (Sunday, October 18)</h3>
+<ul>
+<li><strong>Puja begins:</strong> 7:05 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Saturday, 9:35 PM</li>
+<li><strong>US Pacific (PDT):</strong> Saturday, 6:35 PM</li>
+<li><strong>UK (BST):</strong> Sunday, 2:35 AM</li>
+<li><strong>Sydney (AEDT):</strong> Sunday, 12:35 PM</li>
+</ul>
+
+<h3>Sandhi Puja — the exact 48-minute window (Monday, October 19)</h3>
+<p>Sandhi Puja marks the precise junction of Ashtami and Navami tithis — traditionally the most powerful moment of Durga Puja, when the Goddess is believed to have taken the form of Chamunda. Exact timing matters more here than for any other ritual.</p>
+<ul>
+<li><strong>Begins:</strong> 7:26 AM IST — <strong>Balidan (peak moment):</strong> 7:50 AM IST — <strong>Ends:</strong> 8:14 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Sunday, October 18, 9:56 PM – 10:44 PM (peak at 10:20 PM)</li>
+<li><strong>US Pacific (PDT):</strong> Sunday, October 18, 6:56 PM – 7:44 PM (peak at 7:20 PM)</li>
+<li><strong>UK (BST):</strong> Monday, October 19, 2:56 AM – 3:44 AM (peak at 3:20 AM)</li>
+<li><strong>Sydney (AEDT):</strong> Monday, October 19, 12:56 PM – 1:44 PM (peak at 1:20 PM)</li>
+</ul>
+
+<h3>Maha Navami (Monday, October 19)</h3>
+<ul>
+<li><strong>Navami tithi begins:</strong> 7:50 AM IST (same moment as Sandhi Puja's peak)</li>
+<li><strong>US Eastern (EDT):</strong> Sunday, October 18, 10:20 PM</li>
+<li><strong>US Pacific (PDT):</strong> Sunday, October 18, 7:20 PM</li>
+<li><strong>UK (BST):</strong> Monday, October 19, 3:20 AM</li>
+<li><strong>Sydney (AEDT):</strong> Monday, October 19, 1:20 PM</li>
+</ul>
+
+<h3>Vijaya Dashami — Visarjan (Tuesday, October 20)</h3>
+<ul>
+<li><strong>Puja completion &amp; visarjan by:</strong> 8:31 AM IST</li>
+<li><strong>US Eastern (EDT):</strong> Monday, October 19, 11:01 PM</li>
+<li><strong>US Pacific (PDT):</strong> Monday, October 19, 8:01 PM</li>
+<li><strong>UK (BST):</strong> Tuesday, October 20, 4:01 AM</li>
+<li><strong>Sydney (AEDT):</strong> Tuesday, October 20, 2:01 PM</li>
+</ul>
+
+<h2>About Durga Puja</h2>
+<p>Durga Puja is Bengal's largest religious and cultural festival, commemorating the goddess Durga's victory over the buffalo demon Mahishasura. Celebrated over five main days from Shashthi to Vijaya Dashami, it was recognized by UNESCO in 2021 as an "Intangible Cultural Heritage of Humanity." For the Bengali diaspora, Durga Puja is often the year's biggest gathering — community pujas run by Bengali associations in most major US, UK, Canadian, and Australian cities recreate the full five-day ritual calendar, frequently on the nearest weekend for practical reasons, though the traditional dates and tithi-based timings remain as listed above.</p>
+
+<h2>Frequently Asked Questions</h2>
+${"{{FAQ}}"}
+
+<p><a href="/festival/durga-puja">বাংলায় সম্পূর্ণ দুর্গাপূজার নির্ঘণ্ট দেখুন (View the full Bengali-language schedule)</a> · <a href="/">সঠিক বাংলা ক্যালেন্ডার home</a></p>
+`,
+  },
+];
+
+for (const p of englishPages) {
+  const canonical = `${SITE}${p.route}`;
+  const bnCanonical = `${SITE}${p.bnCounterpart}`;
+
+  const faqSchema = {
+    "@type": "FAQPage",
+    "mainEntity": p.faq.map(({ q, a }) => ({
+      "@type": "Question",
+      "name": q,
+      "acceptedAnswer": { "@type": "Answer", "text": a },
+    })),
+  };
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": p.title,
+        "description": p.desc,
+        "url": canonical,
+        "inLanguage": "en",
+        "isPartOf": { "@type": "WebSite", "url": SITE, "name": "Sothik Bangla Calendar" },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Sothik Bangla Calendar", "item": SITE },
+          { "@type": "ListItem", "position": 2, "name": p.crumb, "item": canonical },
+        ],
+      },
+      faqSchema,
+    ],
+  };
+
+  const faqHtml = p.faq.map(({ q, a }) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n");
+  const body = p.body.replace("{{FAQ}}", faqHtml);
+
+  let html = swapHead(template, {
+    title: p.title,
+    description: p.desc,
+    canonical,
+    schema,
+    htmlLang: "en",
+    hreflangAlt: [
+      { lang: "en", href: canonical },
+      { lang: "bn", href: bnCanonical },
+    ],
+  });
+  html = swapBody(html, body);
   emit(p.route, html);
 }
 
@@ -794,9 +1315,10 @@ fs.writeFileSync(path.join(DIST, "feed.xml"), feedXml, "utf-8");
 // ── summary ───────────────────────────────────────────────────────────────
 
 const festCount  = Object.keys(FESTIVAL_DETAILS).length;
+const personalityCount = Object.keys(PERSONALITY_DETAILS).length;
 const monthCount = 3 * 12; // 3 years × 12 months
 const staticCount = staticPages.length;
 
 console.log(`\n🗺  sitemap index — core ${buckets.core.length} + articles ${buckets.articles.length} + dates ${buckets.dates.length} URLs (${sitemap.length - buckets.core.length - buckets.articles.length - buckets.dates.length} date pages prerendered but unlisted)`);
 console.log(`📡 feed.xml — ${articles.length} items`);
-console.log(`✅  Prerender complete — ${festCount} festival + ${monthCount} month + ${staticCount} static + ${articles.length + 1} article pages\n`);
+console.log(`✅  Prerender complete — ${festCount} festival + ${personalityCount} personality + ${monthCount} month + ${staticCount} static + ${articles.length + 1} article pages\n`);

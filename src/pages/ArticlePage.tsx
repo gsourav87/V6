@@ -7,8 +7,8 @@ import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 import { ArticleBody } from "@/components/ArticleBody";
 import { ArticleCard, bnPublishDate, formatViewsBn } from "@/components/ArticleCard";
 import { applyPageSEO, removeSchema, SITE_URL, OG_IMAGE_URL } from "@/lib/seo";
-import { getArticleBySlug, getRelatedArticles } from "@/lib/articles";
-import { ARTICLE_CATEGORIES, extractFaq } from "@/lib/article-parser";
+import { getArticleBySlug, getArticleMetaBySlug, getRelatedArticles } from "@/lib/articles";
+import { ARTICLE_CATEGORIES, extractFaq, type Article } from "@/lib/article-parser";
 import { toBengaliNumerals } from "@/lib/bengali-calendar";
 import { useArticleViews, registerArticleView } from "@/hooks/useArticleViews";
 import { cn } from "@/lib/utils";
@@ -16,9 +16,21 @@ import { cn } from "@/lib/utils";
 export default function ArticlePage() {
   const [, params] = useRoute("/articles/:slug");
   const slug = params?.slug ?? "";
-  const article = getArticleBySlug(slug);
-  const related = article ? getRelatedArticles(article) : [];
+
+  // Metadata (title, excerpt, tags, ...) is available instantly — only the
+  // body text (blocks) is fetched lazily, per-slug, below.
+  const meta = getArticleMetaBySlug(slug);
+  const related = meta ? getRelatedArticles(meta) : [];
   const relatedViews = useArticleViews(related.map(a => a.slug));
+
+  const [article, setArticle] = useState<Article | undefined>(undefined);
+  useEffect(() => {
+    setArticle(undefined);
+    if (!slug) return;
+    let cancelled = false;
+    getArticleBySlug(slug).then(a => { if (!cancelled) setArticle(a); });
+    return () => { cancelled = true; };
+  }, [slug]);
 
   const [views, setViews] = useState<number | undefined>(undefined);
   useEffect(() => {
@@ -30,16 +42,16 @@ export default function ArticlePage() {
   const SCHEMA_ID = `article-${slug}-schema`;
 
   useEffect(() => {
-    if (!article) return;
+    if (!meta) return;
 
-    const canonical = `${SITE_URL}/articles/${article.slug}`;
-    const image = article.image ? `${SITE_URL}${article.image}` : OG_IMAGE_URL;
-    const faq = extractFaq(article.blocks);
+    const canonical = `${SITE_URL}/articles/${meta.slug}`;
+    const image = meta.image ? `${SITE_URL}${meta.image}` : OG_IMAGE_URL;
+    const faq = article ? extractFaq(article.blocks) : [];
 
     applyPageSEO({
-      title: `${article.title} | বাংলার ঐতিহ্য ও ইতিহাস — সঠিক বাংলা ক্যালেন্ডার`,
-      description: article.excerpt,
-      path: `/articles/${article.slug}`,
+      title: `${meta.title} | বাংলার ঐতিহ্য ও ইতিহাস — সঠিক বাংলা ক্যালেন্ডার`,
+      description: meta.excerpt,
+      path: `/articles/${meta.slug}`,
       ogImage: image,
       schemaId: SCHEMA_ID,
       schema: {
@@ -47,23 +59,23 @@ export default function ArticlePage() {
         "@graph": [
           {
             "@type": "Article",
-            "headline": article.title,
-            "description": article.excerpt,
+            "headline": meta.title,
+            "description": meta.excerpt,
             "image": [image],
-            "datePublished": article.date,
+            "datePublished": meta.date,
             "inLanguage": "bn",
             "url": canonical,
             "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
             "author": { "@type": "Organization", "name": "সঠিক বাংলা ক্যালেন্ডার", "url": SITE_URL },
             "publisher": { "@type": "Organization", "name": "সঠিক বাংলা ক্যালেন্ডার", "url": SITE_URL },
-            "keywords": article.tags.join(", "),
+            "keywords": meta.tags.join(", "),
           },
           {
             "@type": "BreadcrumbList",
             "itemListElement": [
               { "@type": "ListItem", "position": 1, "name": "হোম", "item": SITE_URL },
               { "@type": "ListItem", "position": 2, "name": "বাংলার ঐতিহ্য ও ইতিহাস", "item": `${SITE_URL}/articles` },
-              { "@type": "ListItem", "position": 3, "name": article.title, "item": canonical },
+              { "@type": "ListItem", "position": 3, "name": meta.title, "item": canonical },
             ],
           },
           ...(faq.length > 0
@@ -80,9 +92,9 @@ export default function ArticlePage() {
       },
     });
     return () => removeSchema(SCHEMA_ID);
-  }, [slug, article]);
+  }, [slug, meta, article]);
 
-  if (!article) {
+  if (!meta) {
     return (
       <div className="min-h-screen">
         <NavBar />
@@ -98,7 +110,7 @@ export default function ArticlePage() {
     );
   }
 
-  const cat = ARTICLE_CATEGORIES[article.category];
+  const cat = ARTICLE_CATEGORIES[meta.category];
 
   return (
     <div className="min-h-screen pb-20">
@@ -118,13 +130,13 @@ export default function ArticlePage() {
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-bengali leading-tight">{article.title}</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-bengali leading-tight">{meta.title}</h1>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-white/80 font-bengali">
-            {article.date && <span>{bnPublishDate(article.date)}</span>}
+            {meta.date && <span>{bnPublishDate(meta.date)}</span>}
             <span className="inline-flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" />
-              {toBengaliNumerals(article.readMinutes)} মিনিট পড়া
+              {toBengaliNumerals(meta.readMinutes)} মিনিট পড়া
             </span>
             {typeof views === "number" && views > 0 && (
               <span className="inline-flex items-center gap-1.5">
@@ -132,31 +144,41 @@ export default function ArticlePage() {
                 {formatViewsBn(views)} বার পঠিত
               </span>
             )}
-            <ShareButton variant="compact" text={`📖 ${article.title}\n${article.excerpt}`} />
+            <ShareButton variant="compact" text={`📖 ${meta.title}\n${meta.excerpt}`} />
           </div>
         </div>
       </div>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 mt-6 space-y-8">
         {/* Featured image */}
-        {article.image && (
+        {meta.image && (
           <img
-            src={article.image}
-            alt={article.imageAlt}
+            src={meta.image}
+            alt={meta.imageAlt}
             onError={e => { e.currentTarget.style.display = "none"; }}
             className="w-full aspect-[16/9] object-cover rounded-2xl border border-border shadow-premium"
           />
         )}
 
-        {/* Body */}
+        {/* Body — fetched lazily, per-article, so reading one doesn't download every article's text */}
         <article>
-          <ArticleBody blocks={article.blocks} />
+          {article ? (
+            <ArticleBody blocks={article.blocks} />
+          ) : (
+            <div className="space-y-3 animate-pulse" aria-hidden="true">
+              <div className="h-4 bg-muted rounded w-full" />
+              <div className="h-4 bg-muted rounded w-full" />
+              <div className="h-4 bg-muted rounded w-5/6" />
+              <div className="h-4 bg-muted rounded w-full" />
+              <div className="h-4 bg-muted rounded w-3/4" />
+            </div>
+          )}
         </article>
 
         {/* Tags */}
-        {article.tags.length > 0 && (
+        {meta.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {article.tags.map(t => (
+            {meta.tags.map(t => (
               <span key={t} className="bg-secondary text-secondary-foreground text-xs font-bengali font-medium px-3 py-1 rounded-full">
                 #{t}
               </span>
@@ -165,14 +187,14 @@ export default function ArticlePage() {
         )}
 
         {/* Curated internal backlinks from frontmatter */}
-        {article.related.length > 0 && (
+        {meta.related.length > 0 && (
           <section className="bg-card border border-border rounded-2xl p-5">
             <h2 className="font-bold font-bengali text-lg mb-3 flex items-center gap-2">
               <Link2 className="w-4 h-4 text-primary" />
               সম্পর্কিত পাতা
             </h2>
             <div className="flex flex-wrap gap-2">
-              {article.related.map(l => (
+              {meta.related.map(l => (
                 <Link
                   key={l.href}
                   href={l.href}

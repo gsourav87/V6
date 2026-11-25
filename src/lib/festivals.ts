@@ -33,7 +33,24 @@ export function getFestivalBySlug(slug: string): Festival | undefined {
 
 export function getUpcomingDatesForSlug(slug: string, fromDate: Date, count = 4): Festival[] {
   const from = fromDate.toISOString().slice(0, 10);
-  return FESTIVALS.filter(f => f.slug === slug && f.date >= from).slice(0, count);
+  let matches = FESTIVALS.filter(f => f.slug === slug && f.date >= from);
+
+  // "durga-puja" (the general overview page) doesn't get its own dated entry
+  // for every year — the per-day cluster (maha-shashthi..vijaya-dashami) is
+  // the source of truth for those years (e.g. 2026). Without this, a year
+  // covered only by the cluster gets silently skipped in favor of whichever
+  // later year does have a direct "durga-puja" entry (e.g. 2027) — wrong
+  // year shown as "upcoming". Fill the gap with a synthetic entry sourced
+  // from Maha Shashthi for any year not already covered directly.
+  if (slug === "durga-puja") {
+    const coveredYears = new Set(matches.map(f => f.date.slice(0, 4)));
+    const synthetic = FESTIVALS
+      .filter(f => f.slug === "maha-shashthi" && f.date >= from && !coveredYears.has(f.date.slice(0, 4)))
+      .map(f => ({ ...f, nameBn: `দুর্গা পূজা (${f.nameBn})` }));
+    matches = [...matches, ...synthetic].sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  return matches.slice(0, count);
 }
 
 const STATIC_FESTIVALS: Festival[] = [
@@ -104,14 +121,19 @@ const STATIC_FESTIVALS: Festival[] = [
   { date: "2026-05-27", nameBn: "ইদ-উল-আজহা", nameEn: "Eid ul-Adha", category: "religious", icon: "🌙", slug: "eid-ul-adha" },
   { date: "2026-07-16", nameBn: "রথযাত্রা", nameEn: "Rath Yatra", category: "religious", icon: "🛕", slug: "rath-yatra" },
   { date: "2026-08-15", nameBn: "স্বাধীনতা দিবস", nameEn: "Independence Day", category: "national", icon: "🇮🇳", slug: "independence-day" },
+  { date: "2026-08-18", nameBn: "মনসা পূজা", nameEn: "Manasa Puja", category: "religious", icon: "🐍" },
   { date: "2026-09-17", nameBn: "বিশ্বকর্মা পূজা", nameEn: "Biswakarma Puja", category: "religious", icon: "⚙️", slug: "biswakarma-puja" },
   { date: "2026-10-02", nameBn: "গান্ধী জয়ন্তী", nameEn: "Gandhi Jayanti", category: "national", icon: "🕊️", slug: "gandhi-jayanti" },
-  { date: "2026-10-12", nameBn: "মহালয়া", nameEn: "Mahalaya", category: "religious", icon: "🙏", slug: "mahalaya" },
-  { date: "2026-10-17", nameBn: "দুর্গা পূজা (মহাষষ্ঠী)", nameEn: "Durga Puja - Maha Shashthi", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-18", nameBn: "দুর্গা পূজা (মহাসপ্তমী)", nameEn: "Durga Puja - Maha Saptami", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-19", nameBn: "দুর্গা পূজা (মহাঅষ্টমী)", nameEn: "Durga Puja - Maha Ashtami", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-20", nameBn: "দুর্গা পূজা (মহানবমী)", nameEn: "Durga Puja - Maha Navami", category: "religious", icon: "🛕", slug: "durga-puja" },
-  { date: "2026-10-21", nameBn: "দুর্গা পূজা (বিজয়াদশমী)", nameEn: "Durga Puja - Vijaya Dashami", category: "religious", icon: "🛕", slug: "durga-puja" },
+  { date: "2026-10-10", nameBn: "মহালয়া", nameEn: "Mahalaya", category: "religious", icon: "🙏", slug: "mahalaya" },
+  // Verified against a real published panjika (see project notes) — differs
+  // from the site's own tithi engine by 2-3+ hours, which is enough to shift
+  // day-of-week assignment. Trust this over the engine for 2026 Durga Puja.
+  { date: "2026-10-16", nameBn: "মহাষষ্ঠী", nameEn: "Durga Puja - Maha Shashthi", category: "religious", icon: "🌺", slug: "maha-shashthi" },
+  { date: "2026-10-17", nameBn: "মহাসপ্তমী", nameEn: "Durga Puja - Maha Saptami", category: "religious", icon: "🌿", slug: "maha-saptami" },
+  { date: "2026-10-18", nameBn: "মহাঅষ্টমী", nameEn: "Durga Puja - Maha Ashtami", category: "religious", icon: "🙏", slug: "maha-ashtami" },
+  { date: "2026-10-19", nameBn: "সন্ধিপুজো", nameEn: "Durga Puja - Sandhi Puja", category: "religious", icon: "⚔️", slug: "sandhi-puja" },
+  { date: "2026-10-19", nameBn: "মহানবমী", nameEn: "Durga Puja - Maha Navami", category: "religious", icon: "🔱", slug: "maha-navami" },
+  { date: "2026-10-20", nameBn: "বিজয়া দশমী", nameEn: "Durga Puja - Vijaya Dashami", category: "religious", icon: "🌺", slug: "vijaya-dashami" },
   { date: "2026-10-24", nameBn: "লক্ষ্মী পূজা", nameEn: "Lakshmi Puja", category: "religious", icon: "🙏", slug: "lakshmi-puja" },
   { date: "2026-11-09", nameBn: "কালী পূজা / দীপাবলি", nameEn: "Kali Puja / Diwali", category: "religious", icon: "🪔", slug: "kali-puja" },
   { date: "2026-12-25", nameBn: "বড়দিন", nameEn: "Christmas", category: "religious", icon: "🎄", slug: "christmas" },

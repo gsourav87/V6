@@ -24,7 +24,7 @@ interface WhatsAppCTAProps {
  */
 export function WhatsAppCTA({ className, variant = "banner" }: WhatsAppCTAProps) {
   const onClick = () => {
-    (window as any).gtag?.("event", "whatsapp_join_click", { variant });
+    (window as any).dataLayer?.push({ event: "whatsapp_join_click", variant });
   };
 
   if (variant === "pill") {

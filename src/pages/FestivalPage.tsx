@@ -10,7 +10,7 @@ import { getObservanceDatesForSlug } from "@/lib/observances";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toBengaliDate, toBengaliNumerals, BN_MONTH_SLUG } from "@/lib/bengali-calendar";
-import { ArrowLeft, ExternalLink, Calendar, CalendarDays } from "lucide-react";
+import { ArrowLeft, ExternalLink, Calendar, CalendarDays, Clock } from "lucide-react";
 
 
 function DateCard({ date }: { date: string }) {
@@ -162,6 +162,24 @@ export default function FestivalPage() {
       </div>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 mt-8 space-y-8">
+
+        {/* Key timings — highest-value, most scannable content, so it goes first */}
+        {detail.keyTimes && detail.keyTimes.length > 0 && (
+          <section className="bg-primary/5 border border-primary/20 rounded-2xl p-4 sm:p-5">
+            <h2 className="font-bold font-bengali text-lg mb-3 flex items-center gap-2 text-card-foreground">
+              <Clock className="w-4 h-4 text-primary" />
+              নির্ঘণ্ট ও সময়সূচি
+            </h2>
+            <dl className="divide-y divide-border/60">
+              {detail.keyTimes.map((kt, i) => (
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 py-2 first:pt-0 last:pb-0">
+                  <dt className="font-bengali text-sm text-muted-foreground">{kt.label}</dt>
+                  <dd className="font-bengali font-bold text-sm sm:text-base text-card-foreground">{kt.time}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
 
         {/* Description */}
         <section>

@@ -29,7 +29,7 @@ export function MonthSpecialDays({ banglaYear, banglaMonth }: Props) {
     <section className="bg-card border border-card-border rounded-3xl shadow-premium overflow-hidden animate-fade-up">
       <div className="flex items-center gap-2 px-5 py-3.5 bg-gradient-to-r from-primary/15 to-transparent border-b border-border/60">
         <Sparkles className="w-4 h-4 text-primary shrink-0" />
-        <h3 className="font-bengali font-bold text-foreground text-base">এই মাসের বিশেষ দিন</h3>
+        <h2 className="font-bengali font-bold text-foreground text-base">এই মাসের বিশেষ দিন</h2>
         <span className="ml-auto text-xs font-bengali text-muted-foreground">
           {toBengaliNumerals(total)}টি দিন
         </span>
