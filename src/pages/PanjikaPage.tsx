@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { format, addDays, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { NavBar } from "@/components/NavBar";
+import { DateConverter } from "@/components/DateConverter";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
 import {
   getTithiAtSunrise, getNakshatraAtSunrise, getYogaAtSunrise,
@@ -295,6 +296,11 @@ export default function PanjikaPage() {
             />
           </Section>
 
+        </div>
+
+        {/* Jump straight to any date — English ↔ Bengali, either direction */}
+        <div className="mt-6">
+          <DateConverter />
         </div>
 
         {/* Day-count info */}

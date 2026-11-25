@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 
+function todayLinks() {
+  const now = new Date();
+  return [
+    { href: `/date/${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`, label: "আজকের বাংলা তারিখ ও পঞ্জিকা" },
+    { href: "/today-bengali-date", label: "আজকের বাংলা তারিখ" },
+    { href: "/articles", label: "বাংলার ঐতিহ্য ও ইতিহাস — নিবন্ধ" },
+  ];
+}
+
 const FOOTER_LINKS = [
   { href: "/festivals", label: "উৎসব ক্যালেন্ডার" },
   { href: "/about", label: "আমাদের সম্পর্কে" },
@@ -12,6 +21,7 @@ const FOOTER_LINKS = [
 
 export function AstronomicalFooter() {
   const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [links] = useState(todayLinks);
 
   useEffect(() => {
     // Generate random stars
@@ -191,6 +201,13 @@ export function AstronomicalFooter() {
 
         {/* Bottom text */}
         <div className="text-center">
+          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-3 font-bengali text-sm">
+            {links.map(l => (
+              <Link key={l.href} href={l.href} className="text-blue-200/70 hover:text-blue-100 transition-colors">
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-4 font-bengali text-sm">
             {FOOTER_LINKS.map(l => (
               <Link key={l.href} href={l.href} className="text-blue-200/70 hover:text-blue-100 transition-colors">

@@ -37,16 +37,11 @@ import { LiveClock } from "@/components/LiveClock";
 import { MonthNavigator } from "@/components/MonthNavigator";
 import { CalendarGrid } from "@/components/CalendarGrid";
 import { MonthSpecialDays } from "@/components/MonthSpecialDays";
-import { RahuKalamCard } from "@/components/RahuKalamCard";
 
-// Below-the-fold widgets — lazy so they stay out of the initial bundle.
-const DateConverter  = lazy(() => import("@/components/DateConverter").then(m => ({ default: m.DateConverter })));
-const SeoContent     = lazy(() => import("./components/SeoContent"));
 // Modal-only content — never needed for first paint, so keep it out of the
 // initial bundle too (only fetched once a user opens the modal).
 const LoginPage       = lazy(() => import("@/components/LoginPage").then(m => ({ default: m.LoginPage })));
 const DayDetailsModal = lazy(() => import("@/components/DayDetailsModal").then(m => ({ default: m.DayDetailsModal })));
-import { WeatherWidget } from "@/components/WeatherWidget";
 import { FestivalSpotlight } from "@/components/FestivalSpotlight";
 import { DurgaPujaBanner } from "@/components/DurgaPujaBanner";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
@@ -76,10 +71,6 @@ function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [, navigate] = useLocation();
-
-  const todayY = now.getFullYear();
-  const todayM = now.getMonth() + 1;
-  const todayD = now.getDate();
 
   useEffect(() => {
     // Fired via GTM (Custom Event trigger "homepage_landing") rather than a
@@ -128,54 +119,12 @@ function Home() {
           ))}
         </div>
 
-        {/* SEO navigation links */}
-        <nav aria-label="Quick links" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-4 text-sm font-bengali font-semibold text-primary">
-          <Link href={`/date/${todayY}/${todayM}/${todayD}`}>আজকের বাংলা তারিখ ও পঞ্জিকা</Link>
-          <Link href="/today-bengali-date">আজকের বাংলা তারিখ</Link>
-          <Link href="/articles">বাংলার ঐতিহ্য ও ইতিহাস — নিবন্ধ</Link>
-        </nav>
-
-        {/* All 12 Bengali months */}
-        <nav aria-label="Bengali months 2026" className="flex flex-wrap justify-center gap-2 mt-3">
-          {([
-            { slug: "boishakh",  nameBn: "বৈশাখ" },
-            { slug: "jaistha",   nameBn: "জ্যৈষ্ঠ" },
-            { slug: "ashar",     nameBn: "আষাঢ়" },
-            { slug: "shraban",   nameBn: "শ্রাবণ" },
-            { slug: "bhadra",    nameBn: "ভাদ্র" },
-            { slug: "ashwin",    nameBn: "আশ্বিন" },
-            { slug: "kartik",    nameBn: "কার্তিক" },
-            { slug: "agrohayon", nameBn: "অগ্রহায়ণ" },
-            { slug: "poush",     nameBn: "পৌষ" },
-            { slug: "magh",      nameBn: "মাঘ" },
-            { slug: "falgun",    nameBn: "ফাল্গুন" },
-            { slug: "chaitra",   nameBn: "চৈত্র" },
-          ] as const).map(({ slug, nameBn }) => (
-            <Link
-              key={slug}
-              href={`/month/${slug}/2026`}
-              className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full text-xs font-bengali font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
-            >
-              {nameBn} ২০২৬
-            </Link>
-          ))}
-        </nav>
-
-        {/* Festival spotlight */}
+        {/* Festival spotlight — the one time-sensitive highlight worth a full card */}
         <div className="mt-5 animate-fade-up stagger-2">
           <FestivalSpotlight />
         </div>
 
-        {/* Weather widget */}
-        <div className="mt-3 animate-fade-up stagger-3">
-          <WeatherWidget />
-        </div>
-
-        {/* WhatsApp channel CTA */}
-        <div className="mt-3 animate-fade-up stagger-4">
-          <WhatsAppCTA />
-        </div>
-
+        {/* Calendar — the main event, given real room to breathe */}
         <div className="mt-8">
           <MonthNavigator
             selectedYear={selectedYear}
@@ -202,20 +151,11 @@ function Home() {
           <div className="mt-6">
             <MonthSpecialDays banglaYear={selectedYear} banglaMonth={selectedMonth} />
           </div>
+        </div>
 
-          <div className="mt-6">
-            <RahuKalamCard />
-          </div>
-
-          <Suspense fallback={null}>
-            <div className="mt-6">
-              <DateConverter />
-            </div>
-
-            <div className="mt-10">
-              <SeoContent />
-            </div>
-          </Suspense>
+        {/* WhatsApp channel CTA */}
+        <div className="mt-10 animate-fade-up">
+          <WhatsAppCTA />
         </div>
       </main>
 

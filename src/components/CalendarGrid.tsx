@@ -65,11 +65,11 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
     d1.getUTCDate()     === d2.getDate();
 
   return (
-    <div className="bg-card rounded-2xl sm:rounded-3xl glow-focus border border-primary/15 overflow-hidden animate-fade-up">
+    <div className="bg-card rounded-2xl sm:rounded-3xl glow-focus shadow-premium border border-primary/15 overflow-hidden animate-fade-up">
       {/* Header Row */}
       <div className="grid grid-cols-7 bg-gradient-to-br from-primary via-primary to-primary/85 text-primary-foreground">
         {BANGLA_DAYS.map((day, i) => (
-          <div key={i} className="py-2.5 sm:py-3 text-center">
+          <div key={i} className="py-3 sm:py-3.5 text-center">
             <div className={cn(
               "font-bold font-bengali text-sm sm:text-base md:text-lg",
               (i === 0 || i === 6) ? "text-amber-200" : "text-primary-foreground",

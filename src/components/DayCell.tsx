@@ -70,8 +70,8 @@ export function DayCell({
       onClick={isCurrentMonth && onClick ? onClick : undefined}
       className={cn(
         // Borderless table cell — shares grid lines with neighbours, no gaps
-        "relative min-h-[64px] sm:min-h-[104px] md:min-h-[132px] lg:min-h-[150px]",
-        "p-1 sm:p-2 md:p-2.5",
+        "relative min-h-[72px] sm:min-h-[118px] md:min-h-[150px] lg:min-h-[176px] xl:min-h-[192px]",
+        "p-1.5 sm:p-2.5 md:p-3",
         "flex flex-col overflow-hidden",
         "border-r border-b border-border/50",
         "transition-colors duration-150 select-none",
@@ -84,15 +84,15 @@ export function DayCell({
       {/* Top: Bengali day + Gregorian date */}
       <div className="flex items-start justify-between gap-0.5 leading-none">
         <span className={cn(
-          "font-bold font-bengali tabular-nums leading-none",
-          "text-2xl sm:text-3xl md:text-5xl lg:text-6xl",
+          "font-bold font-bengali tabular-nums leading-none whitespace-nowrap",
+          "text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl",
           dayNumColor,
         )}>
           {isCurrentMonth ? toBengaliNumerals(bengaliDay) : ""}
         </span>
         {isCurrentMonth && (
           <span className={cn(
-            "shrink-0 mt-0.5 text-[9px] sm:text-[11px] tabular-nums leading-none sm:px-1.5 sm:py-0.5 sm:rounded",
+            "shrink-0 mt-0.5 text-[9px] sm:text-xs tabular-nums leading-none whitespace-nowrap sm:px-1.5 sm:py-0.5 sm:rounded",
             engDateClass,
           )}>
             {format(gregDate, "d")}
@@ -102,12 +102,18 @@ export function DayCell({
 
       {isCurrentMonth && (
         <div className="relative z-10 mt-auto min-w-0">
-          {/* ── Mobile: paksha initial + tithi name (in words) ── */}
+          {/* ── Mobile: paksha initial + tithi ordinal — the full Bengali name
+               (e.g. "ত্রয়োদশী") doesn't fit a 7-column mobile cell without an
+               ugly mid-word ellipsis, so show the compact "শু ১৩" form instead,
+               same convention most printed panjikas use at this scale. ── */}
           <div className="sm:hidden">
             {tithiNameBn && tithiNumber && (
-              <div className={cn("text-[10px] font-bengali leading-tight truncate", tithiColor)}>
+              <div className={cn("text-[11px] font-bengali font-semibold leading-tight whitespace-nowrap", tithiColor)}>
                 {isPurnima ? "🌕 পূর্ণিমা" : isAmavasya ? "🌑 অমাবস্যা" : (
-                  <><span className="text-primary/80 font-semibold">{isShukla ? "শু " : "কৃ "}</span>{tithiNameBn}</>
+                  <>
+                    <span className="text-primary/80">{isShukla ? "শু " : "কৃ "}</span>
+                    {toBengaliNumerals(((tithiNumber - 1) % 15) + 1)}
+                  </>
                 )}
               </div>
             )}
