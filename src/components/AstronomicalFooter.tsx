@@ -12,6 +12,7 @@ function todayLinks() {
 }
 
 const FOOTER_LINKS = [
+  { href: "/important-days", label: "এই মাসের বিশেষ দিন" },
   { href: "/festivals", label: "উৎসব ক্যালেন্ডার" },
   { href: "/about", label: "আমাদের সম্পর্কে" },
   { href: "/contact", label: "যোগাযোগ" },

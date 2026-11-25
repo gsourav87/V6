@@ -22,9 +22,11 @@ const AgeCalculatorPage   = lazy(() => import("./pages/AgeCalculatorPage"));
 const DateDifferencePage  = lazy(() => import("./pages/DateDifferencePage"));
 const BirthRashiPage      = lazy(() => import("./pages/BirthRashiPage"));
 const NamazTimePage       = lazy(() => import("./pages/NamazTimePage"));
+const ImportantDaysPage   = lazy(() => import("./pages/ImportantDaysPage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import { useState, useEffect } from "react";
+import { ChevronRight } from "lucide-react";
 import { Route, Switch, Router as WouterRouter, Link, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -40,7 +42,6 @@ import { NavBar } from "@/components/NavBar";
 import { LiveClock } from "@/components/LiveClock";
 import { MonthNavigator } from "@/components/MonthNavigator";
 import { CalendarGrid } from "@/components/CalendarGrid";
-import { MonthSpecialDays } from "@/components/MonthSpecialDays";
 
 // Modal-only content — never needed for first paint, so keep it out of the
 // initial bundle too (only fetched once a user opens the modal).
@@ -152,9 +153,19 @@ function Home() {
             }}
           />
 
-          <div className="mt-6">
-            <MonthSpecialDays banglaYear={selectedYear} banglaMonth={selectedMonth} />
-          </div>
+          <Link
+            href="/important-days"
+            className="group mt-6 flex items-center gap-3 bg-card border border-border/70 rounded-2xl px-5 py-4 hover:border-primary/40 hover:shadow-premium transition-all"
+          >
+            <span className="grid place-items-center w-11 h-11 rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-600 text-xl shadow-md ring-1 ring-white/20 shrink-0">
+              ✨
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="font-bengali font-bold text-foreground text-sm">এই মাসের বিশেষ দিন ও উৎসব</div>
+              <div className="font-bengali text-xs text-muted-foreground">সম্পূর্ণ তালিকা দেখুন</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
         </div>
 
         {/* WhatsApp channel CTA */}
@@ -321,6 +332,10 @@ function App() {
 
                 <Route path="/namaz-time">
                   <NamazTimePage />
+                </Route>
+
+                <Route path="/important-days">
+                  <ImportantDaysPage />
                 </Route>
 
                 <Route>
