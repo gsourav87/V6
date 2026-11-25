@@ -1,0 +1,42 @@
+name: Daily Rebuild Safety Net
+
+# The homepage's title/description bake in *today's* actual tithi/nakshatra
+# at build time (see scripts/prerender.ts) — Search Console showed 0% CTR on
+# every "today's Bangla date" query while that title went stale, because
+# nothing rebuilds the site except a content commit landing on main. If the
+# Daily Article pipeline has a bad day (API outage, exhausted queue, a review
+# PR left unmerged), the homepage's "today" silently freezes right along
+# with it — exactly what happened for ~6 days in November.
+#
+# This is the independent fallback: once a day, if main hasn't been pushed to
+# yet today, push an empty commit so Vercel's normal git-triggered build runs
+# anyway and bakes the correct date in. A no-op on every day something else
+# (a merged article, a manual commit) already pushed.
+
+on:
+  schedule:
+    - cron: "0 5 * * *" # 10:30 IST — after both Daily Article attempts and a
+                         # little buffer for a same-morning PR merge
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push an empty commit if main hasn't moved today (IST)
+        run: |
+          TODAY_IST=$(TZ=Asia/Kolkata date +%F)
+          LAST_COMMIT_IST=$(TZ=Asia/Kolkata git log -1 --format=%cd --date=format-local:%F)
+          if [ "$TODAY_IST" = "$LAST_COMMIT_IST" ]; then
+            echo "↷ main already has a commit from today ($TODAY_IST) — nothing to do."
+            exit 0
+          fi
+          git config user.name "sothik-bangla-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit --allow-empty -m "chore: daily rebuild ($TODAY_IST) — keep homepage date fresh"
+          git push

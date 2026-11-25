@@ -8,17 +8,18 @@ name: Daily Article
 #   GEMINI_API_KEY (required) and PEXELS_API_KEY (optional — publishes
 #   without a featured image if omitted).
 #
-# Pushes using the workflow's own built-in GITHUB_TOKEN — no personal
-# access token needed, unlike the git push in the docs elsewhere.
-#
-# After a successful publish, waits for the new page to actually be live on
-# Vercel, then sends a push notification via the existing api/send-push.ts
-# (same CRON_SECRET the daily panchang pushes use).
+# This does NOT push straight to main. It opens a pull request instead, so a
+# human skims the AI-written draft before it goes live — Google's spam
+# policy on "scaled content abuse" specifically calls out AI content
+# "published at scale" with no human review as the high-risk pattern, and
+# auto-publishing daily with zero review was exactly that. Merging the PR is
+# what actually publishes it; .github/workflows/article-published.yml picks
+# up from there (waits for the live deploy, sends the push notification).
 #
 # Runs twice: 08:00 IST, then a retry at 08:40 IST in case the first run hit
-# a transient failure (Gemini rate limit, network blip, etc.). The retry is
-# a no-op if the 08:00 run already succeeded — daily-article.ts checks for
-# today's article before doing any work.
+# a transient failure (Gemini rate limit, network blip, etc.). The retry
+# no-ops if the 08:00 run already opened a PR — see the first step below —
+# and also no-ops once daily-article.ts sees today's article already merged.
 #
 # Test on demand: Actions tab → "Daily Article" → Run workflow.
 
@@ -30,9 +31,10 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 # If the 08:00 run is somehow still going when the 08:40 retry fires, queue
-# rather than race on the git push — don't cancel a run that might succeed.
+# rather than race on the branch push — don't cancel a run that might succeed.
 concurrency:
   group: daily-article
   cancel-in-progress: false
@@ -43,56 +45,64 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Skip if a content PR is already open
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Don't generate a second draft while yesterday's (or today's
+          # earlier run's) is still waiting on review — that would burn an
+          # extra queue topic and Gemini call for nothing, and pile up PRs
+          # if review lags.
+          open_count=$(gh pr list --state open --json headRefName \
+            --jq '[.[] | select(.headRefName | startswith("content/"))] | length')
+          if [ "$open_count" -gt 0 ]; then
+            echo "↷ a content PR is already open — skipping this run."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.guard.outputs.skip != 'true'
         with:
           node-version: 20
 
       - run: npm ci
+        if: steps.guard.outputs.skip != 'true'
 
       - name: Generate article
         id: generate
+        if: steps.guard.outputs.skip != 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: npx tsx scripts/daily-article.ts
 
-      - name: Commit and push if a new article was written
-        run: |
-          git config user.name "sothik-bangla-bot"
-          git config user.email "actions@users.noreply.github.com"
-          if [ -n "$(git status --porcelain)" ]; then
-            git add content-queue/article-topics.txt src/content/articles public/articles
-            git commit -m "content: new article ($(date -u +%F))"
-            # Retry once with a rebase in case something else pushed to main
-            # in between (e.g. an overlapping run, or a manual commit). Must
-            # exit non-zero if both attempts fail — don't silently swallow it.
-            pushed=false
-            for i in 1 2; do
-              if git push; then pushed=true; break; fi
-              echo "push rejected, rebasing onto origin/main and retrying..."
-              git pull --rebase origin main
-            done
-            [ "$pushed" = true ] || { echo "✗ push failed after retry"; exit 1; }
-          else
-            echo "nothing to commit"
-          fi
-
-      - name: Wait for the new article to be live, then notify subscribers
-        if: steps.generate.outputs.slug != ''
+      - name: Open a review PR if a new article was written
+        if: steps.guard.outputs.skip != 'true' && steps.generate.outputs.slug != ''
         env:
+          GH_TOKEN: ${{ github.token }}
           SLUG: ${{ steps.generate.outputs.slug }}
           TITLE: ${{ steps.generate.outputs.title }}
         run: |
-          URL="https://www.sothikbanglacalendar.live/articles/$SLUG"
-          echo "waiting for $URL to deploy..."
-          for i in $(seq 1 18); do
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-            if [ "$CODE" = "200" ]; then echo "live after $((i * 10))s"; break; fi
-            sleep 10
-          done
-          curl -fsS -G "https://www.sothikbanglacalendar.live/api/send-push" \
-            --retry 3 --retry-delay 20 --retry-connrefused \
-            --data-urlencode "slot=article" \
-            --data-urlencode "slug=$SLUG" \
-            --data-urlencode "title=$TITLE" \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -X POST -w "\nHTTP %{http_code}\n"
+          git config user.name "sothik-bangla-bot"
+          git config user.email "actions@users.noreply.github.com"
+          BRANCH="content/$SLUG"
+          git checkout -b "$BRANCH"
+          git add content-queue/article-topics.txt src/content/articles public/articles
+          git commit -m "content: new article ($(date -u +%F)) — $TITLE"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --title "📝 নতুন নিবন্ধ: $TITLE" \
+            --body "$(cat <<EOF
+          AI-generated draft, ready for a quick read-through before it goes live.
+
+          - **Slug:** \`$SLUG\`
+          - **Preview after merge:** https://www.sothikbanglacalendar.live/articles/$SLUG
+
+          Merging this PR is what publishes the article — merge once it reads
+          right and the facts check out. Closing instead of merging discards it
+          (the topic has already been popped from the queue either way).
+          EOF
+          )"
