@@ -151,6 +151,97 @@ export function moonSiderealLon(jde: number): number {
   return norm360(moonTropicalLon(jde) - lahiriAyanamsa(jde));
 }
 
+// ── Planetary heliocentric→geocentric longitude (Grahasphuta) ──────────────
+// Low-precision Keplerian elements (J2000.0 + per-century rates), the
+// standard "Approximate Positions of the Major Planets" table published by
+// NASA JPL (Standish 1992) and reproduced in Meeus and most introductory
+// astronomy references. Good to a few arcminutes over 1800–2050 — plenty for
+// placing a planet's rashi/nakshatra, which is all Grahasphuta needs.
+interface OrbitalElements {
+  a0: number; aDot: number;   // semi-major axis (AU)
+  e0: number; eDot: number;   // eccentricity
+  i0: number; iDot: number;   // inclination (deg)
+  L0: number; LDot: number;   // mean longitude (deg)
+  peri0: number; periDot: number; // longitude of perihelion (deg)
+  node0: number; nodeDot: number; // longitude of ascending node (deg)
+}
+
+const ELEMENTS: Record<string, OrbitalElements> = {
+  mercury: { a0: 0.38709927, aDot: 0.00000037, e0: 0.20563593, eDot: 0.00001906, i0: 7.00497902, iDot: -0.00594749, L0: 252.25032350, LDot: 149472.67411175, peri0: 77.45779628, periDot: 0.16047689, node0: 48.33076593, nodeDot: -0.12534081 },
+  venus:   { a0: 0.72333566, aDot: 0.00000390, e0: 0.00677672, eDot: -0.00004107, i0: 3.39467605, iDot: -0.00078890, L0: 181.97909950, LDot: 58517.81538729, peri0: 131.60246718, periDot: 0.00268329, node0: 76.67984255, nodeDot: -0.27769418 },
+  earth:   { a0: 1.00000261, aDot: 0.00000562, e0: 0.01671123, eDot: -0.00004392, i0: -0.00001531, iDot: -0.01294668, L0: 100.46457166, LDot: 35999.37244981, peri0: 102.93768193, periDot: 0.32327364, node0: 0, nodeDot: 0 },
+  mars:    { a0: 1.52371034, aDot: 0.00001847, e0: 0.09339410, eDot: 0.00007882, i0: 1.84969142, iDot: -0.00813131, L0: -4.55343205, LDot: 19140.30268499, peri0: -23.94362959, periDot: 0.44441088, node0: 49.55953891, nodeDot: -0.29257343 },
+  jupiter: { a0: 5.20288700, aDot: -0.00011607, e0: 0.04838624, eDot: -0.00013253, i0: 1.30439695, iDot: -0.00183714, L0: 34.39644051, LDot: 3034.74612775, peri0: 14.72847983, periDot: 0.21252668, node0: 100.47390909, nodeDot: 0.20469106 },
+  saturn:  { a0: 9.53667594, aDot: -0.00125060, e0: 0.05386179, eDot: -0.00050991, i0: 2.48599187, iDot: 0.00193609, L0: 49.95424423, LDot: 1222.49362201, peri0: 92.59887831, periDot: -0.41897216, node0: 113.66242448, nodeDot: -0.28867794 },
+};
+
+/** Heliocentric ecliptic rectangular coordinates (AU), mean equinox of date. */
+function heliocentricXYZ(el: OrbitalElements, T: number): { x: number; y: number; z: number } {
+  const a = el.a0 + el.aDot * T;
+  const e = el.e0 + el.eDot * T;
+  const i = (el.i0 + el.iDot * T) * DEG;
+  const L = el.L0 + el.LDot * T;
+  const peri = el.peri0 + el.periDot * T;
+  const node = el.node0 + el.nodeDot * T;
+
+  let M = norm360(L - peri);
+  if (M > 180) M -= 360;
+  const Mr = M * DEG;
+  const eDeg = e * 180 / Math.PI; // e in "radians-as-degrees" for the Kepler iteration below
+
+  // Solve Kepler's equation E - e*sin(E) = M (E, M in degrees) by iteration.
+  let E = M + eDeg * Math.sin(Mr);
+  for (let k = 0; k < 8; k++) {
+    const Er = E * DEG;
+    const dM = M - (E - eDeg * Math.sin(Er));
+    const dE = dM / (1 - e * Math.cos(Er));
+    E += dE;
+    if (Math.abs(dE) < 1e-7) break;
+  }
+  const Er = E * DEG;
+
+  const xOrb = a * (Math.cos(Er) - e);
+  const yOrb = a * Math.sqrt(1 - e * e) * Math.sin(Er);
+  const r = Math.sqrt(xOrb * xOrb + yOrb * yOrb);
+  const nu = Math.atan2(yOrb, xOrb); // true anomaly (rad)
+
+  const nodeR = node * DEG;
+  const argR = nu + (peri - node) * DEG; // argument of latitude
+
+  const x = r * (Math.cos(nodeR) * Math.cos(argR) - Math.sin(nodeR) * Math.sin(argR) * Math.cos(i));
+  const y = r * (Math.sin(nodeR) * Math.cos(argR) + Math.cos(nodeR) * Math.sin(argR) * Math.cos(i));
+  const z = r * Math.sin(argR) * Math.sin(i);
+  return { x, y, z };
+}
+
+export type GrahaPlanet = "mercury" | "venus" | "mars" | "jupiter" | "saturn";
+
+/** Geocentric tropical ecliptic longitude of a planet (degrees), ignoring light-time/aberration (negligible for rashi-level precision). */
+export function planetTropicalLon(planet: GrahaPlanet, jde: number): number {
+  const T = jT(jde);
+  const earth = heliocentricXYZ(ELEMENTS.earth, T);
+  const p = heliocentricXYZ(ELEMENTS[planet], T);
+  const dx = p.x - earth.x;
+  const dy = p.y - earth.y;
+  return norm360(Math.atan2(dy, dx) / DEG);
+}
+
+export function planetSiderealLon(planet: GrahaPlanet, jde: number): number {
+  return norm360(planetTropicalLon(planet, jde) - lahiriAyanamsa(jde));
+}
+
+// Rahu/Ketu: mean lunar ascending/descending node (Meeus ch.47, same term used
+// for nutation above) — the traditional "shadow planets" in Indian astrology.
+export function rahuSiderealLon(jde: number): number {
+  const T = jT(jde);
+  const meanNode = norm360(125.0445479 - 1934.1362891 * T);
+  return norm360(meanNode - lahiriAyanamsa(jde));
+}
+
+export function ketuSiderealLon(jde: number): number {
+  return norm360(rahuSiderealLon(jde) + 180);
+}
+
 // Find JDE when sun's sidereal longitude = targetDeg (0-360) using bisection
 // Search within [jdeLow, jdeHigh]
 export function findSiderealSunIngress(targetDeg: number, jdeLow: number, jdeHigh: number): number {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { format, addDays, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { Link } from "wouter";
 import { NavBar } from "@/components/NavBar";
 import { DateConverter } from "@/components/DateConverter";
 import { applyPageSEO, injectSchema, removeSchema, SITE_URL } from "@/lib/seo";
@@ -10,6 +11,9 @@ import {
 } from "@/lib/panjika";
 import { toBengaliDate, toBengaliNumerals } from "@/lib/bengali-calendar";
 import { getFestivalsForDate } from "@/lib/festivals";
+import { getGrahasphutaAtSunrise } from "@/lib/grahasphuta";
+import { getTithiDosha } from "@/lib/tithi-dosha";
+import { getEkadashiInfo } from "@/lib/ekadashi";
 import { cn } from "@/lib/utils";
 
 const VARA_BN = ["রবিবার","সোমবার","মঙ্গলবার","বুধবার","বৃহস্পতিবার","শুক্রবার","শনিবার"];
@@ -63,12 +67,16 @@ export default function PanjikaPage() {
   const karana    = useMemo(() => getKaranaAtSunrise(utcDate), [utcDate]);
   const rahu      = useMemo(() => getRahuKalamInfo(utcDate, today), [utcDate, today]);
   const festivals = useMemo(() => getFestivalsForDate(utcDate), [utcDate]);
+  const grahas    = useMemo(() => getGrahasphutaAtSunrise(utcDate), [utcDate]);
+  const ekadashi  = useMemo(() => getEkadashiInfo(utcDate), [utcDate]);
   const dayOfWeek = utcDate.getUTCDay();
 
   const isToday = date.toDateString() === today.toDateString();
 
   const isPurnima  = tithi.number === 15;
   const isAmavasya = tithi.number === 30;
+  const tithiWithinPaksha = ((tithi.number - 1) % 15) + 1;
+  const dosha = getTithiDosha(tithiWithinPaksha, dayOfWeek);
 
   const SCHEMA_ID = "panjika-schema";
 
@@ -177,6 +185,27 @@ export default function PanjikaPage() {
                 <span>{f.nameBn}</span>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Tithi caution badges — দগ্ধা/বিষ/হুতাশন তিথি */}
+        {(dosha.isDagdha || dosha.isVisha || dosha.isHutashan) && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {dosha.isDagdha && (
+              <span className="inline-flex items-center gap-1.5 bg-red-600/10 text-red-700 dark:text-red-400 border border-red-600/25 text-xs font-bengali font-semibold px-3 py-1.5 rounded-full">
+                🔥 দগ্ধা তিথি — নতুন কাজ শুরুর জন্য অশুভ
+              </span>
+            )}
+            {dosha.isVisha && (
+              <span className="inline-flex items-center gap-1.5 bg-amber-600/10 text-amber-700 dark:text-amber-400 border border-amber-600/25 text-xs font-bengali font-semibold px-3 py-1.5 rounded-full">
+                ⚠️ বিষ তিথি
+              </span>
+            )}
+            {dosha.isHutashan && (
+              <span className="inline-flex items-center gap-1.5 bg-orange-600/10 text-orange-700 dark:text-orange-400 border border-orange-600/25 text-xs font-bengali font-semibold px-3 py-1.5 rounded-full">
+                ⚠️ হুতাশন তিথি
+              </span>
+            )}
           </div>
         )}
 
@@ -296,12 +325,61 @@ export default function PanjikaPage() {
             />
           </Section>
 
+          {/* Ekadashi fasting + parana (fast-breaking) window */}
+          {ekadashi.isEkadashi && (
+            <Section title="একাদশীর উপবাস">
+              <InfoRow
+                icon="🙏"
+                label="আজ"
+                value="একাদশী উপবাস"
+                highlight="good"
+              />
+              <InfoRow
+                icon="🍚"
+                label="পারণ (উপবাস ভঙ্গ)"
+                value={ekadashi.paranaStart ? `${formatKolkataTime(ekadashi.paranaStart)} থেকে` : "—"}
+                sub={`${ekadashi.paranaEndLabelBn} (পরদিন সূর্যোদয়ের পর, দ্বাদশী থাকতে থাকতে)`}
+              />
+            </Section>
+          )}
+
+          {/* গ্রহস্ফুট — navagraha sidereal positions at sunrise */}
+          <Section title="গ্রহস্ফুট (সূর্যোদয়কালীন)">
+            <div className="py-2 grid grid-cols-3 gap-x-2 gap-y-3 text-center">
+              {grahas.map(g => (
+                <div key={g.nameEn} className="flex flex-col items-center">
+                  <span className="text-xs font-bengali font-bold text-foreground">{g.nameBn}</span>
+                  <span className="text-xs font-bengali text-primary font-semibold mt-0.5">{g.rashiNameBn}</span>
+                  <span className="text-[11px] text-muted-foreground mt-0.5">{g.degreeInRashi.toFixed(1)}°</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+
         </div>
 
         {/* Jump straight to any date — English ↔ Bengali, either direction */}
         <div className="mt-6">
           <DateConverter />
         </div>
+
+        {/* More tools */}
+        <nav aria-label="আরও টুলস" className="mt-6 flex flex-wrap gap-2 justify-center">
+          {[
+            { href: "/birth-rashi-calculator", label: "জন্ম রাশি নির্ণয়" },
+            { href: "/age-calculator", label: "বয়স গণনা" },
+            { href: "/date-difference", label: "তারিখ পার্থক্য" },
+            { href: "/namaz-time", label: "নামাজের সময়" },
+          ].map(l => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="text-xs bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground px-3 py-1.5 rounded-full transition-colors font-bengali font-medium"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
 
         {/* Day-count info */}
         <p className="text-center text-xs text-muted-foreground mt-6 font-bengali">

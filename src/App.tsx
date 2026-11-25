@@ -18,6 +18,10 @@ const ContactPage      = lazy(() => import("./pages/ContactPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const DisclaimerPage   = lazy(() => import("./pages/DisclaimerPage"));
 const DurgaPuja2026USA = lazy(() => import("./pages/en/DurgaPuja2026USA"));
+const AgeCalculatorPage   = lazy(() => import("./pages/AgeCalculatorPage"));
+const DateDifferencePage  = lazy(() => import("./pages/DateDifferencePage"));
+const BirthRashiPage      = lazy(() => import("./pages/BirthRashiPage"));
+const NamazTimePage       = lazy(() => import("./pages/NamazTimePage"));
 const NotFound         = lazy(() => import("./pages/not-found"));
 
 import { useState, useEffect } from "react";
@@ -301,6 +305,22 @@ function App() {
 
                 <Route path="/en/durga-puja-2026-usa-uk-canada-dates-times">
                   <DurgaPuja2026USA />
+                </Route>
+
+                <Route path="/age-calculator">
+                  <AgeCalculatorPage />
+                </Route>
+
+                <Route path="/date-difference">
+                  <DateDifferencePage />
+                </Route>
+
+                <Route path="/birth-rashi-calculator">
+                  <BirthRashiPage />
+                </Route>
+
+                <Route path="/namaz-time">
+                  <NamazTimePage />
                 </Route>
 
                 <Route>
