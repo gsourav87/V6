@@ -70,8 +70,8 @@ export function DayCell({
       onClick={isCurrentMonth && onClick ? onClick : undefined}
       className={cn(
         // Borderless table cell — shares grid lines with neighbours, no gaps
-        "relative min-h-[72px] sm:min-h-[118px] md:min-h-[150px] lg:min-h-[176px] xl:min-h-[192px]",
-        "p-1.5 sm:p-2.5 md:p-3",
+        "relative min-h-[88px] sm:min-h-[132px] md:min-h-[162px] lg:min-h-[190px] xl:min-h-[206px]",
+        "p-1.5 sm:p-3 md:p-3.5",
         "flex flex-col overflow-hidden",
         "border-r border-b border-border/50",
         "transition-colors duration-150 select-none",
@@ -85,7 +85,7 @@ export function DayCell({
       <div className="flex items-start justify-between gap-0.5 leading-none">
         <span className={cn(
           "font-bold font-bengali tabular-nums leading-none whitespace-nowrap",
-          "text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl",
+          "text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-7xl",
           dayNumColor,
         )}>
           {isCurrentMonth ? toBengaliNumerals(bengaliDay) : ""}
@@ -109,7 +109,7 @@ export function DayCell({
           <div className="sm:hidden">
             {tithiNameBn && tithiNumber && (
               <div className={cn("text-[11px] font-bengali font-semibold leading-tight whitespace-nowrap", tithiColor)}>
-                {isPurnima ? "🌕 পূর্ণিমা" : isAmavasya ? "🌑 অমাবস্যা" : (
+                {isPurnima ? "🌕 পূর্ণিমা" : isAmavasya ? "🌑 অমা" : (
                   <>
                     <span className="text-primary/80">{isShukla ? "শু " : "কৃ "}</span>
                     {toBengaliNumerals(((tithiNumber - 1) % 15) + 1)}
@@ -138,26 +138,29 @@ export function DayCell({
                 )}
               </div>
             )}
-            <div className="flex flex-col gap-0.5">
-              {festivals.slice(0, 2).map((f, i) => (
-                <div
+            {/* Icon badges, not inline names — many festival/person names run
+                long in Bengali and would need either truncation (cropped) or
+                multi-line wrapping inside a single grid cell; the full name
+                is still available via the tooltip and the day-details modal. */}
+            <div className="flex flex-wrap items-center gap-1">
+              {festivals.slice(0, 4).map((f, i) => (
+                <span
                   key={i}
                   title={f.nameBn}
                   className={cn(
-                    "flex items-center gap-0.5 text-[11px] font-bengali font-medium px-1 py-0.5 rounded min-w-0",
-                    f.category === "national" ? "bg-green-600/80 text-white"
-                    : f.category === "religious" ? "bg-primary/80 text-primary-foreground"
-                    : "bg-violet-500/80 text-white",
+                    "grid place-items-center w-5 h-5 md:w-6 md:h-6 rounded-full text-xs md:text-sm shrink-0",
+                    f.category === "national" ? "bg-green-600/80"
+                    : f.category === "religious" ? "bg-primary/80"
+                    : "bg-violet-500/80",
                   )}
                 >
-                  <span className="shrink-0 text-sm">{f.icon}</span>
-                  <span className="truncate">{f.nameBn}</span>
-                </div>
+                  {f.icon}
+                </span>
               ))}
-              {festivals.length > 2 && (
-                <div className="text-[11px] text-muted-foreground font-medium pl-0.5">
-                  +{toBengaliNumerals(festivals.length - 2)} আরো
-                </div>
+              {festivals.length > 4 && (
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  +{toBengaliNumerals(festivals.length - 4)}
+                </span>
               )}
             </div>
           </div>

@@ -69,9 +69,9 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
       {/* Header Row */}
       <div className="grid grid-cols-7 bg-gradient-to-br from-primary via-primary to-primary/85 text-primary-foreground">
         {BANGLA_DAYS.map((day, i) => (
-          <div key={i} className="py-3 sm:py-3.5 text-center">
+          <div key={i} className="py-3.5 sm:py-4 text-center">
             <div className={cn(
-              "font-bold font-bengali text-sm sm:text-base md:text-lg",
+              "font-bold font-bengali text-base sm:text-lg md:text-xl",
               (i === 0 || i === 6) ? "text-amber-200" : "text-primary-foreground",
             )}>{day.short}</div>
             <div className="text-[8px] sm:text-[10px] md:text-xs text-primary-foreground/70 uppercase tracking-wider hidden sm:block">
