@@ -33,6 +33,18 @@ const ROOT = path.join(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
 const SITE = "https://www.sothikbanglacalendar.live";
 
+// Google's Event rich result requires a `location` — these are nationwide
+// Bengali-Hindu cultural observances, not single-venue events, so a
+// country-level Place satisfies the required field without implying a
+// specific venue. (Event schema without this was failing Google's required-
+// property check, which is likely why no Event rich results were showing up
+// despite the markup otherwise being valid.)
+const EVENT_LOCATION = {
+  "@type": "Place",
+  "name": "পশ্চিমবঙ্গ ও বাংলাদেশ",
+  "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+};
+
 // ── utilities ─────────────────────────────────────────────────────────────
 
 /** Convert ASCII digits to Bengali numerals */
@@ -344,6 +356,7 @@ for (const [slug, detail] of Object.entries(FESTIVAL_DETAILS)) {
         "startDate": upcoming,
         "inLanguage": "bn",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": EVENT_LOCATION,
         "organizer": { "@type": "Organization", "name": "সঠিক বাংলা ক্যালেন্ডার", "url": SITE },
       }
     : {
@@ -1217,6 +1230,7 @@ for (const d of [...dateSet].sort()) {
       ...(f.descBn ? { "description": f.descBn } : {}),
       "inLanguage": "bn",
       "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "location": EVENT_LOCATION,
       "url": f.slug ? `${SITE}/festival/${f.slug}` : canonical,
     })),
   ];
