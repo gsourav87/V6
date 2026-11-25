@@ -11,9 +11,10 @@ interface CalendarGridProps {
   month: number;
   todayDate: Date;
   onDateClick?: (date: Date) => void;
+  className?: string;
 }
 
-export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGridProps) {
+export function CalendarGrid({ year, month, todayDate, onDateClick, className }: CalendarGridProps) {
   const currentMonthDays = useMemo(() => {
     return bengaliMonthDays(year, month).map(dayObj => {
       const t = getTithiAtSunrise(dayObj.gregDate);
@@ -65,7 +66,7 @@ export function CalendarGrid({ year, month, todayDate, onDateClick }: CalendarGr
     d1.getUTCDate()     === d2.getDate();
 
   return (
-    <div className="bg-card rounded-2xl sm:rounded-3xl glow-focus shadow-premium border border-primary/15 overflow-hidden animate-fade-up">
+    <div className={cn("bg-card rounded-2xl sm:rounded-3xl glow-focus shadow-premium border border-primary/15 overflow-hidden animate-fade-up", className)}>
       {/* Header Row */}
       <div className="grid grid-cols-7 bg-gradient-to-br from-primary via-primary to-primary/85 text-primary-foreground">
         {BANGLA_DAYS.map((day, i) => (

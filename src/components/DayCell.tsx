@@ -65,6 +65,11 @@ export function DayCell({
     ? "text-slate-300 sm:bg-slate-700/50"
     : "text-muted-foreground sm:bg-muted/70";
 
+  // Stagger each cell's attention-loop so a month full of festival days
+  // doesn't flash in unison — ripples across the grid instead.
+  const hasEvents = isCurrentMonth && festivals.length > 0;
+  const animDelay = { animationDelay: `${(bengaliDay % 6) * 0.45}s` };
+
   return (
     <div
       onClick={isCurrentMonth && onClick ? onClick : undefined}
@@ -83,11 +88,15 @@ export function DayCell({
 
       {/* Top: Bengali day + Gregorian date */}
       <div className="flex items-start justify-between gap-0.5 leading-none">
-        <span className={cn(
-          "font-bold font-bengali tabular-nums leading-none whitespace-nowrap",
-          "text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-7xl",
-          dayNumColor,
-        )}>
+        <span
+          className={cn(
+            "font-bold font-bengali tabular-nums leading-none whitespace-nowrap",
+            "text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-7xl",
+            dayNumColor,
+            hasEvents && "animate-cell-date-flash",
+          )}
+          style={hasEvents ? animDelay : undefined}
+        >
           {isCurrentMonth ? toBengaliNumerals(bengaliDay) : ""}
         </span>
         {isCurrentMonth && (
@@ -120,7 +129,14 @@ export function DayCell({
             {festivals.length > 0 && (
               <div className="flex items-center gap-0.5 leading-none mt-0.5">
                 {festivals.slice(0, 3).map((f, i) => (
-                  <span key={i} title={f.nameBn} className="text-[11px]">{f.icon}</span>
+                  <span
+                    key={i}
+                    title={f.nameBn}
+                    className="text-[11px] animate-cell-icon-pop"
+                    style={animDelay}
+                  >
+                    {f.icon}
+                  </span>
                 ))}
                 {festivals.length > 3 && (
                   <span className="text-[8px] text-muted-foreground font-medium">+{toBengaliNumerals(festivals.length - 3)}</span>
@@ -148,11 +164,12 @@ export function DayCell({
                   key={i}
                   title={f.nameBn}
                   className={cn(
-                    "grid place-items-center w-5 h-5 md:w-6 md:h-6 rounded-full text-xs md:text-sm shrink-0",
+                    "grid place-items-center w-5 h-5 md:w-6 md:h-6 rounded-full text-xs md:text-sm shrink-0 animate-cell-icon-pop",
                     f.category === "national" ? "bg-green-600/80"
                     : f.category === "religious" ? "bg-primary/80"
                     : "bg-violet-500/80",
                   )}
+                  style={animDelay}
                 >
                   {f.icon}
                 </span>

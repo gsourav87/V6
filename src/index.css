@@ -413,6 +413,31 @@
   .animate-fade-up { opacity: 1; animation: none; }
   .aurora::before, .aurora::after { animation: none; }
   .card-lift { transition: none; }
+  .animate-cell-date-flash, .animate-cell-icon-pop { animation: none; }
+}
+
+/* Calendar-grid attention loop: on a day that has a festival/observance, the
+   date number briefly flashes, then the icon for what the day is pops in —
+   repeats on a slow cycle so a glance at the month shows which days matter
+   without needing to tap each one. Pure opacity/transform (GPU-cheap), and
+   each cell gets a different delay so the whole grid doesn't flash in unison. */
+@keyframes cell-date-flash {
+  0%, 80%, 100% { text-shadow: none; transform: scale(1); }
+  86%           { text-shadow: 0 0 12px currentColor; transform: scale(1.14); }
+  92%           { text-shadow: none; transform: scale(1); }
+}
+.animate-cell-date-flash {
+  display: inline-block;
+  animation: cell-date-flash 6s ease-in-out infinite;
+}
+
+@keyframes cell-icon-pop {
+  0%, 78%  { opacity: 0.45; transform: scale(0.8); }
+  87%      { opacity: 1;    transform: scale(1.35); }
+  94%, 100%{ opacity: 1;    transform: scale(1); }
+}
+.animate-cell-icon-pop {
+  animation: cell-icon-pop 6s ease-in-out infinite;
 }
 
 /* ── Print / Save-as-PDF ────────────────────────────────────────────────

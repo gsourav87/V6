@@ -151,6 +151,7 @@ function Home() {
                 `/date/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
               );
             }}
+            className="-mx-3 sm:mx-0 rounded-none sm:rounded-3xl border-x-0 sm:border-x"
           />
 
           <Link
