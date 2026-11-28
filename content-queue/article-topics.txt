@@ -2,7 +2,6 @@
 # category must be one of: festival, person, history, observance, facts
 # scripts/daily-article.ts pops the top line each day and removes it after
 # publishing. Lines starting with # are ignored. Add more any time.
-festival|গঙ্গাস্নান ও গঙ্গা পূজা
 festival|নীল ষষ্ঠী
 festival|বাসন্তী পূজা
 festival|অম্বুবাচী মেলা (কামাখ্যা)
